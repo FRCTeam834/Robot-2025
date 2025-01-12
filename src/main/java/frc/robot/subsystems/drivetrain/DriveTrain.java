@@ -28,7 +28,7 @@ public class DriveTrain extends SubsystemBase {
   private final SwerveModule blSwerveModule;
   private final SwerveModule brSwerveModule;
 
-  private final Gyro gyro = new Gyro();
+  private final Gyro gyro;
 
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
     SwerveConstants.moduleTranslations[0], 
@@ -41,8 +41,8 @@ public class DriveTrain extends SubsystemBase {
     kinematics, 
     getYaw(),
     getModulePositions()
-    // ? Does this need Pose2d w/ vectors
   );
+
   private boolean stopped = false;
   private ChassisSpeeds setpoint = new ChassisSpeeds();
 
@@ -50,11 +50,13 @@ public class DriveTrain extends SubsystemBase {
   SwerveModule flSwerveModule,
   SwerveModule frSwerveModule,
   SwerveModule blSwerveModule,
-  SwerveModule brSwerveModule) {
+  SwerveModule brSwerveModule,
+  Gyro gyro) {
     this.flSwerveModule = flSwerveModule;
     this.frSwerveModule = frSwerveModule;
     this.blSwerveModule = blSwerveModule;
     this.brSwerveModule = brSwerveModule;
+    this.gyro = gyro;
     SmartDashboard.putData(this);
   }
 
@@ -120,7 +122,8 @@ public class DriveTrain extends SubsystemBase {
     brSwerveModule.resetDriveEncoder();
   }
 
-  // IF STILL THEN SEED ENCODERS WITH CANCODER!
+  // If there's a significant error between relative encoder and cancoder, reseed encoders
+  // TODO: Needs work
   public void seedTurnEncoders() {
     for(SwerveModuleState state : getModuleStates()) {
       if (Math.abs(state.speedMetersPerSecond) > 0.001) return;
@@ -139,7 +142,7 @@ public class DriveTrain extends SubsystemBase {
   @Override
   public void periodic() {
     odometry.update(getYaw(), getModulePositions());
-    seedTurnEncoders();
+    //seedTurnEncoders();
 
     if (DriverStation.isDisabled() || stopped) {
       stop();

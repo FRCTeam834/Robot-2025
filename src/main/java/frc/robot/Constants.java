@@ -14,16 +14,23 @@ public class Constants {
         //TODO: Figure out units and change constants
 
         //SwerveModule.java
-        public static final double drivingFactor = 1 * Math.PI / 1; // wheeldiametermeters * PI / DrivingMotorReduction
-        public static final double turningFactor = 2 * Math.PI;
-        public static final double drivingVelocityFeedForward = 1; // 1 / DriveFreeWheelSpeedRps
+        public static final double MODULE_WHEEL_DIAMETER = Units.inchesToMeters(3.95); // meters
+        public static final double DRIVE_GEAR_RATIO = 8.14; 
+        public static final double STEER_GEAR_RATIO = 12.8;
+
+        public static final double drivingVelocityFeedForward = 1/473; // Allegedly 1/Motor Kv but 2022 code uses 3.248 
+
+        public static final double CAN_CODER_OFFSET_FL = 0;
+        public static final double CAN_CODER_OFFSET_FR = 0;
+        public static final double CAN_CODER_OFFSET_BL = 0;
+        public static final double CAN_CODER_OFFSET_BR = 0;
 
         // DriveTrain.java
-        public static final double DRIVE_LENGTH = 0;
-        public static final double DRIVE_WIDTH = 0;
-        public static final double MAX_MODULE_SPEED = Units.feetToMeters(15);
-        public static final double MAX_TRANSLATION_SPEED = Units.feetToMeters(Units.feetToMeters(15));
-        public static final double MAX_STEER_SPEED = Units.degreesToRadians(250);
+        public static final double DRIVE_LENGTH = 0; //m
+        public static final double DRIVE_WIDTH = 0; //m
+        public static final double MAX_MODULE_SPEED = 8; // m/s
+        public static final double MAX_TRANSLATION_SPEED = 4; // m/s
+        public static final double MAX_STEER_SPEED = Units.degreesToRadians(180);
 
         public static final Translation2d[] moduleTranslations = {
             new Translation2d(DRIVE_LENGTH / 2, DRIVE_WIDTH / 2),

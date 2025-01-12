@@ -25,7 +25,9 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SwerveConstants;
@@ -47,56 +49,63 @@ public class SwerveModule extends SubsystemBase {
 
   private SwerveModuleState setpoint = new SwerveModuleState();
 
-  public SwerveModule(int steerID, int driveID, int CANCoderID) {
+  public SwerveModule(int steerID, int driveID, int CANCoderID, double CANCoderOffset) {
     driveMotor = new SparkMax(driveID, MotorType.kBrushless);
     turnMotor = new SparkMax(driveID, MotorType.kBrushless);
 
     driveEncoder = driveMotor.getEncoder();
     turnEncoder = turnMotor.getEncoder();
     turnCANCoder = new CANcoder(CANCoderID);
-    // ? Seeding or direct cancoder value
+
+    CANcoderConfiguration CANCoderConfig = new CANcoderConfiguration();
+    CANCoderConfig.MagnetSensor.MagnetOffset = CANCoderOffset;
+    turnCANCoder.getConfigurator().apply(CANCoderConfig);
 
     driveController = driveMotor.getClosedLoopController();
     turnController = turnMotor.getClosedLoopController();
 
     driveMotorConfig
     .idleMode(IdleMode.kBrake)
-    .smartCurrentLimit(50)
+    .smartCurrentLimit(40)
     .voltageCompensation(12)
     .inverted(false);
     //.closedLoopRampRate(0.5);
 
     driveMotorConfig.encoder
-    .positionConversionFactor(SwerveConstants.drivingFactor) // meters 
-    .velocityConversionFactor(SwerveConstants.drivingFactor / 60.0); // meters per second
+    .positionConversionFactor((Math.PI * SwerveConstants.MODULE_WHEEL_DIAMETER) / SwerveConstants.DRIVE_GEAR_RATIO) // meters 
+    .velocityConversionFactor((Math.PI * SwerveConstants.MODULE_WHEEL_DIAMETER) / (60.0 * SwerveConstants.DRIVE_GEAR_RATIO)); // meters per second
 
     driveMotorConfig.closedLoop
     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-    .pid(0.04, 0, 0)
+    .pid(1, 0, 0)
     .velocityFF(SwerveConstants.drivingVelocityFeedForward)
     .outputRange(-1, 1)
-    .maxMotion
+    .maxMotion //TODO
       .maxAcceleration(1.0)
       .maxVelocity(1.0)
       .allowedClosedLoopError(.1);
 
     turnMotorConfig
     .idleMode(IdleMode.kBrake)
-    .smartCurrentLimit(30)
+    .smartCurrentLimit(20)
     .voltageCompensation(12)
     .inverted(false);
 
+    turnMotorConfig.encoder
+    .positionConversionFactor(2 * Math.PI / SwerveConstants.STEER_GEAR_RATIO)
+    .velocityConversionFactor(2 * Math.PI / (60 * SwerveConstants.STEER_GEAR_RATIO));
+
     turnMotorConfig.closedLoop
     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-    .pid(1, 0, 0)
+    .pid(3, 0, 0)
     .outputRange(-1, 1)
     .positionWrappingEnabled(true)
-    .positionWrappingInputRange(0, SwerveConstants.turningFactor);
+    .positionWrappingInputRange(-Math.PI, Math.PI);
 
     driveMotor.configure(driveMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     turnMotor.configure(turnMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    setpoint.angle = Rotation2d.fromRotations(getCANCoderAngle()); 
+    setpoint.angle = Rotation2d.fromRadians(getCANCoderAngle()); 
     turnEncoder.setPosition(getCANCoderAngle());
     driveEncoder.setPosition(0);
     turnCANCoder.setPosition(0);
@@ -105,7 +114,7 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public double getCANCoderAngle() {
-    return turnCANCoder.getAbsolutePosition().getValueAsDouble(); // ! rotations
+    return Units.rotationsToRadians(turnCANCoder.getAbsolutePosition().getValueAsDouble()); 
   }
 
   public double getTurnAngle() {
@@ -120,12 +129,20 @@ public class SwerveModule extends SubsystemBase {
     return turnEncoder.getVelocity();
   }
 
+  public double getSetpointSpeed() {
+    return setpoint.speedMetersPerSecond;
+  }
+
+  public double getSetpointAngle() {
+    return setpoint.angle.getRadians();
+  }
+
   public SwerveModuleState getState() {
-    return new SwerveModuleState(driveEncoder.getVelocity(), Rotation2d.fromRotations(getCANCoderAngle()));
+    return new SwerveModuleState(driveEncoder.getVelocity(), Rotation2d.fromRadians(getTurnAngle()));
   }
 
   public SwerveModulePosition getPosition() {
-    return new SwerveModulePosition(driveEncoder.getPosition(), Rotation2d.fromRotations(getCANCoderAngle()));
+    return new SwerveModulePosition(driveEncoder.getPosition(), Rotation2d.fromRadians(getTurnAngle()));
   }
 
   public void setDesiredState(SwerveModuleState desiredState) {
@@ -133,7 +150,7 @@ public class SwerveModule extends SubsystemBase {
     correctedDesiredState.speedMetersPerSecond = desiredState.speedMetersPerSecond;
     correctedDesiredState.angle = desiredState.angle;
 
-    correctedDesiredState.optimize(Rotation2d.fromRotations(getCANCoderAngle()));
+    correctedDesiredState.optimize(Rotation2d.fromRadians(getTurnAngle()));
 
     if (Math.abs(correctedDesiredState.speedMetersPerSecond) < 0.001) {
       stop();
@@ -142,6 +159,7 @@ public class SwerveModule extends SubsystemBase {
 
     // correctedDesiredState.speedMetersPerSecond *= Math.cos(correctedDesiredState.speedMetersPerSecond - getTurnAngle());
 
+    //TODO: MAXMotion
     driveController.setReference(correctedDesiredState.speedMetersPerSecond, ControlType.kVelocity);
     turnController.setReference(correctedDesiredState.angle.getRadians(), ControlType.kPosition);
 
@@ -167,9 +185,7 @@ public class SwerveModule extends SubsystemBase {
 
     builder.addDoubleProperty("Setpoint Speed", this::getSetpointSpeed, null);
     builder.addDoubleProperty("Setpoint Angle", this::getSetpointAngle, null);
-    builder.addDoubleProperty("Raw Setpoint Angle", () -> { return rawSetpoint.angle.getRadians(); }, null);
-    builder.addDoubleProperty("Speed", this::getSpeed, null);
-    builder.addDoubleProperty("Angle", this::getAngleRadians, null);
-    builder.addDoubleProperty("PID Voltage", () -> driveController.calculate(inputs.driveVelocity, setpoint.speedMetersPerSecond), null);
+    builder.addDoubleProperty("Speed", this::getDriveVelocity, null);
+    builder.addDoubleProperty("Angle", this::getTurnAngle, null);
   }
 }
