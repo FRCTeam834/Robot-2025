@@ -18,18 +18,6 @@ public class Constants {
         public static final double DRIVE_GEAR_RATIO = 8.14; 
         public static final double STEER_GEAR_RATIO = 12.8;
 
-<<<<<<< HEAD
-        public static final double drivingVelocityFeedForward = 1/473; // Allegedly 1/Motor Kv but 2022 code uses 3.248 
-
-        public static final double CAN_CODER_OFFSET_FL = 0;
-        public static final double CAN_CODER_OFFSET_FR = 0;
-        public static final double CAN_CODER_OFFSET_BL = 0;
-        public static final double CAN_CODER_OFFSET_BR = 0;
-
-        // DriveTrain.java
-        public static final double DRIVE_LENGTH = 0; //m
-        public static final double DRIVE_WIDTH = 0; //m
-=======
         public static final double drivingVelocityFeedForward = 3.248; // Allegedly 1/473 Kv but 2022 code uses 3.248 
 
         public static final double CAN_CODER_OFFSET_FL = -0.286; // rotations
@@ -40,7 +28,6 @@ public class Constants {
         // DriveTrain.java
         public static final double DRIVE_LENGTH = Units.inchesToMeters(30); //m
         public static final double DRIVE_WIDTH = Units.inchesToMeters(30); //m
->>>>>>> 69ab3b2 (test)
         public static final double MAX_MODULE_SPEED = 8; // m/s
         public static final double MAX_TRANSLATION_SPEED = 4; // m/s
         public static final double MAX_STEER_SPEED = Units.degreesToRadians(180);
@@ -54,10 +41,6 @@ public class Constants {
 
         //Gyro.java
         //TODO
-<<<<<<< HEAD
-        public static final int PIGEON_ID = 0;
-=======
         public static final int PIGEON_ID = 18;
->>>>>>> 69ab3b2 (test)
     }
 }

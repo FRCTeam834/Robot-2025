@@ -15,17 +15,10 @@ import frc.robot.subsystems.drivetrain.SwerveModule;
 public class RobotContainer {
 
   public static DriveTrain driveTrain = new DriveTrain(
-<<<<<<< HEAD
-    new SwerveModule(0, 0, 0, SwerveConstants.CAN_CODER_OFFSET_FL), 
-    new SwerveModule(0, 0, 0, SwerveConstants.CAN_CODER_OFFSET_FR), 
-    new SwerveModule(0, 0, 0, SwerveConstants.CAN_CODER_OFFSET_BL), 
-    new SwerveModule(0, 0, 0, SwerveConstants.CAN_CODER_OFFSET_BR),
-=======
     new SwerveModule(3, 2, 10, SwerveConstants.CAN_CODER_OFFSET_FL), 
     new SwerveModule(5, 4, 11, SwerveConstants.CAN_CODER_OFFSET_FR), 
     new SwerveModule(7, 6, 12, SwerveConstants.CAN_CODER_OFFSET_BL), 
     new SwerveModule(9, 8, 13, SwerveConstants.CAN_CODER_OFFSET_BR),
->>>>>>> 69ab3b2 (test)
     new Gyro()
   );
 
