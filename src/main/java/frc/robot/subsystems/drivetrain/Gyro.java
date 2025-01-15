@@ -4,6 +4,10 @@
 
 package frc.robot.subsystems.drivetrain;
 
+<<<<<<< HEAD
+=======
+import com.ctre.phoenix6.configs.Pigeon2Configuration;
+>>>>>>> 69ab3b2 (test)
 import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SwerveConstants;
@@ -14,6 +18,10 @@ public class Gyro extends SubsystemBase {
 
   public Gyro() {
     pigeon = new Pigeon2(SwerveConstants.PIGEON_ID); //TODO: replace id
+<<<<<<< HEAD
+=======
+
+>>>>>>> 69ab3b2 (test)
     pigeon.setYaw(0.0);
   }
 

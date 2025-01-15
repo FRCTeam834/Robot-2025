@@ -37,11 +37,15 @@ public class DriveTrain extends SubsystemBase {
     SwerveConstants.moduleTranslations[3]
   );
 
+<<<<<<< HEAD
   private SwerveDriveOdometry odometry = new SwerveDriveOdometry( 
     kinematics, 
     getYaw(),
     getModulePositions()
   );
+=======
+  private SwerveDriveOdometry odometry;
+>>>>>>> 69ab3b2 (test)
 
   private boolean stopped = false;
   private ChassisSpeeds setpoint = new ChassisSpeeds();
@@ -58,6 +62,17 @@ public class DriveTrain extends SubsystemBase {
     this.brSwerveModule = brSwerveModule;
     this.gyro = gyro;
     SmartDashboard.putData(this);
+<<<<<<< HEAD
+=======
+
+    odometry = new SwerveDriveOdometry( 
+      kinematics, 
+      getYaw(),
+      getModulePositions()
+    );
+
+
+>>>>>>> 69ab3b2 (test)
   }
 
   public Rotation2d getYaw() {
