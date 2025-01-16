@@ -6,6 +6,8 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.DriveWithSpeeds;
 import frc.robot.subsystems.drivetrain.DriveTrain;
@@ -14,11 +16,15 @@ import frc.robot.subsystems.drivetrain.SwerveModule;
 
 public class RobotContainer {
 
+  JoystickButton middle = new JoystickButton(OI.leftJoystick, 3);
+
+  private static SwerveModule FL = new SwerveModule(3, 2, 10, SwerveConstants.CAN_CODER_OFFSET_FL, false);
+  private static SwerveModule FR = new SwerveModule(5, 4, 11, SwerveConstants.CAN_CODER_OFFSET_FR, false);
+  private static SwerveModule BL = new SwerveModule(7, 6, 12, SwerveConstants.CAN_CODER_OFFSET_BL, false);
+  private static SwerveModule BR = new SwerveModule(9, 8, 13, SwerveConstants.CAN_CODER_OFFSET_BR, false);
+
   public static DriveTrain driveTrain = new DriveTrain(
-    new SwerveModule(3, 2, 10, SwerveConstants.CAN_CODER_OFFSET_FL), 
-    new SwerveModule(5, 4, 11, SwerveConstants.CAN_CODER_OFFSET_FR), 
-    new SwerveModule(7, 6, 12, SwerveConstants.CAN_CODER_OFFSET_BL), 
-    new SwerveModule(9, 8, 13, SwerveConstants.CAN_CODER_OFFSET_BR),
+    FL, FR, BL, BR,
     new Gyro()
   );
 
@@ -33,7 +39,15 @@ public class RobotContainer {
     configureBindings();
   }
 
-  private void configureBindings() {}
+  private void configureBindings() {
+    middle.onTrue(new InstantCommand(() -> {
+      FL.zeroCANCoder();
+      FR.zeroCANCoder();
+      BL.zeroCANCoder();
+      BR.zeroCANCoder();
+      System.out.println("Zeroed!");
+    }));
+  }
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");

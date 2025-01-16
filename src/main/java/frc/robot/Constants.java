@@ -20,17 +20,17 @@ public class Constants {
 
         public static final double drivingVelocityFeedForward = 3.248; // Allegedly 1/473 Kv but 2022 code uses 3.248 
 
-        public static final double CAN_CODER_OFFSET_FL = -0.286; // rotations
-        public static final double CAN_CODER_OFFSET_FR = -0.454;
-        public static final double CAN_CODER_OFFSET_BL = 0.058;
-        public static final double CAN_CODER_OFFSET_BR = -0.1213;
+        public static final double CAN_CODER_OFFSET_FL = -0.110352; // rotations
+        public static final double CAN_CODER_OFFSET_FR = 0.1806;
+        public static final double CAN_CODER_OFFSET_BL = -0.2512;
+        public static final double CAN_CODER_OFFSET_BR = -0.187;
 
         // DriveTrain.java
         public static final double DRIVE_LENGTH = Units.inchesToMeters(30); //m
         public static final double DRIVE_WIDTH = Units.inchesToMeters(30); //m
         public static final double MAX_MODULE_SPEED = 8; // m/s
         public static final double MAX_TRANSLATION_SPEED = 4; // m/s
-        public static final double MAX_STEER_SPEED = Units.degreesToRadians(180);
+        public static final double MAX_STEER_SPEED = Units.degreesToRadians(270);
 
         public static final Translation2d[] moduleTranslations = {
             new Translation2d(DRIVE_LENGTH / 2, DRIVE_WIDTH / 2),

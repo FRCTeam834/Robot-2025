@@ -7,6 +7,7 @@ package frc.robot.subsystems.drivetrain;
 import java.util.concurrent.CancellationException;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.CANcoderConfigurator;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
@@ -22,6 +23,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -49,17 +51,16 @@ public class SwerveModule extends SubsystemBase {
 
   private SwerveModuleState setpoint = new SwerveModuleState();
 
-  public SwerveModule(int steerID, int driveID, int CANCoderID, double CANCoderOffset) {
+  private double CANCoderOffset = 0.0; // rotations
+
+  public SwerveModule(int steerID, int driveID, int CANCoderID, double encoderOffset, boolean reversedDrive) {
     driveMotor = new SparkMax(driveID, MotorType.kBrushless);
     turnMotor = new SparkMax(steerID, MotorType.kBrushless);
 
     driveEncoder = driveMotor.getEncoder();
     turnEncoder = turnMotor.getEncoder();
     turnCANCoder = new CANcoder(CANCoderID);
-
-    CANcoderConfiguration CANCoderConfig = new CANcoderConfiguration();
-    CANCoderConfig.MagnetSensor.MagnetOffset = CANCoderOffset;
-    turnCANCoder.getConfigurator().apply(CANCoderConfig);
+    CANCoderOffset = encoderOffset;
 
     driveController = driveMotor.getClosedLoopController();
     turnController = turnMotor.getClosedLoopController();
@@ -68,7 +69,7 @@ public class SwerveModule extends SubsystemBase {
     .idleMode(IdleMode.kBrake)
     .smartCurrentLimit(40)
     .voltageCompensation(12)
-    .inverted(false);
+    .inverted(reversedDrive);
     //.closedLoopRampRate(0.5);
 
     driveMotorConfig.encoder
@@ -112,11 +113,16 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public double getCANCoderAngle() {
-    return Units.rotationsToRadians(turnCANCoder.getAbsolutePosition().getValueAsDouble()); 
+    return Units.rotationsToRadians(turnCANCoder.getAbsolutePosition().getValueAsDouble() - CANCoderOffset); 
+  }
+
+  public double getCANCoderAngleRotations() {
+    return turnCANCoder.getAbsolutePosition().getValueAsDouble();
   }
 
   public double getTurnAngle() {
-    return turnEncoder.getPosition();
+    double constrainedAngle = MathUtil.angleModulus(turnEncoder.getPosition());
+    return constrainedAngle;
   }
 
   public double getDriveVelocity() {
@@ -167,6 +173,12 @@ public class SwerveModule extends SubsystemBase {
 
   public void seedTurnEncoder() {
     turnEncoder.setPosition(getCANCoderAngle());
+  }
+
+  public void zeroCANCoder() {
+    //wheels currently in desired zero position
+    CANCoderOffset = getCANCoderAngleRotations();
+    seedTurnEncoder();
   }
 
   public void resetDriveEncoder() {
