@@ -35,9 +35,9 @@ public class DriveWithSpeeds extends Command {
   @Override
   public void execute() {
     driveTrain.drive(
-     vxSupplier.getAsDouble() * SwerveConstants.MAX_MODULE_SPEED, 
-     vySupplier.getAsDouble() * SwerveConstants.MAX_MODULE_SPEED, 
-     omegaSupplier.getAsDouble() * SwerveConstants.MAX_STEER_SPEED
+     -vySupplier.getAsDouble() * SwerveConstants.MAX_MODULE_SPEED, 
+     -vxSupplier.getAsDouble() * SwerveConstants.MAX_MODULE_SPEED, 
+     -omegaSupplier.getAsDouble() * SwerveConstants.MAX_STEER_SPEED
     );
 
 

@@ -60,8 +60,6 @@ public class DriveTrain extends SubsystemBase {
       getYaw(),
       getModulePositions()
     );
-
-
   }
 
   public Rotation2d getYaw() {
@@ -167,10 +165,10 @@ public class DriveTrain extends SubsystemBase {
     blSwerveModule.setDesiredState(desiredStates[2]);
     brSwerveModule.setDesiredState(desiredStates[3]);
 
-    flSwerveModule.periodic();
-    frSwerveModule.periodic();
-    blSwerveModule.periodic();
-    brSwerveModule.periodic();
+    // flSwerveModule.periodic();
+    // frSwerveModule.periodic();
+    // blSwerveModule.periodic();
+    // brSwerveModule.periodic();
   }
 
   public void stop() { 

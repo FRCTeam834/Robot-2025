@@ -116,13 +116,16 @@ public class SwerveModule extends SubsystemBase {
     return Units.rotationsToRadians(turnCANCoder.getAbsolutePosition().getValueAsDouble() - CANCoderOffset); 
   }
 
-  public double getCANCoderAngleRotations() {
+  public double getRawCANCoderAngle() {
     return turnCANCoder.getAbsolutePosition().getValueAsDouble();
   }
 
+  public double getRawCANCoderAngleRadians() {
+    return Units.rotationsToRadians(turnCANCoder.getAbsolutePosition().getValueAsDouble());
+  }
+
   public double getTurnAngle() {
-    double constrainedAngle = MathUtil.angleModulus(turnEncoder.getPosition());
-    return constrainedAngle;
+    return turnEncoder.getPosition();
   }
 
   public double getDriveVelocity() {
@@ -142,11 +145,11 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public SwerveModuleState getState() {
-    return new SwerveModuleState(driveEncoder.getVelocity(), Rotation2d.fromRadians(getCANCoderAngle()));
+    return new SwerveModuleState(driveEncoder.getVelocity(), Rotation2d.fromRadians(getTurnAngle()));
   }
 
   public SwerveModulePosition getPosition() {
-    return new SwerveModulePosition(driveEncoder.getPosition(), Rotation2d.fromRadians(getCANCoderAngle()));
+    return new SwerveModulePosition(driveEncoder.getPosition(), Rotation2d.fromRadians(getTurnAngle()));
   }
 
   public void setDesiredState(SwerveModuleState desiredState) {
@@ -154,7 +157,7 @@ public class SwerveModule extends SubsystemBase {
     correctedDesiredState.speedMetersPerSecond = desiredState.speedMetersPerSecond;
     correctedDesiredState.angle = desiredState.angle;
 
-    correctedDesiredState.optimize(Rotation2d.fromRadians(getCANCoderAngle()));
+    correctedDesiredState.optimize(Rotation2d.fromRadians(getTurnAngle()));
 
     if (Math.abs(correctedDesiredState.speedMetersPerSecond) < 0.01) {
       stop();
@@ -177,8 +180,12 @@ public class SwerveModule extends SubsystemBase {
 
   public void zeroCANCoder() {
     //wheels currently in desired zero position
-    CANCoderOffset = getCANCoderAngleRotations();
+    CANCoderOffset = getRawCANCoderAngle();
     seedTurnEncoder();
+  }
+
+  public double getCANCoderOffset() {
+    return CANCoderOffset;
   }
 
   public void resetDriveEncoder() {
@@ -194,6 +201,7 @@ public class SwerveModule extends SubsystemBase {
   public void initSendable(SendableBuilder builder) {
     builder.setSmartDashboardType("SwerveModule");
 
+    builder.addDoubleProperty("RawAbsoluteEncoderAngle", this::getRawCANCoderAngleRadians, null);
     builder.addDoubleProperty("AbsoluteEncoderAngle", this::getCANCoderAngle, null);
     builder.addDoubleProperty("Setpoint Speed", this::getSetpointSpeed, null);
     builder.addDoubleProperty("Setpoint Angle", this::getSetpointAngle, null);
