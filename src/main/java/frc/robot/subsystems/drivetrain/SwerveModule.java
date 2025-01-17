@@ -178,6 +178,12 @@ public class SwerveModule extends SubsystemBase {
     turnEncoder.setPosition(getCANCoderAngle());
   }
 
+  public void checkAndSeedTurnEncoder() {
+    if(Math.abs(getCANCoderAngle() - getTurnAngle()) > Units.degreesToRadians(2) && getTurnVelocity() < 0.01) {
+      seedTurnEncoder();
+    }
+  }
+
   public void zeroCANCoder() {
     //wheels currently in desired zero position
     CANCoderOffset = getRawCANCoderAngle();
@@ -195,6 +201,11 @@ public class SwerveModule extends SubsystemBase {
   public void stop() {
     driveMotor.setVoltage(0);
     turnMotor.setVoltage(0);
+  }
+
+  @Override
+  public void periodic() {
+    checkAndSeedTurnEncoder();
   }
 
   @Override

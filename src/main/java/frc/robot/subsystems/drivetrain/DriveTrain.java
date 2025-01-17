@@ -130,23 +130,11 @@ public class DriveTrain extends SubsystemBase {
     blSwerveModule.resetDriveEncoder();
     brSwerveModule.resetDriveEncoder();
   }
-
-  // If there's a significant error between relative encoder and cancoder, reseed encoders
-  // TODO: Needs work
-  public void seedTurnEncoders() {
-    for(SwerveModule module : modulesArray) {
-      if(Math.abs(module.getCANCoderAngle() - module.getTurnAngle()) > Units.degreesToRadians(5)) {
-        module.seedTurnEncoder();
-        System.out.println("Reseeded encoder. I am working, for your info");
-      }
-    }
-  }
  
   @Override
   public void periodic() {
     odometry.update(getYaw(), getModulePositions());
-    //seedTurnEncoders();
-
+    
     if (DriverStation.isDisabled() || stopped) {
       stop();
       return;
@@ -165,11 +153,6 @@ public class DriveTrain extends SubsystemBase {
     frSwerveModule.setDesiredState(desiredStates[1]);
     blSwerveModule.setDesiredState(desiredStates[2]);
     brSwerveModule.setDesiredState(desiredStates[3]);
-
-    // flSwerveModule.periodic();
-    // frSwerveModule.periodic();
-    // blSwerveModule.periodic();
-    // brSwerveModule.periodic();
   }
 
   public void stop() { 

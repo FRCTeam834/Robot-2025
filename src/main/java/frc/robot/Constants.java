@@ -33,10 +33,10 @@ public class Constants {
         public static final double MAX_STEER_SPEED = Units.degreesToRadians(270);
 
         public static final Translation2d[] moduleTranslations = {
-            new Translation2d(DRIVE_LENGTH / 2, DRIVE_WIDTH / 2),
-            new Translation2d(DRIVE_LENGTH / 2, -DRIVE_WIDTH / 2),
-            new Translation2d(-DRIVE_LENGTH / 2, DRIVE_WIDTH / 2),
-            new Translation2d(-DRIVE_LENGTH / 2, -DRIVE_WIDTH / 2)
+            new Translation2d(DRIVE_WIDTH / 2, DRIVE_LENGTH / 2),
+            new Translation2d(DRIVE_WIDTH / 2, -DRIVE_LENGTH / 2),
+            new Translation2d(-DRIVE_WIDTH / 2, DRIVE_LENGTH / 2),
+            new Translation2d(-DRIVE_WIDTH / 2, -DRIVE_LENGTH / 2)
         };
 
         //Gyro.java
