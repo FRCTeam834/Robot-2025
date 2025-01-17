@@ -14,16 +14,16 @@ public class Constants {
         //TODO: Figure out units and change constants
 
         //SwerveModule.java
-        public static final double MODULE_WHEEL_DIAMETER = Units.inchesToMeters(3.95); // meters
+        public static final double MODULE_WHEEL_DIAMETER = Units.inchesToMeters(4); // meters
         public static final double DRIVE_GEAR_RATIO = 8.14; 
         public static final double STEER_GEAR_RATIO = 12.8;
 
         public static final double drivingVelocityFeedForward = 3.248; // Allegedly 1/473 Kv but 2022 code uses 3.248 
 
-        public static final double CAN_CODER_OFFSET_FL = -0.110352; // rotations
-        public static final double CAN_CODER_OFFSET_FR = 0.1806;
-        public static final double CAN_CODER_OFFSET_BL = -0.2512;
-        public static final double CAN_CODER_OFFSET_BR = -0.187;
+        public static final double CAN_CODER_OFFSET_FL = 0.386475; // rotations
+        public static final double CAN_CODER_OFFSET_FR = 0.274658;
+        public static final double CAN_CODER_OFFSET_BL = 0.1853;
+        public static final double CAN_CODER_OFFSET_BR = 0.306641;
 
         // DriveTrain.java
         public static final double DRIVE_LENGTH = Units.inchesToMeters(30); //m

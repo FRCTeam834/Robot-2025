@@ -28,7 +28,7 @@ public class OI {
     public static final double getLeftJoystickY () {
         double raw = -leftJoystick.getY();
         if (Math.abs(raw) < flightJoystickDeadzone) raw = 0.0;
-        return raw;
+        return UnitQuad.calculate(raw);
     }
 
     /**

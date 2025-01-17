@@ -90,7 +90,7 @@ public class SwerveModule extends SubsystemBase {
     .idleMode(IdleMode.kBrake)
     .smartCurrentLimit(20)
     .voltageCompensation(12)
-    .inverted(false);
+    .inverted(true);
 
     turnMotorConfig.encoder
     .positionConversionFactor(2 * Math.PI / SwerveConstants.STEER_GEAR_RATIO)
@@ -98,7 +98,7 @@ public class SwerveModule extends SubsystemBase {
 
     turnMotorConfig.closedLoop
     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-    .pid(0.05, 0, 0.01)
+    .pid(0.15, 0, 0.01)
     .outputRange(-1, 1)
     .positionWrappingEnabled(true)
     .positionWrappingInputRange(-Math.PI, Math.PI);

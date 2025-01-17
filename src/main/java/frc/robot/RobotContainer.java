@@ -19,9 +19,9 @@ public class RobotContainer {
   JoystickButton middle = new JoystickButton(OI.leftJoystick, 3);
 
   private static SwerveModule FL = new SwerveModule(3, 2, 10, SwerveConstants.CAN_CODER_OFFSET_FL, false);
-  private static SwerveModule FR = new SwerveModule(5, 4, 11, SwerveConstants.CAN_CODER_OFFSET_FR, false);
+  private static SwerveModule FR = new SwerveModule(5, 4, 11, SwerveConstants.CAN_CODER_OFFSET_FR, true);
   private static SwerveModule BL = new SwerveModule(7, 6, 12, SwerveConstants.CAN_CODER_OFFSET_BL, false);
-  private static SwerveModule BR = new SwerveModule(9, 8, 13, SwerveConstants.CAN_CODER_OFFSET_BR, false);
+  private static SwerveModule BR = new SwerveModule(9, 8, 13, SwerveConstants.CAN_CODER_OFFSET_BR, true);
 
   public static DriveTrain driveTrain = new DriveTrain(
     FL, FR, BL, BR,
@@ -31,9 +31,9 @@ public class RobotContainer {
   public RobotContainer() {
     driveTrain.setDefaultCommand(new DriveWithSpeeds(
       driveTrain,
-      OI::getRightJoystickY,
-      OI::getRightJoystickX,
-      OI::getLeftJoystickX
+      OI::getLeftJoystickX,
+      OI::getLeftJoystickY,
+      OI::getRightJoystickY
     ));
 
     configureBindings();

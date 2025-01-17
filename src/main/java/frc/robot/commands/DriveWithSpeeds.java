@@ -12,7 +12,7 @@ import frc.robot.subsystems.drivetrain.DriveTrain;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class DriveWithSpeeds extends Command {
-   private final DriveTrain driveTrain;
+  private final DriveTrain driveTrain;
   private final DoubleSupplier vxSupplier;
   private final DoubleSupplier vySupplier;
   private final DoubleSupplier omegaSupplier;

@@ -28,6 +28,8 @@ public class DriveTrain extends SubsystemBase {
   private final SwerveModule blSwerveModule;
   private final SwerveModule brSwerveModule;
 
+  private final SwerveModule[] modulesArray = new SwerveModule[4];
+
   private final Gyro gyro;
 
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
@@ -54,6 +56,11 @@ public class DriveTrain extends SubsystemBase {
     this.brSwerveModule = brSwerveModule;
     this.gyro = gyro;
     SmartDashboard.putData(this);
+
+    modulesArray[0] = flSwerveModule;
+    modulesArray[1] = frSwerveModule;
+    modulesArray[2] = blSwerveModule;
+    modulesArray[3] = brSwerveModule;
 
     odometry = new SwerveDriveOdometry( 
       kinematics, 
@@ -127,20 +134,14 @@ public class DriveTrain extends SubsystemBase {
   // If there's a significant error between relative encoder and cancoder, reseed encoders
   // TODO: Needs work
   public void seedTurnEncoders() {
-    for(SwerveModuleState state : getModuleStates()) {
-      if (Math.abs(state.speedMetersPerSecond) > 0.001) return;
+    for(SwerveModule module : modulesArray) {
+      if(Math.abs(module.getCANCoderAngle() - module.getTurnAngle()) > Units.degreesToRadians(5)) {
+        module.seedTurnEncoder();
+        System.out.println("Reseeded encoder. I am working, for your info");
+      }
     }
-
-    for (double turnVelocity : getTurnVelocities()) {
-      if (Math.abs(turnVelocity) > 0.001) return;
-    }
-
-    flSwerveModule.seedTurnEncoder();
-    frSwerveModule.seedTurnEncoder();
-    blSwerveModule.seedTurnEncoder();
-    brSwerveModule.seedTurnEncoder();
   }
-
+ 
   @Override
   public void periodic() {
     odometry.update(getYaw(), getModulePositions());
