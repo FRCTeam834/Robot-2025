@@ -90,7 +90,7 @@ public class SwerveModule extends SubsystemBase {
     .idleMode(IdleMode.kBrake)
     .smartCurrentLimit(20)
     .voltageCompensation(12)
-    .inverted(true);
+    .inverted(false);
 
     turnMotorConfig.encoder
     .positionConversionFactor(2 * Math.PI / SwerveConstants.STEER_GEAR_RATIO)
@@ -107,7 +107,7 @@ public class SwerveModule extends SubsystemBase {
     turnMotor.configure(turnMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     setpoint.angle = Rotation2d.fromRadians(getCANCoderAngle()); 
-    turnEncoder.setPosition(getCANCoderAngle());     
+    turnEncoder.setPosition(getCANCoderAngle());
 
     SmartDashboard.putData("SwerveModule " + driveID, this);
   }
@@ -179,7 +179,7 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public void checkAndSeedTurnEncoder() {
-    if(Math.abs(getCANCoderAngle() - getTurnAngle()) > Units.degreesToRadians(2) && getTurnVelocity() < 0.01) {
+    if(Math.abs(getCANCoderAngle() - getTurnAngle()) > Units.degreesToRadians(5) && getTurnVelocity() < 0.005) {
       seedTurnEncoder();
     }
   }
@@ -205,7 +205,7 @@ public class SwerveModule extends SubsystemBase {
 
   @Override
   public void periodic() {
-    checkAndSeedTurnEncoder();
+    //checkAndSeedTurnEncoder();
   }
 
   @Override

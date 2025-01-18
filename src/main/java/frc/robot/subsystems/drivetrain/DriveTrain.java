@@ -28,8 +28,6 @@ public class DriveTrain extends SubsystemBase {
   private final SwerveModule blSwerveModule;
   private final SwerveModule brSwerveModule;
 
-  private final SwerveModule[] modulesArray = new SwerveModule[4];
-
   private final Gyro gyro;
 
   private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
@@ -56,11 +54,6 @@ public class DriveTrain extends SubsystemBase {
     this.brSwerveModule = brSwerveModule;
     this.gyro = gyro;
     SmartDashboard.putData(this);
-
-    modulesArray[0] = flSwerveModule;
-    modulesArray[1] = frSwerveModule;
-    modulesArray[2] = blSwerveModule;
-    modulesArray[3] = brSwerveModule;
 
     odometry = new SwerveDriveOdometry( 
       kinematics, 
@@ -123,8 +116,8 @@ public class DriveTrain extends SubsystemBase {
   }
   
 
-  public void resetOdometry(Pose2d pose) {
-    odometry.resetPosition(getYaw(), getModulePositions(), pose);
+  public void zeroOdometry(Rotation2d angle) {
+    odometry.resetRotation(angle);
     flSwerveModule.resetDriveEncoder();
     frSwerveModule.resetDriveEncoder();
     blSwerveModule.resetDriveEncoder();
