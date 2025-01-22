@@ -54,7 +54,7 @@ public class Elevator extends SubsystemBase {
     configureSpark("", () -> { return elevatorMotor.restoreFactoryDefaults(); });
     elevatorEncoder = pivotMotor.getAbsoluteEncoder(Type.kDutyCycle);
     
-    //!Update with correct configurations for the encoder and the elevator motor
+    //!Update with correct configurations for the elevator encoder and the elevator motor
     /*
     configureSpark("", () -> { return elevatorEncoder.setPositionConversionFactor(1.0); });
     configureSpark("", () -> { return elevatorEncoder.setVelocityConversionFactor(1.0); });
@@ -65,7 +65,7 @@ public class Elevator extends SubsystemBase {
     elevatorPID.enableContinuousInput(-Math.PI, Math.PI);
     SmartDashboard.putData(this);
 
-    if(Constants.robotMode == RobotMode.COMPETITION) {
+    if(/*Robot is in competition mode*/) { //!Update
       //! Delay needed?
       Timer.delay(0.25);
       //BURN FLASH
@@ -132,7 +132,7 @@ public class Elevator extends SubsystemBase {
       //Set the voltage of the motor
       setElevatorVoltage(
         elevatorFeedforward.calculate(elevatorPID.getSetpoint().position, elevatorPID.getSetpoint().velocity) +
-        elevatorPID.calculate(inputs.elevatorPosition));
+        elevatorPID.calculate(getCurrentElevatorPosition()));
     }
 
     public void stop () {
@@ -153,7 +153,7 @@ public class Elevator extends SubsystemBase {
     
 
     public double getCurrentElevatorPosition () {
-      return inputs.elevatorPosition;
+      return elevatorEncoder.getPosition();
     }
     
     @Override
@@ -164,7 +164,7 @@ public class Elevator extends SubsystemBase {
       builder.addDoubleProperty("ElevatorPosition", this::getCurrentElevatorPosition, null);
 
       builder.addDoubleProperty("AppliedVoltage", () -> {
-        return inputs.ElevatorAppliedVoltage;
+        return elevatorMotor.getAppliedOutput();
       }, null);
       builder.addDoubleProperty("DesiredPosition", () -> {
         return desiredPosition;
