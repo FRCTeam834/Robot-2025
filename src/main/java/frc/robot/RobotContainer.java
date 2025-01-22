@@ -24,8 +24,8 @@ public class RobotContainer {
 
   private static SwerveModule FL = new SwerveModule(3, 2, 10, SwerveConstants.CAN_CODER_OFFSET_FL, false);
   private static SwerveModule FR = new SwerveModule(5, 4, 11, SwerveConstants.CAN_CODER_OFFSET_FR, true);
-  private static SwerveModule BL = new SwerveModule(9, 8, 12, SwerveConstants.CAN_CODER_OFFSET_BL, false);
-  private static SwerveModule BR = new SwerveModule(7, 6, 13, SwerveConstants.CAN_CODER_OFFSET_BR, true);
+  private static SwerveModule BL = new SwerveModule(9, 8, 13, SwerveConstants.CAN_CODER_OFFSET_BL, false);
+  private static SwerveModule BR = new SwerveModule(7, 6, 12, SwerveConstants.CAN_CODER_OFFSET_BR, true);
 
   public static DriveTrain driveTrain = new DriveTrain(
     FL, FR, BL, BR,
@@ -46,6 +46,7 @@ public class RobotContainer {
   private void configureBindings() {
     leftJoystick10.onTrue(new InstantCommand(() -> {
       driveTrain.zeroOdometry(new Rotation2d());
+      System.out.println("Zeroes the odometry");
     }));
 
     leftJoystick3.onTrue(new InstantCommand(() -> {

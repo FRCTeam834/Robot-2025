@@ -22,14 +22,14 @@ public class Constants {
 
         public static final double CAN_CODER_OFFSET_FL = 0.394; // rotations
         public static final double CAN_CODER_OFFSET_FR = 0.275658;
-        public static final double CAN_CODER_OFFSET_BL = 0.193359;
-        public static final double CAN_CODER_OFFSET_BR = 0.3125;
+        public static final double CAN_CODER_OFFSET_BR = 0.193359;
+        public static final double CAN_CODER_OFFSET_BL = 0.3125;
 
         // DriveTrain.java
         public static final double DRIVE_LENGTH = Units.inchesToMeters(30); //m
         public static final double DRIVE_WIDTH = Units.inchesToMeters(30); //m
-        public static final double MAX_MODULE_SPEED = 8; // m/s
-        public static final double MAX_TRANSLATION_SPEED = 4; // m/s
+        public static final double MAX_MODULE_SPEED = 0.5; // 8 // m/s
+        public static final double MAX_TRANSLATION_SPEED = 0.5; // 4 // m/s
         public static final double MAX_STEER_SPEED = Units.degreesToRadians(270);
 
         public static final Translation2d[] moduleTranslations = {

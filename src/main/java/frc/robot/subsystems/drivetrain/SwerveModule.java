@@ -51,8 +51,6 @@ public class SwerveModule extends SubsystemBase {
 
   private SwerveModuleState setpoint = new SwerveModuleState();
 
-  private double CANCoderOffset = 0.0; // rotations
-
   public SwerveModule(int steerID, int driveID, int CANCoderID, double encoderOffset, boolean reversedDrive) {
     driveMotor = new SparkMax(driveID, MotorType.kBrushless);
     turnMotor = new SparkMax(steerID, MotorType.kBrushless);
@@ -60,7 +58,6 @@ public class SwerveModule extends SubsystemBase {
     driveEncoder = driveMotor.getEncoder();
     turnEncoder = turnMotor.getEncoder();
     turnCANCoder = new CANcoder(CANCoderID);
-    CANCoderOffset = encoderOffset;
 
     driveController = driveMotor.getClosedLoopController();
     turnController = turnMotor.getClosedLoopController();
@@ -113,15 +110,11 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public double getCANCoderAngle() {
-    return Units.rotationsToRadians(turnCANCoder.getAbsolutePosition().getValueAsDouble() - CANCoderOffset); 
+    return Units.rotationsToRadians(turnCANCoder.getAbsolutePosition().getValueAsDouble()); 
   }
 
   public double getRawCANCoderAngle() {
     return turnCANCoder.getAbsolutePosition().getValueAsDouble();
-  }
-
-  public double getRawCANCoderAngleRadians() {
-    return Units.rotationsToRadians(turnCANCoder.getAbsolutePosition().getValueAsDouble());
   }
 
   public double getTurnAngle() {
@@ -186,12 +179,14 @@ public class SwerveModule extends SubsystemBase {
 
   public void zeroCANCoder() {
     //wheels currently in desired zero position
-    CANCoderOffset = getRawCANCoderAngle();
-    seedTurnEncoder();
-  }
+    CANcoderConfiguration getConfig = new CANcoderConfiguration();
+    turnCANCoder.getConfigurator().refresh(getConfig);
+    double oldOffset = getConfig.MagnetSensor.MagnetOffset;
 
-  public double getCANCoderOffset() {
-    return CANCoderOffset;
+    CANcoderConfiguration config = new CANcoderConfiguration();
+    config.MagnetSensor.MagnetOffset = -(turnCANCoder.getAbsolutePosition().getValueAsDouble() - oldOffset);
+    turnCANCoder.getConfigurator().apply(config);
+    seedTurnEncoder();
   }
 
   public void resetDriveEncoder() {
@@ -212,7 +207,6 @@ public class SwerveModule extends SubsystemBase {
   public void initSendable(SendableBuilder builder) {
     builder.setSmartDashboardType("SwerveModule");
 
-    builder.addDoubleProperty("RawAbsoluteEncoderAngle", this::getRawCANCoderAngleRadians, null);
     builder.addDoubleProperty("AbsoluteEncoderAngle", this::getCANCoderAngle, null);
     builder.addDoubleProperty("Setpoint Speed", this::getSetpointSpeed, null);
     builder.addDoubleProperty("Setpoint Angle", this::getSetpointAngle, null);
