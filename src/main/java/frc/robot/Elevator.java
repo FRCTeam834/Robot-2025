@@ -9,7 +9,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Elevator extends SubsystemBase {
   /** Creates a new Elevator. */
   //Motor
-  private final CANSparkMax elevatorMotor;
+  private final CANSparkMax elevatorMotor1;
+  private final CANSparkMax elevatorMotor2;
 
   //Elevator absolute encoder
   private final AbsoluteEncoder elevatorEncoder;
@@ -50,18 +51,25 @@ public class Elevator extends SubsystemBase {
   //Elevator constructor
   public Elevator() {
     //Initialize and configure motors
-    elevatorMotor = new CANSparkMax(1, MotorType.kBrushless); //!Update with correct motor ID
-    configureSpark("", () -> { return elevatorMotor.restoreFactoryDefaults(); });
-    elevatorEncoder = pivotMotor.getAbsoluteEncoder(Type.kDutyCycle);
+    //!Update with correct motor IDs
+    elevatorMotor1 = new CANSparkMax(1, MotorType.kBrushless);
+    elevatorMotor2 = new CANSparkMax(2, MotorType.kBrushless);
+    configureSpark("", () -> { return elevatorMotor1.restoreFactoryDefaults(); });
+    configureSpark("", () -> { return elevatorMotor2.restoreFactoryDefaults(); });
+    elevatorEncoder = elevatorMotor1.getAbsoluteEncoder(Type.kDutyCycle);
     
     //!Update with correct configurations for the elevator encoder and the elevator motor
     /*
     configureSpark("", () -> { return elevatorEncoder.setPositionConversionFactor(1.0); });
     configureSpark("", () -> { return elevatorEncoder.setVelocityConversionFactor(1.0); });
     configureSpark("", () -> { return elevatorEncoder.setZeroOffset(0); });
-    configureSpark("", () -> { return elevatorMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 10); }
-    configureSpark("", () -> { return elevatorMotor.enableVoltageCompensation(0.0); });
+    configureSpark("", () -> { return elevatorMotor1.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 10); }
+    configureSpark("", () -> { return elevatorMotor1.enableVoltageCompensation(0.0); });
+    configureSpark("", () -> { return elevatorMotor2.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 10); }
+    configureSpark("", () -> { return elevatorMotor2.enableVoltageCompensation(0.0); });
     */
+    elevatorMotor2.follow(elevatorMotor1); //Motor 2's output is the same as Motor 1
+    
     elevatorPID.enableContinuousInput(-Math.PI, Math.PI);
     SmartDashboard.putData(this);
 
@@ -69,7 +77,9 @@ public class Elevator extends SubsystemBase {
       //! Delay needed?
       Timer.delay(0.25);
       //BURN FLASH
-      configureSpark("", () -> { return elevatorMotor.burnFlash(); });
+      configureSpark("", () -> { return elevatorMotor1.burnFlash(); });
+      Timer.delay(0.25);
+      configureSpark("", () -> { return elevatorMotor2.burnFlash(); });
       Timer.delay(0.25);
     }
 
@@ -97,16 +107,18 @@ public class Elevator extends SubsystemBase {
 
   @Override
   public void setIdleCoast() {
-    elevatorMotor.setIdleMode(IdleMode.kCoast);
+    elevatorMotor1.setIdleMode(IdleMode.kCoast);
+    elevatorMotor2.setIdleMode(IdleMode.kCoast);
   }
 
   @Override
   public void setIdleBrake() {
-    elevatorMotor.setIdleMode(IdleMode.kBrake);
+    elevatorMotor1.setIdleMode(IdleMode.kBrake);
+    elevatorMotor2.setIdleMode(IdleMode.kBrake);
   }
 
   public void setElevatorVoltage(double volts) {
-    elevatorMotor.setVoltage(volts);
+    elevatorMotor1.setVoltage(volts);
   }
 
 
@@ -121,7 +133,7 @@ public class Elevator extends SubsystemBase {
 
     //Update the elevator feedforward if the constants have changed
     if (elevatorkS.hasChanged(hashCode()) || elevatorkG.hasChanged(hashCode()) || elevatorkV.hasChanged(hashCode()) || elevatorkA.hasChanged(hashCode())) {
-      elevatorFeedforward = new elevatorFeedforward(pivotkS.get(), pivotkG.get(), pivotkV.get(), pivotkA.get());
+      elevatorFeedforward = new elevatorFeedforward(elevatorkS.get(), elevatorkG.get(), elevatorkV.get(), elevatorkA.get());
     }
 
     if (DriverStation.isDisabled()) {
@@ -164,7 +176,7 @@ public class Elevator extends SubsystemBase {
       builder.addDoubleProperty("ElevatorPosition", this::getCurrentElevatorPosition, null);
 
       builder.addDoubleProperty("AppliedVoltage", () -> {
-        return elevatorMotor.getAppliedOutput();
+        return elevatorMotor1.getAppliedOutput();
       }, null);
       builder.addDoubleProperty("DesiredPosition", () -> {
         return desiredPosition;
