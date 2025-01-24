@@ -43,4 +43,10 @@ public class Constants {
         //TODO
         public static final int PIGEON_ID = 18;
     }
+
+    public static class VisionConstants {
+        public static final boolean useVisionPoseEstimator = true;
+        public static final boolean useMegatag2 = true;
+        public static final double maxDegreesPerSecond = 720;
+    }
 }

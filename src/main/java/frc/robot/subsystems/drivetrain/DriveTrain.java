@@ -115,6 +115,9 @@ public class DriveTrain extends SubsystemBase {
     };
   }
   
+  public SwerveDriveKinematics getKinematics() {
+    return kinematics;
+  }
 
   public void zeroOdometry(Rotation2d angle) {
     gyro.resetYaw(0.0);

@@ -15,6 +15,8 @@ import frc.robot.commands.DriveWithSpeeds;
 import frc.robot.subsystems.drivetrain.DriveTrain;
 import frc.robot.subsystems.drivetrain.Gyro;
 import frc.robot.subsystems.drivetrain.SwerveModule;
+import frc.robot.subsystems.vision.Limelight;
+import frc.robot.utility.PoseEstimator;
 
 public class RobotContainer {
 
@@ -27,10 +29,14 @@ public class RobotContainer {
   private static SwerveModule BL = new SwerveModule(9, 8, 13, SwerveConstants.CAN_CODER_OFFSET_BL, false);
   private static SwerveModule BR = new SwerveModule(7, 6, 12, SwerveConstants.CAN_CODER_OFFSET_BR, true);
 
+  public static Gyro gyro = new Gyro();
   public static DriveTrain driveTrain = new DriveTrain(
     FL, FR, BL, BR,
-    new Gyro()
+    gyro
   );
+
+  public static Limelight limelight = new Limelight(driveTrain, gyro);
+  public static PoseEstimator estimator = new PoseEstimator(driveTrain, limelight);
 
   public RobotContainer() {
     driveTrain.setDefaultCommand(new DriveWithSpeeds(

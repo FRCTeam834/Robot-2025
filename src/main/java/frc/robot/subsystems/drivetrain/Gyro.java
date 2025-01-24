@@ -22,6 +22,10 @@ public class Gyro extends SubsystemBase {
     return pigeon.getYaw().getValueAsDouble();
   }
 
+  public double getAngularVelo() {
+    return pigeon.getAngularVelocityZWorld().getValueAsDouble();
+  }
+
   public void resetYaw(double angle) {
     pigeon.setYaw(angle);
   }
