@@ -32,7 +32,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 
 public class Elevator extends SubsystemBase {
   /** Creates a new Elevator. */
-  //Motor
+  //Motors
   private final SparkMax elevatorMotor1;
   private final SparkMax elevatorMotor2;
 
@@ -53,6 +53,7 @@ public class Elevator extends SubsystemBase {
   //Initialize feedforward
   private ElevatorFeedforward elevatorFeedforward = new ElevatorFeedforward(0.0, 0.0, 0.0, 0.0);
 
+  //PID controller
   private SparkClosedLoopController pid_controller;
 
   private SparkMaxConfig motor1Config = new SparkMaxConfig();
@@ -62,7 +63,7 @@ public class Elevator extends SubsystemBase {
   private boolean elevatorStopped = false;
 
   static {
-    //!Initialize default constants
+    //TODO: Intitialize default constants
     elevatorkP.initDefault(1);
     elevatorkI.initDefault(0);
     elevatorkD.initDefault(0);
@@ -82,6 +83,7 @@ public class Elevator extends SubsystemBase {
 
     pid_controller = elevatorMotor1.getClosedLoopController();
 
+    //Configure motors
     motor1Config
     .idleMode(IdleMode.kBrake)
     .smartCurrentLimit(50)
@@ -89,10 +91,12 @@ public class Elevator extends SubsystemBase {
     .closedLoopRampRate(0.2)
     .inverted(false);
 
+    //Configure motor encoders
     motor1Config.encoder
     .positionConversionFactor(Math.PI) //TODO: get meters
     .velocityConversionFactor(Math.PI / 60); //TODO: get meters/sec
 
+    //Configure PID controller
     motor1Config.closedLoop
     .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
     .pid(elevatorkP.get(), elevatorkI.get(), elevatorkD.get())
@@ -102,12 +106,14 @@ public class Elevator extends SubsystemBase {
     .maxVelocity(1.0)
     .allowedClosedLoopError(0.1);
 
+    //Second motor should have the same configurations as the first motor
     motor2Config.apply(motor1Config);
     motor2Config.follow(elevatorMotor1);
 
     elevatorMotor1.configure(motor1Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     elevatorMotor2.configure(motor2Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
+    //Send all data to the Smart Dashboard
     SmartDashboard.putData(this);
   }
 
@@ -127,14 +133,16 @@ public class Elevator extends SubsystemBase {
       elevatorFeedforward = new ElevatorFeedforward(elevatorkS.get(), elevatorkG.get(), elevatorkV.get(), elevatorkA.get());
     }
 
+    //Update PID controller
     if (!elevatorStopped) {
       pid_controller.setReference(setpoint, ControlType.kPosition, null, elevatorFeedforward.calculate(absoluteEncoder.getVelocity())); //!Is this the correct parameter?
     }
   }
 
+  //Stop the elevator motors
   public void stop() {
     elevatorStopped = true;
-    elevatorMotor1.setVoltage(0.0);
+    elevatorMotor1.setVoltage(0.0); //Stop motors
   }
 
   @Override
