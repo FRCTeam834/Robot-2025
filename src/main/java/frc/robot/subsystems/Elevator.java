@@ -128,12 +128,13 @@ public class Elevator extends SubsystemBase {
     }
 
     if (!elevatorStopped) {
-      pid_controller.setReference(setpoint, ControlType.kPosition, null, elevatorFeedforward.calculate());
+      pid_controller.setReference(setpoint, ControlType.kPosition, null, elevatorFeedforward.calculate(absoluteEncoder.getVelocity())); //!Is this the correct parameter?
     }
   }
 
   public void stop() {
     elevatorStopped = true;
+    elevatorMotor1.setVoltage(0.0);
   }
 
   @Override
