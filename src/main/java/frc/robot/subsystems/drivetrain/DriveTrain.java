@@ -79,7 +79,7 @@ public class DriveTrain extends SubsystemBase {
   }
 
   public void drive(double xSpeed, double ySpeed, double rot) {
-    ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getYaw());
+    ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, odometry.getPoseMeters().getRotation());
     setDesiredSpeeds(speeds);
   }
 
@@ -117,7 +117,7 @@ public class DriveTrain extends SubsystemBase {
   
 
   public void zeroOdometry(Rotation2d angle) {
-    gyro.resetYaw(0.0);
+    //gyro.resetYaw(0.0);
     odometry.resetRotation(angle);
     flSwerveModule.resetDriveEncoder();
     frSwerveModule.resetDriveEncoder();

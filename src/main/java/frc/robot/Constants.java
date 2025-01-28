@@ -18,7 +18,7 @@ public class Constants {
         public static final double DRIVE_GEAR_RATIO = 8.14; 
         public static final double STEER_GEAR_RATIO = 12.8;
 
-        public static final double drivingVelocityFeedForward = 3.248; // Allegedly 1/473 Kv but 2022 code uses 3.248 
+        public static final double drivingVelocityFeedForward = 1.4; // Allegedly 1/473 Kv but 2022 code uses 3.248 
 
         public static final double CAN_CODER_OFFSET_FL = 0.394; // rotations
         public static final double CAN_CODER_OFFSET_FR = 0.275658;
@@ -28,8 +28,8 @@ public class Constants {
         // DriveTrain.java
         public static final double DRIVE_LENGTH = Units.inchesToMeters(30); //m
         public static final double DRIVE_WIDTH = Units.inchesToMeters(30); //m
-        public static final double MAX_MODULE_SPEED = 0.5; // 8 // m/s
-        public static final double MAX_TRANSLATION_SPEED = 0.5; // 4 // m/s
+        public static final double MAX_MODULE_SPEED = 3; // 8 // m/s
+        public static final double MAX_TRANSLATION_SPEED = 2; // 4 // m/s
         public static final double MAX_STEER_SPEED = Units.degreesToRadians(270);
 
         public static final Translation2d[] moduleTranslations = {
