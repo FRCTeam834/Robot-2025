@@ -13,6 +13,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
@@ -24,6 +25,7 @@ import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -50,6 +52,7 @@ public class SwerveModule extends SubsystemBase {
   private final SparkClosedLoopController turnController;
 
   private SwerveModuleState setpoint = new SwerveModuleState();
+  private SimpleMotorFeedforward ff = new SimpleMotorFeedforward(0.2, SwerveConstants.drivingVelocityFeedForward);
 
   public SwerveModule(int steerID, int driveID, int CANCoderID, double encoderOffset, boolean reversedDrive) {
     driveMotor = new SparkMax(driveID, MotorType.kBrushless);
@@ -76,7 +79,7 @@ public class SwerveModule extends SubsystemBase {
     driveMotorConfig.closedLoop
     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
     .pid(0.15, 0, 0)
-    .velocityFF(SwerveConstants.drivingVelocityFeedForward)
+    .velocityFF(0) //SwerveConstants.drivingVelocityFeedForward
     .outputRange(-1, 1)
     .maxMotion //TODO
       .maxAcceleration(1.0)
@@ -95,7 +98,7 @@ public class SwerveModule extends SubsystemBase {
 
     turnMotorConfig.closedLoop
     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-    .pid(0.15, 0, 0.01)
+    .pid(0.25, 0, 0.0)
     .outputRange(-1, 1)
     .positionWrappingEnabled(true)
     .positionWrappingInputRange(-Math.PI, Math.PI);
@@ -138,11 +141,11 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public SwerveModuleState getState() {
-    return new SwerveModuleState(driveEncoder.getVelocity(), Rotation2d.fromRadians(getTurnAngle()));
+    return new SwerveModuleState(driveEncoder.getVelocity(), Rotation2d.fromRadians(getCANCoderAngle()));
   }
 
   public SwerveModulePosition getPosition() {
-    return new SwerveModulePosition(driveEncoder.getPosition(), Rotation2d.fromRadians(getTurnAngle()));
+    return new SwerveModulePosition(driveEncoder.getPosition(), Rotation2d.fromRadians(getCANCoderAngle()));
   }
 
   public void setDesiredState(SwerveModuleState desiredState) {
@@ -150,7 +153,7 @@ public class SwerveModule extends SubsystemBase {
     correctedDesiredState.speedMetersPerSecond = desiredState.speedMetersPerSecond;
     correctedDesiredState.angle = desiredState.angle;
 
-    correctedDesiredState.optimize(Rotation2d.fromRadians(getTurnAngle()));
+    correctedDesiredState.optimize(Rotation2d.fromRadians(getCANCoderAngle()));
 
     if (Math.abs(correctedDesiredState.speedMetersPerSecond) < 0.01) {
       stop();
@@ -161,7 +164,7 @@ public class SwerveModule extends SubsystemBase {
 
     //TODO: MAXMotion
     //TODO: If needed try arbitary feedforward
-    driveController.setReference(correctedDesiredState.speedMetersPerSecond, ControlType.kVelocity);
+    driveController.setReference(correctedDesiredState.speedMetersPerSecond, ControlType.kVelocity, ClosedLoopSlot.kSlot0, ff.calculate(correctedDesiredState.speedMetersPerSecond));
     turnController.setReference(correctedDesiredState.angle.getRadians(), ControlType.kPosition);
 
     this.setpoint = correctedDesiredState;
