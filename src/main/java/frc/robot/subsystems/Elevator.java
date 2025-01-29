@@ -14,21 +14,20 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.AlternateEncoderConfig.Type;
+////import com.revrobotics.spark.config.AlternateEncoderConfig.Type;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-
-import edu.wpi.first.math.MathUtil;
+////import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.util.Units;
+////import edu.wpi.first.math.controller.PIDController;
+////import edu.wpi.first.math.controller.ProfiledPIDController;
+////import edu.wpi.first.math.trajectory.TrapezoidProfile;
+////import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.DriverStation;
+////import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.utility.TunableNumber;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+////import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 
 public class Elevator extends SubsystemBase {
   /** Creates a new Elevator. */
@@ -123,9 +122,10 @@ public class Elevator extends SubsystemBase {
     
     //Update the elevator PID if the constants have changed
     if (elevatorkP.hasChanged(hashCode()) || elevatorkI.hasChanged(hashCode()) || elevatorkD.hasChanged(hashCode())) {
-      SparkMaxConfig updateConfig = new SparkMaxConfig();
-      updateConfig.closedLoop.pid(elevatorkP.get(), elevatorkI.get(), elevatorkD.get());
-      elevatorMotor1.configureAsync(updateConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+      motor1Config.closedLoop.pid(elevatorkP.get(), elevatorkI.get(), elevatorkD.get());
+      motor2Config.closedLoop.pid(elevatorkP.get(), elevatorkI.get(), elevatorkD.get());
+      elevatorMotor1.configureAsync(motor1Config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+      elevatorMotor2.configureAsync(motor2Config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
     //Update the elevator feedforward if the constants have changed
@@ -143,6 +143,12 @@ public class Elevator extends SubsystemBase {
   public void stop() {
     elevatorStopped = true;
     elevatorMotor1.setVoltage(0.0); //Stop motors
+  }
+
+  //Update the setpoint for the elevator
+  public void setElevatorSetpoint(double setpoint) {
+    elevatorStopped = false;
+    this.setpoint = setpoint;
   }
 
   @Override
