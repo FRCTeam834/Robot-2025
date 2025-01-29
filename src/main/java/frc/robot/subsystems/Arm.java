@@ -4,48 +4,30 @@
 
 package frc.robot.subsystems;
 
-//! Errors importing revrobotics
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.utility.TunableNumber;
 import com.revrobotics.spark.config.AlternateEncoderConfig.Type;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.utility.TunableNumber;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-
-
-
 public class Arm extends SubsystemBase {
   /** Creates a new Arm. */
-  //Booleans for if the arm is stopped
-  private boolean armStopped = false;
-  private boolean intakeStopped = true; //!Intake
 
-  //Arm angle setpoint
-  private double angleSetpoint = 0.0; //!Radians? Degrees? Rotations?
-
-  //Motors
-  private final SparkMax intakeMotor; //! Intake
+  //Declare motors
+  private final SparkMax intakeMotor;
   private final SparkMax armMotor;
-
+  
   //Arm absolute encoder
   private final AbsoluteEncoder armAbsoluteEncoder;
 
@@ -53,7 +35,7 @@ public class Arm extends SubsystemBase {
   private static final TunableNumber armkP = new TunableNumber("Arm/armkP");
   private static final TunableNumber armkI = new TunableNumber("Arm/armkI");
   private static final TunableNumber armkD = new TunableNumber("Arm/armkD");
-
+  
   //Arm feedforward constants
   private static final TunableNumber armkS = new TunableNumber("Arm/armkS"); //static friction
   private static final TunableNumber armkG = new TunableNumber("Arm/armkG"); //gravity
@@ -61,16 +43,25 @@ public class Arm extends SubsystemBase {
 
   //Initialize arm feedforward
   private ArmFeedforward armFeedforward = new ArmFeedforward(0.0, 0.0, 0.0);
-
+  
   //Arm PID controller
   private SparkClosedLoopController armPIDController;
 
-  //Configuration for the arm motor
+  //Booleans for if the arm is stopped
+  private boolean armStopped = false;
+  private boolean intakeStopped = false;
+  
+  //Arm angle setpoint
+  private double angleSetpoint = 0.0; //!Radians? Degrees? Rotations?
+
+  
+  //Configuration for the motors
   private SparkMaxConfig armMotorConfig = new SparkMaxConfig();
+  private SparkMaxConfig intakeMotorConfig = new SparkMaxConfig();
  
   //Arm PID and feedforward constants
   static {
-    //!Update with the correct default PID and feedforward constants
+    //TODO: Initialize default constants
     armkP.initDefault(1);
     armkI.initDefault(0);
     armkD.initDefault(0);
@@ -82,8 +73,9 @@ public class Arm extends SubsystemBase {
 
   //Arm constructor
   public Arm() {
-    //Initialize arm motor
-    armMotor = new SparkMax(17, MotorType.kBrushless); //!Update with correct motor ID
+    //Initialize motor
+    armMotor = new SparkMax(17, MotorType.kBrushless);
+    intakeMotor = new SparkMax(18, MotorType.kBrushless);
     
     //Initialize arm absolute encoder
     armAbsoluteEncoder = armMotor.getAbsoluteEncoder();
@@ -91,14 +83,29 @@ public class Arm extends SubsystemBase {
     //Initialize arm PID controller
     armPIDController = armMotor.getClosedLoopController();
     
-    //Configure arm motor
+    //Configure motors and encoders
     //TODO: Arm motor configurations
+    armMotorConfig
+    .idleMode(IdleMode.kBrake)
+    .inverted(false);
 
     //TODO: Arm Encoder configurations
+    armMotorConfig.encoder
+    .positionConversionFactor(0)
+    .velocityConversionFactor(0);
 
     //TODO: Arm PID configurations
-    
+    armMotorConfig.closedLoop
+    .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+    .pid(armkP.get(), armkI.get(), armkD.get());
+
+    //TODO: Intake motor configurations
+    intakeMotorConfig
+    .idleMode(IdleMode.kBrake)
+    .inverted(false);
+
     armMotor.configure(armMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    intakeMotor.configure(intakeMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     //Send all data to the Smart Dashboard
     SmartDashboard.putData(this);
@@ -107,9 +114,11 @@ public class Arm extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    
+    //Update the arm PID if the constants have changed
     if (armkP.hasChanged(hashCode()) || armkI.hasChanged(hashCode()) || armkD.hasChanged(hashCode())) {
-      SparkMaxConfig updateConfig = new SparkMaxConfig();
-      updateConfig.closedLoop.pid(armkP.get(), armkI.get(), armkD.get());
+      armMotorConfig.closedLoop.pid(armkP.get(), armkI.get(), armkD.get());
+      armMotor.configureAsync(armMotorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
     if (armkS.hasChanged(hashCode()) || armkG.hasChanged(hashCode()) || armkV.hasChanged(hashCode())) {
@@ -119,23 +128,26 @@ public class Arm extends SubsystemBase {
 
     //!Incomplete
     if (!armStopped) {
-      
+      //armPIDController.setReference(angleSetpoint, null, armFeedforward.calculate(armAbsoluteEncoder.getPosition(), armAbsoluteEncoder.getVelocity()));
     }
   }
 
-  //!Incomplete
   public void stop () {
     armStopped = true;
     intakeStopped = true;
     armMotor.setVoltage(0.0);
+    intakeMotor.setVoltage(0.0);
   }
 
   //!Incomplete
   public void setDesiredArmAngle (double angle) {
+    armStopped = false;
+    angleSetpoint = angle;
   }
 
   public void setIntakeVoltage (double volts) {
-    
+    intakeStopped = false;
+    intakeMotor.setVoltage(volts);
   }
 
   public void initSendable (SendableBuilder builder) {
