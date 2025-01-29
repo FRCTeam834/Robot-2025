@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -17,7 +18,7 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.utility.TunableNumber;
-import com.revrobotics.spark.config.AlternateEncoderConfig.Type;
+////import com.revrobotics.spark.config.AlternateEncoderConfig.Type;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
@@ -52,8 +53,10 @@ public class Arm extends SubsystemBase {
   private boolean intakeStopped = false;
   
   //Arm angle setpoint
-  private double angleSetpoint = 0.0; //!Radians? Degrees? Rotations?
+  private double angleSetpoint = 0.0; //TODO: Get units
 
+  //Intake voltage
+  private double intakeVoltage = 0.0; //TODO: Find correct values for intake voltages
   
   //Configuration for the motors
   private SparkMaxConfig armMotorConfig = new SparkMaxConfig();
@@ -104,6 +107,7 @@ public class Arm extends SubsystemBase {
     .idleMode(IdleMode.kBrake)
     .inverted(false);
 
+    //Apply configurations
     armMotor.configure(armMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     intakeMotor.configure(intakeMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
@@ -121,17 +125,23 @@ public class Arm extends SubsystemBase {
       armMotor.configureAsync(armMotorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
+    //Update the arm feedforward if the constants have changed
     if (armkS.hasChanged(hashCode()) || armkG.hasChanged(hashCode()) || armkV.hasChanged(hashCode())) {
       armFeedforward = new ArmFeedforward(armkS.get(), armkG.get(), armkV.get());
     }
 
-
-    //!Incomplete
+    //Set the position of the arm motor
     if (!armStopped) {
-      //armPIDController.setReference(angleSetpoint, null, armFeedforward.calculate(armAbsoluteEncoder.getPosition(), armAbsoluteEncoder.getVelocity()));
+      armPIDController.setReference(angleSetpoint, ControlType.kPosition, null, armFeedforward.calculate(armAbsoluteEncoder.getPosition(), armAbsoluteEncoder.getVelocity()));
+    }
+
+    //Set the voltage of the intake motor
+    if (!intakeStopped) {
+      intakeMotor.setVoltage(intakeVoltage);
     }
   }
 
+  //Stop all motors
   public void stop () {
     armStopped = true;
     intakeStopped = true;
@@ -139,15 +149,16 @@ public class Arm extends SubsystemBase {
     intakeMotor.setVoltage(0.0);
   }
 
-  //!Incomplete
-  public void setDesiredArmAngle (double angle) {
+  //Update the arm angle setpoint
+  public void setArmAngleSetpoint (double angle) {
     armStopped = false;
     angleSetpoint = angle;
   }
 
+  //Update the desired intake voltage
   public void setIntakeVoltage (double volts) {
     intakeStopped = false;
-    intakeMotor.setVoltage(volts);
+    intakeVoltage = volts;
   }
 
   public void initSendable (SendableBuilder builder) {
