@@ -120,7 +120,6 @@ public class DriveTrain extends SubsystemBase {
   }
 
   public void zeroOdometry(Rotation2d angle) {
-    //gyro.resetYaw(0.0);
     odometry.resetRotation(angle);
     flSwerveModule.resetDriveEncoder();
     frSwerveModule.resetDriveEncoder();

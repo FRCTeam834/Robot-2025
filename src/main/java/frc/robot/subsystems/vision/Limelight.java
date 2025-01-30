@@ -19,7 +19,7 @@ public class Limelight extends SubsystemBase {
   private final DriveTrain driveTrain;
   private final Gyro gyro;
 
-  private final String cameraOneName = "one";
+  private final String cameraOneName = "limelight-one";
   
   private LimelightHelpers.PoseEstimate lastEstimate;
   private LimelightHelpers.PoseEstimate estimate;
@@ -30,6 +30,8 @@ public class Limelight extends SubsystemBase {
     this.gyro = gyro;
 
     lastEstimate = new LimelightHelpers.PoseEstimate();
+    estimate = new LimelightHelpers.PoseEstimate();
+
     LimelightHelpers.setPipelineIndex(cameraOneName, 0);
     SmartDashboard.putData(this);
   }

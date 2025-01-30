@@ -9,6 +9,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator3d;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
@@ -24,6 +25,8 @@ public class PoseEstimator extends SubsystemBase {
 
   private LimelightHelpers.PoseEstimate estimate;
 
+  private Field2d field = new Field2d();
+
   public PoseEstimator(DriveTrain driveTrain, Limelight limelight) {
     this.limelight = limelight;
     this.driveTrain = driveTrain;
@@ -33,7 +36,7 @@ public class PoseEstimator extends SubsystemBase {
       driveTrain.getModulePositions(),
       new Pose2d()
     );
-
+    SmartDashboard.putData("KellersField", field);
     SmartDashboard.putData(this);
   }
 
@@ -50,6 +53,8 @@ public class PoseEstimator extends SubsystemBase {
     estimate = limelight.getPoseEstimate2d();
     poseEstimator.updateWithTime(Timer.getFPGATimestamp(), driveTrain.getYaw(), driveTrain.getModulePositions());
     
+    field.setRobotPose(estimate.pose);
+
     if(!VisionConstants.useVisionPoseEstimator) return;
     if(VisionConstants.useMegatag2) limelight.setRobotOrientation(driveTrain.getYaw());
     poseEstimator.addVisionMeasurement(estimate.pose, estimate.timestampSeconds);
