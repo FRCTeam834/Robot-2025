@@ -45,8 +45,21 @@ public class Constants {
     }
 
     public static class VisionConstants {
+        public static final boolean useLL4Gyro = true;
         public static final boolean useVisionPoseEstimator = true;
         public static final boolean useMegatag2 = true;
-        public static final double maxDegreesPerSecond = 720;
+        public static final double maxDegreesPerSecond = 180;
+
+        public static final String CAM_ONE_NAME = "limelight-one"; // 3G
+        public static final String CAM_TWO_NAME = "limelight-two"; // 4
+        public static final String CAM_THREE_NAME = "limelight-three"; // 4
+        
+        public static final LimelightStrategies STRATEGY = LimelightStrategies.ALL_ESTIMATES;
+    }
+
+    public static enum LimelightStrategies {
+        ALL_ESTIMATES,
+        BEST_ESTIMATE,
+        AVERAGE_ESTIMATE
     }
 }

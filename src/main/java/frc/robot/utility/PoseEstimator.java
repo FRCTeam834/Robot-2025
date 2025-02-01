@@ -4,16 +4,20 @@
 
 package frc.robot.utility;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator3d;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.LimelightHelpers.RawFiducial;
 import frc.robot.subsystems.drivetrain.DriveTrain;
 import frc.robot.subsystems.vision.Limelight;
 
@@ -23,7 +27,7 @@ public class PoseEstimator extends SubsystemBase {
   private final Limelight limelight;
   private final SwerveDrivePoseEstimator poseEstimator;
 
-  private LimelightHelpers.PoseEstimate estimate;
+  private LimelightHelpers.PoseEstimate[] cam_estimates;
 
   private Field2d field = new Field2d();
 
@@ -36,6 +40,9 @@ public class PoseEstimator extends SubsystemBase {
       driveTrain.getModulePositions(),
       new Pose2d()
     );
+
+    limelight.setRobotOrientation(driveTrain.getYaw());
+
     SmartDashboard.putData("KellersField", field);
     SmartDashboard.putData(this);
   }
@@ -50,14 +57,59 @@ public class PoseEstimator extends SubsystemBase {
 
   @Override
   public void periodic() {
-    estimate = limelight.getPoseEstimate2d();
+    cam_estimates[0] = limelight.getPoseEstimate2d(VisionConstants.CAM_ONE_NAME);
+    cam_estimates[1] = limelight.getPoseEstimate2d(VisionConstants.CAM_TWO_NAME);
+
     poseEstimator.updateWithTime(Timer.getFPGATimestamp(), driveTrain.getYaw(), driveTrain.getModulePositions());
-    
-    field.setRobotPose(estimate.pose);
 
     if(!VisionConstants.useVisionPoseEstimator) return;
-    if(VisionConstants.useMegatag2) limelight.setRobotOrientation(driveTrain.getYaw());
-    poseEstimator.addVisionMeasurement(estimate.pose, estimate.timestampSeconds);
+    if(VisionConstants.useMegatag2 && !Constants.VisionConstants.useLL4Gyro) limelight.setRobotOrientation(driveTrain.getYaw());
+
+    poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
+    
+    if(Constants.VisionConstants.STRATEGY == Constants.LimelightStrategies.ALL_ESTIMATES) {
+      poseEstimator.addVisionMeasurement(cam_estimates[0].pose, cam_estimates[0].timestampSeconds);
+      poseEstimator.addVisionMeasurement(cam_estimates[1].pose, cam_estimates[1].timestampSeconds);
+    }
+
+    if(Constants.VisionConstants.STRATEGY == Constants.LimelightStrategies.AVERAGE_ESTIMATE) {
+      double averagex = (cam_estimates[0].pose.getX() + cam_estimates[0].pose.getX()) / cam_estimates.length;
+      double averagey = (cam_estimates[1].pose.getY() + cam_estimates[1].pose.getY()) / cam_estimates.length;
+      
+      double theta_y_sum = (
+        Math.sin(cam_estimates[0].pose.getRotation().getRadians()) + 
+        Math.sin(cam_estimates[1].pose.getRotation().getRadians())
+      );
+
+      double theta_x_sum = (
+        Math.cos(cam_estimates[0].pose.getRotation().getRadians()) + 
+        Math.cos(cam_estimates[1].pose.getRotation().getRadians())
+      );
+
+      double theta_avg = Math.atan2(theta_y_sum / cam_estimates.length, theta_x_sum / cam_estimates.length);
+
+      Pose2d average_pose = new Pose2d(averagex, averagey, new Rotation2d(theta_avg));
+
+      poseEstimator.addVisionMeasurement(average_pose, Math.max(cam_estimates[0].timestampSeconds, cam_estimates[1].timestampSeconds));
+    }
+
+    if(Constants.VisionConstants.STRATEGY == Constants.LimelightStrategies.BEST_ESTIMATE) {
+      double bestDistance = Double.MAX_VALUE;
+      LimelightHelpers.PoseEstimate bestEstimate = cam_estimates[0];
+
+      for(LimelightHelpers.PoseEstimate estimate : cam_estimates) {
+        for(RawFiducial fiducial : estimate.rawFiducials) {
+          if (fiducial.distToCamera < bestDistance) {
+            bestDistance = fiducial.distToCamera;
+            bestEstimate = estimate;
+          }
+        }
+      }
+
+      poseEstimator.addVisionMeasurement(bestEstimate.pose, bestEstimate.timestampSeconds);
+    }
+
+    field.setRobotPose(poseEstimator.getEstimatedPosition());
   }
 
   @Override
