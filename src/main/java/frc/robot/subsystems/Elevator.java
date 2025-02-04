@@ -6,7 +6,9 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import com.revrobotics.AbsoluteEncoder;
+////import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
@@ -19,6 +21,7 @@ import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 ////import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.math.util.Units;
 ////import edu.wpi.first.math.controller.PIDController;
 ////import edu.wpi.first.math.controller.ProfiledPIDController;
 ////import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -35,8 +38,8 @@ public class Elevator extends SubsystemBase {
   private final SparkMax elevatorMotor1;
   private final SparkMax elevatorMotor2;
 
-  //Elevator absolute encoder
-  private final AbsoluteEncoder absoluteEncoder;
+  //Elevator relative encoder
+  private final RelativeEncoder relativeEncoder;
 
   //PID constants
   private static TunableNumber elevatorkP = new TunableNumber("Elevator/ElevatorkP");
@@ -78,7 +81,7 @@ public class Elevator extends SubsystemBase {
     //Initialize and configure motors
     elevatorMotor1 = new SparkMax(15, MotorType.kBrushless);
     elevatorMotor2 = new SparkMax(16, MotorType.kBrushless);
-    absoluteEncoder = elevatorMotor1.getAbsoluteEncoder();
+    relativeEncoder = elevatorMotor1.getEncoder();
 
     pid_controller = elevatorMotor1.getClosedLoopController();
 
@@ -92,12 +95,12 @@ public class Elevator extends SubsystemBase {
 
     //Configure motor encoders
     motor1Config.encoder
-    .positionConversionFactor(Math.PI) //TODO: get meters
-    .velocityConversionFactor(Math.PI / 60); //TODO: get meters/sec
+    .positionConversionFactor(Math.PI * Units.inchesToMeters(1.5))
+    .velocityConversionFactor(Math.PI * Units.inchesToMeters(1.5) / 60);
 
     //Configure PID controller
     motor1Config.closedLoop
-    .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+    .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
     .pid(elevatorkP.get(), elevatorkI.get(), elevatorkD.get())
     .outputRange(-1, 1)
     .maxMotion
@@ -135,7 +138,7 @@ public class Elevator extends SubsystemBase {
 
     //Update PID controller
     if (!elevatorStopped) {
-      pid_controller.setReference(setpoint, ControlType.kPosition, null, elevatorFeedforward.calculate(absoluteEncoder.getVelocity())); //!Is this the correct parameter?
+      pid_controller.setReference(setpoint, ControlType.kPosition, ClosedLoopSlot.kSlot0, elevatorFeedforward.calculate(relativeEncoder.getVelocity()));
     }
   }
 
