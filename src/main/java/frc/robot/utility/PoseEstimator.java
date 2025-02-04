@@ -25,17 +25,21 @@ import frc.robot.subsystems.vision.Limelight;
 public class PoseEstimator extends SubsystemBase {
   /** Creates a new PoseEstimator. */
   private final DriveTrain driveTrain;
-  private final Limelight limelight;
-  private final SwerveDrivePoseEstimator poseEstimator;
+  private final Limelight[] cameras; 
 
-  private LimelightHelpers.PoseEstimate[] cam_estimates = new LimelightHelpers.PoseEstimate[2];
+  /*
+   * [0] = LL3G
+   * [1] = LL4
+  */
+
+  private final SwerveDrivePoseEstimator poseEstimator;
 
   private Field2d ll4Field = new Field2d();
   private Field2d ll3GField = new Field2d();
   private Field2d combined_field = new Field2d();
 
-  public PoseEstimator(DriveTrain driveTrain, Limelight limelight) {
-    this.limelight = limelight;
+  public PoseEstimator(DriveTrain driveTrain, Limelight[] cameras) {
+    this.cameras = cameras;
     this.driveTrain = driveTrain;
     poseEstimator = new SwerveDrivePoseEstimator(
       driveTrain.getKinematics(),
@@ -60,9 +64,8 @@ public class PoseEstimator extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if(VisionConstants.useMegatag2) limelight.setRobotOrientation(driveTrain.getYaw());
-    cam_estimates[0] = limelight.getPoseEstimate2d(VisionConstants.CAM_ONE_NAME);
-    cam_estimates[1] = limelight.getPoseEstimate2d(VisionConstants.CAM_TWO_NAME);
+    cameras[0].setRobotOrientation(driveTrain.getYaw()); // Giving LL3G our gyro yaw
+    LimelightHelpers.PoseEstimate[] cam_estimates = {cameras[0].getPoseEstimate2d(), cameras[1].getPoseEstimate2d()};
 
     poseEstimator.updateWithTime(Timer.getFPGATimestamp(), driveTrain.getYaw(), driveTrain.getModulePositions());
 
@@ -71,8 +74,9 @@ public class PoseEstimator extends SubsystemBase {
     //poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
     
     if(Constants.VisionConstants.STRATEGY == Constants.LimelightStrategies.ALL_ESTIMATES) {
-      poseEstimator.addVisionMeasurement(cam_estimates[0].pose, cam_estimates[0].timestampSeconds);
-      poseEstimator.addVisionMeasurement(cam_estimates[1].pose, cam_estimates[1].timestampSeconds);
+      for(LimelightHelpers.PoseEstimate estimate : cam_estimates) {
+        if(estimate != null) poseEstimator.addVisionMeasurement(estimate.pose, estimate.timestampSeconds);
+      }
     }
 
     if(Constants.VisionConstants.STRATEGY == Constants.LimelightStrategies.AVERAGE_ESTIMATE) {

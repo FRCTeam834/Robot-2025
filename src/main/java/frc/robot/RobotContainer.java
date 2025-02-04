@@ -35,8 +35,13 @@ public class RobotContainer {
     gyro
   );
 
-  public static Limelight limelight = new Limelight(driveTrain, gyro);
-  public static PoseEstimator estimator = new PoseEstimator(driveTrain, limelight);
+
+  private static Limelight[] cams = {
+    new Limelight(Constants.VisionConstants.CAM_ONE_NAME, false, driveTrain, gyro), 
+    new Limelight(Constants.VisionConstants.CAM_TWO_NAME, true, driveTrain, gyro)
+  };
+
+  public static PoseEstimator estimator = new PoseEstimator(driveTrain, cams);
 
   public RobotContainer() {
     driveTrain.setDefaultCommand(new DriveWithSpeeds(
@@ -52,6 +57,8 @@ public class RobotContainer {
   private void configureBindings() {
     leftJoystick10.onTrue(new InstantCommand(() -> {
       driveTrain.zeroOdometry(new Rotation2d());
+      cams[1].seedLL4IMU();
+
       System.out.println("Zeroes the odometry");
     }));
 
@@ -60,8 +67,7 @@ public class RobotContainer {
       FR.zeroCANCoder();
       BL.zeroCANCoder();
       BR.zeroCANCoder();
-      limelight.setRobotOrientation(driveTrain.getYaw());
-      System.out.println("Zeroed!");
+      System.out.println("Updated CANCoder zero");
     }));
 
     leftJoystick11.onTrue(new InstantCommand(() -> {

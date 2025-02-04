@@ -5,70 +5,59 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.drivetrain.DriveTrain;
 import frc.robot.subsystems.drivetrain.Gyro;
-import frc.robot.utility.PoseEstimator;
 
 public class Limelight extends SubsystemBase {
   /** Creates a new Limelight. */
   private final DriveTrain driveTrain;
   private final Gyro gyro;
-  
-  private LimelightHelpers.PoseEstimate lastEstimate;
-  private LimelightHelpers.PoseEstimate estimate;
-  private boolean rejectUpdate;
+  private final String cameraName;
+  private final boolean isLL4;
 
-  public Limelight(DriveTrain driveTrain, Gyro gyro) {
+  public Limelight(String cameraName, boolean isLL4, DriveTrain driveTrain, Gyro gyro) {
+    this.cameraName = cameraName;
     this.driveTrain = driveTrain;
     this.gyro = gyro;
+    this.isLL4 = isLL4;
 
-    lastEstimate = new LimelightHelpers.PoseEstimate();
-    estimate = new LimelightHelpers.PoseEstimate();
 
-    setIMUMode(1);
-    setRobotOrientation(driveTrain.getYaw());
-    setIMUMode(2);
+    if (isLL4) {
+      setIMUMode(1);
+      setRobotOrientation(driveTrain.getYaw());
+      setIMUMode(2);
+    }
 
     SmartDashboard.putData(this);
   }
 
   public void setRobotOrientation(Rotation2d yaw) {
-    LimelightHelpers.SetRobotOrientation(Constants.VisionConstants.CAM_ONE_NAME, yaw.getDegrees(), 0, 0, 0, 0, 0);
-    LimelightHelpers.SetRobotOrientation(Constants.VisionConstants.CAM_TWO_NAME, yaw.getDegrees(), 0, 0, 0, 0, 0);
+    LimelightHelpers.SetRobotOrientation(cameraName, yaw.getDegrees(), 0, 0, 0, 0, 0);
   } 
 
   public void setIMUMode(int mode) {
-    LimelightHelpers.SetIMUMode(Constants.VisionConstants.CAM_TWO_NAME, mode);
+    LimelightHelpers.SetIMUMode(cameraName, mode);
   }
 
-  public LimelightHelpers.PoseEstimate getPoseEstimate2d(String cameraName) {
-    rejectUpdate = false;
+  public void seedLL4IMU() {
+    if(!isLL4) return;
+    setIMUMode(1);
+    setRobotOrientation(driveTrain.getYaw());
+    setIMUMode(2);
+  }
 
-    if (VisionConstants.useMegatag2) {
-      estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(cameraName);
+  public LimelightHelpers.PoseEstimate getPoseEstimate2d() {
+    boolean rejectUpdate = false;
+    LimelightHelpers.PoseEstimate estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(cameraName);
 
-      if(Math.abs(gyro.getAngularVelo()) > VisionConstants.maxDegreesPerSecond) rejectUpdate = true;
-      if(estimate.tagCount == 0) rejectUpdate = true;
-    } else {
-      estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(Constants.VisionConstants.CAM_ONE_NAME);
+    if(Math.abs(gyro.getAngularVelo()) > VisionConstants.maxDegreesPerSecond) rejectUpdate = true;
+    if(estimate.tagCount == 0) rejectUpdate = true;
 
-      if(estimate.tagCount == 1 && estimate.rawFiducials.length == 1) {
-        if (estimate.rawFiducials[0].ambiguity > 0.7) rejectUpdate = true;
-        if (estimate.rawFiducials[0].distToCamera > 3) rejectUpdate = true;
-      }
-      if(estimate.tagCount == 0) rejectUpdate = true;
-    }
-
-    if(estimate == null) return lastEstimate;
-    if(rejectUpdate) return lastEstimate;
-
-    lastEstimate = estimate;
+    if (rejectUpdate) return null;
     return estimate;
   }
 
