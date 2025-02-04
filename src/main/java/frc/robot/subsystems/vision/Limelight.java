@@ -31,6 +31,10 @@ public class Limelight extends SubsystemBase {
     lastEstimate = new LimelightHelpers.PoseEstimate();
     estimate = new LimelightHelpers.PoseEstimate();
 
+    setIMUMode(1);
+    setRobotOrientation(driveTrain.getYaw());
+    setIMUMode(2);
+
     SmartDashboard.putData(this);
   }
 
@@ -61,6 +65,7 @@ public class Limelight extends SubsystemBase {
       if(estimate.tagCount == 0) rejectUpdate = true;
     }
 
+    if(estimate == null) return lastEstimate;
     if(rejectUpdate) return lastEstimate;
 
     lastEstimate = estimate;

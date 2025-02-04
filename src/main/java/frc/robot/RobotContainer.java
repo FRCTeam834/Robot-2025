@@ -60,6 +60,7 @@ public class RobotContainer {
       FR.zeroCANCoder();
       BL.zeroCANCoder();
       BR.zeroCANCoder();
+      limelight.setRobotOrientation(driveTrain.getYaw());
       System.out.println("Zeroed!");
     }));
 

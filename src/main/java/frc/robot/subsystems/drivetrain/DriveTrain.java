@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.*;
+import frc.robot.utility.PoseEstimator;
 
 public class DriveTrain extends SubsystemBase {
   private final SwerveModule flSwerveModule;
@@ -38,6 +39,7 @@ public class DriveTrain extends SubsystemBase {
   );
 
   private SwerveDriveOdometry odometry;
+  private PoseEstimator poseEstimator;
 
   private boolean stopped = false;
   private ChassisSpeeds setpoint = new ChassisSpeeds();
@@ -55,7 +57,7 @@ public class DriveTrain extends SubsystemBase {
     this.gyro = gyro;
     SmartDashboard.putData(this);
 
-    odometry = new SwerveDriveOdometry( 
+    odometry = new SwerveDriveOdometry(
       kinematics, 
       getYaw(),
       getModulePositions()
@@ -79,7 +81,7 @@ public class DriveTrain extends SubsystemBase {
   }
 
   public void drive(double xSpeed, double ySpeed, double rot) {
-    ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, odometry.getPoseMeters().getRotation());
+    ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getYaw());
     setDesiredSpeeds(speeds);
   }
 
@@ -120,7 +122,7 @@ public class DriveTrain extends SubsystemBase {
   }
 
   public void zeroOdometry(Rotation2d angle) {
-    odometry.resetRotation(angle);
+    gyro.resetYaw(0.0);
     flSwerveModule.resetDriveEncoder();
     frSwerveModule.resetDriveEncoder();
     blSwerveModule.resetDriveEncoder();
@@ -129,8 +131,6 @@ public class DriveTrain extends SubsystemBase {
  
   @Override
   public void periodic() {
-    odometry.update(getYaw(), getModulePositions());
-    
     if (DriverStation.isDisabled() || stopped) {
       stop();
       return;

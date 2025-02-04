@@ -9,6 +9,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator3d;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -27,9 +28,11 @@ public class PoseEstimator extends SubsystemBase {
   private final Limelight limelight;
   private final SwerveDrivePoseEstimator poseEstimator;
 
-  private LimelightHelpers.PoseEstimate[] cam_estimates;
+  private LimelightHelpers.PoseEstimate[] cam_estimates = new LimelightHelpers.PoseEstimate[2];
 
-  private Field2d field = new Field2d();
+  private Field2d ll4Field = new Field2d();
+  private Field2d ll3GField = new Field2d();
+  private Field2d combined_field = new Field2d();
 
   public PoseEstimator(DriveTrain driveTrain, Limelight limelight) {
     this.limelight = limelight;
@@ -41,9 +44,9 @@ public class PoseEstimator extends SubsystemBase {
       new Pose2d()
     );
 
-    limelight.setRobotOrientation(driveTrain.getYaw());
-
-    SmartDashboard.putData("KellersField", field);
+    SmartDashboard.putData("ll4field", ll4Field);
+    SmartDashboard.putData("ll3gfield", ll3GField);
+    SmartDashboard.putData("KellersField", combined_field);
     SmartDashboard.putData(this);
   }
 
@@ -57,15 +60,15 @@ public class PoseEstimator extends SubsystemBase {
 
   @Override
   public void periodic() {
+    if(VisionConstants.useMegatag2) limelight.setRobotOrientation(driveTrain.getYaw());
     cam_estimates[0] = limelight.getPoseEstimate2d(VisionConstants.CAM_ONE_NAME);
     cam_estimates[1] = limelight.getPoseEstimate2d(VisionConstants.CAM_TWO_NAME);
 
     poseEstimator.updateWithTime(Timer.getFPGATimestamp(), driveTrain.getYaw(), driveTrain.getModulePositions());
 
     if(!VisionConstants.useVisionPoseEstimator) return;
-    if(VisionConstants.useMegatag2 && !Constants.VisionConstants.useLL4Gyro) limelight.setRobotOrientation(driveTrain.getYaw());
 
-    poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
+    //poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
     
     if(Constants.VisionConstants.STRATEGY == Constants.LimelightStrategies.ALL_ESTIMATES) {
       poseEstimator.addVisionMeasurement(cam_estimates[0].pose, cam_estimates[0].timestampSeconds);
@@ -109,11 +112,22 @@ public class PoseEstimator extends SubsystemBase {
       poseEstimator.addVisionMeasurement(bestEstimate.pose, bestEstimate.timestampSeconds);
     }
 
-    field.setRobotPose(poseEstimator.getEstimatedPosition());
+    ll4Field.setRobotPose(cam_estimates[1].pose);
+    ll3GField.setRobotPose(cam_estimates[0].pose);
+    combined_field.setRobotPose(poseEstimator.getEstimatedPosition());
+  }
+
+  private double getDistanceToTag18() {
+    Pose2d pose = poseEstimator.getEstimatedPosition();
+    double y_diff = Units.inchesToMeters(158.50) - pose.getY();
+    double x_diff = Units.inchesToMeters(144.0) - pose.getX();
+
+    return Math.sqrt(x_diff*x_diff + y_diff*y_diff);
   }
 
   @Override
   public void initSendable (SendableBuilder builder) {
     builder.setSmartDashboardType("PoseEstimator");
+    builder.addDoubleProperty("Distance to 18", this::getDistanceToTag18, null);
   }
 }

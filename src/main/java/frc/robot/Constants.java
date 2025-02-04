@@ -63,3 +63,9 @@ public class Constants {
         AVERAGE_ESTIMATE
     }
 }
+
+/*
+ * 2/3 issue
+ * Pigeon needs to be counter clockwise positive
+ * ll4 gyro needs to be flipped 180
+ */

@@ -26,21 +26,21 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     if(Constants.VisionConstants.useLL4Gyro) {
-      RobotContainer.limelight.setIMUMode(1);
+      //RobotContainer.limelight.setIMUMode(1);
     }
   }
 
   @Override
   public void disabledPeriodic() {
     if(Constants.VisionConstants.useLL4Gyro) {
-      RobotContainer.limelight.setRobotOrientation(RobotContainer.driveTrain.getYaw());
+      //RobotContainer.limelight.setRobotOrientation(RobotContainer.driveTrain.getYaw());
     }
   }
 
   @Override
   public void disabledExit() {
     if(Constants.VisionConstants.useLL4Gyro) {
-      RobotContainer.limelight.setIMUMode(2);
+      //RobotContainer.limelight.setIMUMode(2);
     }
   }
 
