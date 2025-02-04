@@ -154,6 +154,13 @@ public class Elevator extends SubsystemBase {
     this.setpoint = setpoint;
   }
 
+  //TODO:
+  /*
+   * Methods for isAtGoal()
+   * Set position of relative encoder to zero in constructor
+   * getHeight method (I'd make a convertRotationsToDistance method)
+   */
+
   @Override
   public void initSendable (SendableBuilder builder) {
     builder.setSmartDashboardType("Elevator");
