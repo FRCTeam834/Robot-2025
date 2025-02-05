@@ -5,6 +5,7 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
@@ -25,11 +26,11 @@ public class Limelight extends SubsystemBase {
     this.gyro = gyro;
     this.isLL4 = isLL4;
 
-
     if (isLL4) {
-      setIMUMode(1);
-      setRobotOrientation(driveTrain.getYaw());
-      setIMUMode(2);
+      // setIMUMode(1);
+      // setRobotOrientation(driveTrain.getYaw());
+      // setIMUMode(2);
+      setIMUMode(0);
     }
 
     SmartDashboard.putData(this);
@@ -45,9 +46,10 @@ public class Limelight extends SubsystemBase {
 
   public void seedLL4IMU() {
     if(!isLL4) return;
-    setIMUMode(1);
-    setRobotOrientation(driveTrain.getYaw());
-    setIMUMode(2);
+    //setIMUMode(1);
+    //setRobotOrientation(driveTrain.getYaw());
+    //System.out.println("SEEDED LL4");
+    //setIMUMode(2);
   }
 
   public LimelightHelpers.PoseEstimate getPoseEstimate2d() {

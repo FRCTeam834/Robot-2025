@@ -65,6 +65,7 @@ public class PoseEstimator extends SubsystemBase {
   @Override
   public void periodic() {
     cameras[0].setRobotOrientation(driveTrain.getYaw()); // Giving LL3G our gyro yaw
+    cameras[1].setRobotOrientation(driveTrain.getYaw());
     LimelightHelpers.PoseEstimate[] cam_estimates = {cameras[0].getPoseEstimate2d(), cameras[1].getPoseEstimate2d()};
 
     poseEstimator.updateWithTime(Timer.getFPGATimestamp(), driveTrain.getYaw(), driveTrain.getModulePositions());
@@ -116,8 +117,8 @@ public class PoseEstimator extends SubsystemBase {
       poseEstimator.addVisionMeasurement(bestEstimate.pose, bestEstimate.timestampSeconds);
     }
 
-    ll4Field.setRobotPose(cam_estimates[1].pose);
-    ll3GField.setRobotPose(cam_estimates[0].pose);
+    if (cam_estimates[1] != null) ll4Field.setRobotPose(cam_estimates[1].pose);
+    if (cam_estimates[0] != null) ll3GField.setRobotPose(cam_estimates[0].pose);
     combined_field.setRobotPose(poseEstimator.getEstimatedPosition());
   }
 
@@ -129,9 +130,14 @@ public class PoseEstimator extends SubsystemBase {
     return Math.sqrt(x_diff*x_diff + y_diff*y_diff);
   }
 
+  private double getLL4IMUYaw() {
+    return LimelightHelpers.getIMUData(Constants.VisionConstants.CAM_TWO_NAME).Yaw;
+  }
+
   @Override
   public void initSendable (SendableBuilder builder) {
     builder.setSmartDashboardType("PoseEstimator");
     builder.addDoubleProperty("Distance to 18", this::getDistanceToTag18, null);
+    builder.addDoubleProperty("LL4 IMU Yaw", this::getLL4IMUYaw, null);
   }
 }

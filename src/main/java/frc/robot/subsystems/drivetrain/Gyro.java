@@ -19,7 +19,7 @@ public class Gyro extends SubsystemBase {
   }
 
   public double getYaw() {
-    return pigeon.getYaw().getValueAsDouble();
+    return Math.IEEEremainder(pigeon.getYaw().getValueAsDouble(), 360);
   }
 
   public double getAngularVelo() {
