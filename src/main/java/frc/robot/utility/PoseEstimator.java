@@ -130,6 +130,22 @@ public class PoseEstimator extends SubsystemBase {
     return Math.sqrt(x_diff*x_diff + y_diff*y_diff);
   }
 
+  private double getDistanceToTag18LL3G() {
+    Pose2d pose = ll3GField.getRobotPose();
+    double y_diff = Units.inchesToMeters(158.50) - pose.getY();
+    double x_diff = Units.inchesToMeters(144.0) - pose.getX();
+
+    return Math.sqrt(x_diff*x_diff + y_diff*y_diff);
+  }
+
+  private double getDistanceToTag18LL4() {
+    Pose2d pose =  ll4Field.getRobotPose();
+    double y_diff = Units.inchesToMeters(158.50) - pose.getY();
+    double x_diff = Units.inchesToMeters(144.0) - pose.getX();
+
+    return Math.sqrt(x_diff*x_diff + y_diff*y_diff);
+  }
+
   private double getLL4IMUYaw() {
     return LimelightHelpers.getIMUData(Constants.VisionConstants.CAM_TWO_NAME).Yaw;
   }
@@ -137,7 +153,9 @@ public class PoseEstimator extends SubsystemBase {
   @Override
   public void initSendable (SendableBuilder builder) {
     builder.setSmartDashboardType("PoseEstimator");
-    builder.addDoubleProperty("Distance to 18", this::getDistanceToTag18, null);
+    builder.addDoubleProperty("Distance to 18", this::getDistanceToTag18LL3G, null);
+    builder.addDoubleProperty("Distance to 18 LL3G", this::getDistanceToTag18LL3G, null);
+    builder.addDoubleProperty("Distance to 18 LL4", this::getDistanceToTag18LL4, null);
     builder.addDoubleProperty("LL4 IMU Yaw", this::getLL4IMUYaw, null);
   }
 }

@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.config.RobotConfig;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 
@@ -26,7 +28,7 @@ public class Constants {
         public static final double CAN_CODER_OFFSET_BL = 0.3125;
 
         // DriveTrain.java
-        public static final double DRIVE_LENGTH = Units.inchesToMeters(30); //m
+        public static final double DRIVE_LENGTH = Units.inchesToMeters(30); //m // should be 60cm
         public static final double DRIVE_WIDTH = Units.inchesToMeters(30); //m
         public static final double MAX_MODULE_SPEED = 3; // 8 // m/s
         public static final double MAX_TRANSLATION_SPEED = 2; // 4 // m/s
@@ -61,6 +63,16 @@ public class Constants {
         ALL_ESTIMATES,
         BEST_ESTIMATE,
         AVERAGE_ESTIMATE
+    }
+
+    public static RobotConfig PATHPLANNER_CONFIG;
+
+    static {
+        try {
+            PATHPLANNER_CONFIG = RobotConfig.fromGUISettings();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
 

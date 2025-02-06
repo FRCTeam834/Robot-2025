@@ -56,6 +56,8 @@ public class Limelight extends SubsystemBase {
     boolean rejectUpdate = false;
     LimelightHelpers.PoseEstimate estimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(cameraName);
 
+    if(estimate == null) return null;
+
     if(Math.abs(gyro.getAngularVelo()) > VisionConstants.maxDegreesPerSecond) rejectUpdate = true;
     if(estimate.tagCount == 0) rejectUpdate = true;
 
