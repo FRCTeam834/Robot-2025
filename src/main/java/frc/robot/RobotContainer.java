@@ -4,14 +4,24 @@
 
 package frc.robot;
 
+import java.util.List;
+
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.Waypoint;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.DriveWithSpeeds;
+import frc.robot.commands.RotateToPathTarget;
 import frc.robot.subsystems.drivetrain.DriveTrain;
 import frc.robot.subsystems.drivetrain.Gyro;
 import frc.robot.subsystems.drivetrain.SwerveModule;
@@ -23,6 +33,8 @@ public class RobotContainer {
   JoystickButton leftJoystick3 = new JoystickButton(OI.leftJoystick, 3);
   JoystickButton leftJoystick10 = new JoystickButton(OI.leftJoystick, 10);
   JoystickButton leftJoystick11 = new JoystickButton(OI.leftJoystick, 11);
+  JoystickButton leftJoystick7 = new JoystickButton(OI.leftJoystick, 7);
+  JoystickButton leftJoystick6 = new JoystickButton(OI.leftJoystick, 6);
 
   private static SwerveModule FL = new SwerveModule(3, 2, 10, SwerveConstants.CAN_CODER_OFFSET_FL, false);
   private static SwerveModule FR = new SwerveModule(5, 4, 11, SwerveConstants.CAN_CODER_OFFSET_FR, true);
@@ -43,6 +55,7 @@ public class RobotContainer {
 
   public static PoseEstimator estimator = new PoseEstimator(driveTrain, cams);
 
+  /* AUTON STUFF */
   public RobotContainer() {
     driveTrain.setDefaultCommand(new DriveWithSpeeds(
       driveTrain,
@@ -51,6 +64,7 @@ public class RobotContainer {
       OI::getRightJoystickX
     ));
 
+    driveTrain.configureAutoBuilder(estimator);
     configureBindings();
   }
 
@@ -59,7 +73,7 @@ public class RobotContainer {
       driveTrain.zeroOdometry(new Rotation2d());
       cams[1].seedLL4IMU();
 
-      System.out.println("Zeroes the odometry");
+      System.out.println("Zeroed the odometry");
     }));
 
     leftJoystick3.onTrue(new InstantCommand(() -> {
@@ -70,6 +84,11 @@ public class RobotContainer {
       System.out.println("Updated CANCoder zero");
     }));
 
+    //leftJoystick7.whileTrue(driveTrain.makePath(estimator));
+    leftJoystick7.whileTrue(driveTrain.pathFindToPose(new Pose2d(Units.inchesToMeters(144 - 47), Units.inchesToMeters(158.50 + 10.75), new Rotation2d(Math.PI - 0.139))));
+
+    leftJoystick6.whileTrue(new RotateToPathTarget(driveTrain, Rotation2d.fromDegrees(90)));
+
     leftJoystick11.onTrue(new InstantCommand(() -> {
       FL.seedTurnEncoder();
       FR.seedTurnEncoder();
@@ -79,6 +98,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
+    return null;
   }
 }

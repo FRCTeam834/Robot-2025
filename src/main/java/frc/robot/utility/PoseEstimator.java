@@ -4,6 +4,11 @@
 
 package frc.robot.utility;
 
+import java.util.List;
+
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.Waypoint;
+
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator3d;

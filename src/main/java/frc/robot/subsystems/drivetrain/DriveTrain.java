@@ -4,7 +4,17 @@
 
 package frc.robot.subsystems.drivetrain;
 
-import com.ctre.phoenix6.swerve.SwerveModuleConstants;
+import java.util.List;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.controllers.PPLTVController;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.Waypoint;
+import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -19,7 +29,9 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.*;
 import frc.robot.utility.PoseEstimator;
 
@@ -39,7 +51,6 @@ public class DriveTrain extends SubsystemBase {
   );
 
   private SwerveDriveOdometry odometry;
-  private PoseEstimator poseEstimator;
 
   private boolean stopped = false;
   private ChassisSpeeds setpoint = new ChassisSpeeds();
@@ -116,6 +127,10 @@ public class DriveTrain extends SubsystemBase {
       brSwerveModule.getTurnVelocity()
     };
   }
+
+  public ChassisSpeeds getRobotRelativeSpeeds () {
+    return kinematics.toChassisSpeeds(getModuleStates());
+  }
   
   public SwerveDriveKinematics getKinematics() {
     return kinematics;
@@ -123,10 +138,10 @@ public class DriveTrain extends SubsystemBase {
 
   public void zeroOdometry(Rotation2d angle) {
     gyro.resetYaw(0.0);
-    flSwerveModule.resetDriveEncoder();
-    frSwerveModule.resetDriveEncoder();
-    blSwerveModule.resetDriveEncoder();
-    brSwerveModule.resetDriveEncoder();
+    flSwerveModule.seedTurnEncoder();
+    frSwerveModule.seedTurnEncoder();
+    blSwerveModule.seedTurnEncoder();
+    brSwerveModule.seedTurnEncoder();
   }
  
   @Override
@@ -157,6 +172,48 @@ public class DriveTrain extends SubsystemBase {
     frSwerveModule.stop();
     blSwerveModule.stop();
     brSwerveModule.stop();
+  }
+
+  @Deprecated
+  public Command makePath(PoseEstimator poseEstimator) {
+    List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+      poseEstimator.getPoseEstimate(),
+      new Pose2d(Units.inchesToMeters(144 - 47), Units.inchesToMeters(158.50 - 10.75), new Rotation2d(Math.PI - 0.224855))
+    );
+
+    PathConstraints constraint = new PathConstraints(1.0, 1.0, Math.PI, Math.PI);
+    PathPlannerPath path = new PathPlannerPath(waypoints, constraint, null, new GoalEndState(0.0, new Rotation2d(Math.PI - 0.224855)));
+    path.preventFlipping = true;
+
+    return AutoBuilder.followPath(path);
+  }
+
+  public Command pathFindToPose(Pose2d target) {
+    PathConstraints constraint = new PathConstraints(1.5, 1.5, Math.PI, Math.PI);
+
+    return AutoBuilder.pathfindToPose(target, constraint, 0.0);
+  }
+
+  public void configureAutoBuilder(PoseEstimator poseEstimator) {
+    AutoBuilder.configure(
+      poseEstimator::getPoseEstimate, 
+      poseEstimator::resetPose,
+      this::getRobotRelativeSpeeds, 
+      this::setDesiredSpeeds, 
+      new PPHolonomicDriveController(
+        new PIDConstants(1.5, 0, 0),
+        new PIDConstants(2.5, 0, 0)
+      ), 
+      Constants.PATHPLANNER_CONFIG,
+        () -> {
+          var alliance = DriverStation.getAlliance();
+          if(alliance.isPresent()) {
+            return alliance.get() == DriverStation.Alliance.Red;
+          }
+          return false;
+        }, 
+        this
+    );
   }
 
   @Override
