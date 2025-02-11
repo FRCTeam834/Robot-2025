@@ -17,14 +17,17 @@ import com.pathplanner.lib.path.Waypoint;
 import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
 
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.HolonomicDriveController;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -32,6 +35,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.*;
 import frc.robot.utility.PoseEstimator;
 
@@ -50,7 +54,11 @@ public class DriveTrain extends SubsystemBase {
     SwerveConstants.moduleTranslations[3]
   );
 
-  private SwerveDriveOdometry odometry;
+  private final HolonomicDriveController holonomicDriveController = new HolonomicDriveController(
+    new PIDController(3, 0, 0), new PIDController(3, 0, 0), 
+    new ProfiledPIDController(1, 0, 0,
+     new TrapezoidProfile.Constraints(4, 4))
+  );
 
   private boolean stopped = false;
   private ChassisSpeeds setpoint = new ChassisSpeeds();
@@ -67,12 +75,6 @@ public class DriveTrain extends SubsystemBase {
     this.brSwerveModule = brSwerveModule;
     this.gyro = gyro;
     SmartDashboard.putData(this);
-
-    odometry = new SwerveDriveOdometry(
-      kinematics, 
-      getYaw(),
-      getModulePositions()
-    );
   }
 
   public Rotation2d getYaw() {
@@ -93,6 +95,17 @@ public class DriveTrain extends SubsystemBase {
 
   public void drive(double xSpeed, double ySpeed, double rot) {
     ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getYaw());
+    setDesiredSpeeds(speeds);
+  }
+
+  public void driveToPose(Pose2d desiredPose, Rotation2d desiredHeading, double desiredLinearVelocity, PoseEstimator estimator) {
+    ChassisSpeeds speeds = holonomicDriveController.calculate(
+      estimator.getPoseEstimate(), 
+      new Pose2d(desiredPose.getTranslation(), new Rotation2d()), 
+      desiredLinearVelocity, // m/s
+      desiredHeading // field relative
+    );
+
     setDesiredSpeeds(speeds);
   }
 
@@ -174,15 +187,15 @@ public class DriveTrain extends SubsystemBase {
     brSwerveModule.stop();
   }
 
-  @Deprecated
   public Command makePath(PoseEstimator poseEstimator) {
     List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
-      poseEstimator.getPoseEstimate(),
-      new Pose2d(Units.inchesToMeters(144 - 47), Units.inchesToMeters(158.50 - 10.75), new Rotation2d(Math.PI - 0.224855))
+      new Pose2d(poseEstimator.getPoseEstimate().getTranslation(), new Rotation2d()),
+      new Pose2d(Units.inchesToMeters(144 - 47), Units.inchesToMeters(158.50 + 10.75), new Rotation2d())
     );
+    
+    PathConstraints constraint = new PathConstraints(1.0, 1.0, Units.degreesToRadians(180), Units.degreesToRadians(180));
 
-    PathConstraints constraint = new PathConstraints(1.0, 1.0, Math.PI, Math.PI);
-    PathPlannerPath path = new PathPlannerPath(waypoints, constraint, null, new GoalEndState(0.0, new Rotation2d(Math.PI - 0.224855)));
+    PathPlannerPath path = new PathPlannerPath(waypoints, constraint, null, new GoalEndState(0.0, new Rotation2d(Math.PI - 0.139)));
     path.preventFlipping = true;
 
     return AutoBuilder.followPath(path);

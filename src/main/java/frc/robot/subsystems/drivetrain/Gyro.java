@@ -14,7 +14,7 @@ public class Gyro extends SubsystemBase {
   private final Pigeon2 pigeon;
 
   public Gyro() {
-    pigeon = new Pigeon2(SwerveConstants.PIGEON_ID); //TODO: replace id
+    pigeon = new Pigeon2(SwerveConstants.PIGEON_ID);
     pigeon.setYaw(0.0);
   }
 
