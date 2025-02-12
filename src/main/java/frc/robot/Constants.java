@@ -76,9 +76,3 @@ public class Constants {
         }
     }
 }
-
-/*
- * 2/3 issue
- * Pigeon needs to be counter clockwise positive
- * ll4 gyro needs to be flipped 180
- */

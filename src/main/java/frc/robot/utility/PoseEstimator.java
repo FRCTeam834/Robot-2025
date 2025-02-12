@@ -77,7 +77,7 @@ public class PoseEstimator extends SubsystemBase {
 
     if(!VisionConstants.useVisionPoseEstimator) return;
 
-    //poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
+    poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
     
     if(Constants.VisionConstants.STRATEGY == Constants.LimelightStrategies.ALL_ESTIMATES) {
       for(LimelightHelpers.PoseEstimate estimate : cam_estimates) {

@@ -9,17 +9,12 @@ import java.util.List;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.controllers.PPLTVController;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.Waypoint;
-import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
 
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.controller.HolonomicDriveController;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -54,11 +49,9 @@ public class DriveTrain extends SubsystemBase {
     SwerveConstants.moduleTranslations[3]
   );
 
-  private final HolonomicDriveController holonomicDriveController = new HolonomicDriveController(
-    new PIDController(3, 0, 0), new PIDController(3, 0, 0), 
-    new ProfiledPIDController(1, 0, 0,
-     new TrapezoidProfile.Constraints(4, 4))
-  );
+  private SlewRateLimiter xaccelerationLimiter = new SlewRateLimiter(3.0);
+  private SlewRateLimiter yaccelerationLimiter = new SlewRateLimiter(3.0);
+  private SlewRateLimiter omegaLimiter = new SlewRateLimiter(3.0);
 
   private boolean stopped = false;
   private ChassisSpeeds setpoint = new ChassisSpeeds();
@@ -101,6 +94,12 @@ public class DriveTrain extends SubsystemBase {
   public void setDesiredSpeeds(ChassisSpeeds speeds) {
     stopped = false;
     setpoint = speeds;
+  }
+
+  public void setChassisSlewRate(double xLimit, double yLimit, double omegaLimit) {
+    xaccelerationLimiter = new SlewRateLimiter(xLimit);
+    yaccelerationLimiter = new SlewRateLimiter(yLimit);
+    omegaLimiter = new SlewRateLimiter(omegaLimit);
   }
 
   public SwerveModulePosition[] getModulePositions() {
@@ -152,6 +151,10 @@ public class DriveTrain extends SubsystemBase {
       stop();
       return;
     }
+
+    setpoint.vxMetersPerSecond = xaccelerationLimiter.calculate(setpoint.vxMetersPerSecond);
+    setpoint.vyMetersPerSecond = yaccelerationLimiter.calculate(setpoint.vyMetersPerSecond);
+    setpoint.omegaRadiansPerSecond = omegaLimiter.calculate(setpoint.omegaRadiansPerSecond);
 
     SwerveModuleState[] desiredStates = kinematics.toSwerveModuleStates(setpoint);
     SwerveDriveKinematics.desaturateWheelSpeeds(
