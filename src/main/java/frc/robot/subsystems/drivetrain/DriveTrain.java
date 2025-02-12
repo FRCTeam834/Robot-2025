@@ -98,17 +98,6 @@ public class DriveTrain extends SubsystemBase {
     setDesiredSpeeds(speeds);
   }
 
-  public void driveToPose(Pose2d desiredPose, Rotation2d desiredHeading, double desiredLinearVelocity, PoseEstimator estimator) {
-    ChassisSpeeds speeds = holonomicDriveController.calculate(
-      estimator.getPoseEstimate(), 
-      new Pose2d(desiredPose.getTranslation(), new Rotation2d()), 
-      desiredLinearVelocity, // m/s
-      desiredHeading // field relative
-    );
-
-    setDesiredSpeeds(speeds);
-  }
-
   public void setDesiredSpeeds(ChassisSpeeds speeds) {
     stopped = false;
     setpoint = speeds;
@@ -190,7 +179,8 @@ public class DriveTrain extends SubsystemBase {
   public Command makePath(PoseEstimator poseEstimator) {
     List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
       new Pose2d(poseEstimator.getPoseEstimate().getTranslation(), new Rotation2d()),
-      new Pose2d(Units.inchesToMeters(144 - 47), Units.inchesToMeters(158.50 + 10.75), new Rotation2d())
+      new Pose2d(poseEstimator.getPoseEstimate().getTranslation().plus(new Translation2d(1.0, 0.0)), new Rotation2d())
+      //new Pose2d(Units.inchesToMeters(144 - 47), Units.inchesToMeters(158.50 + 10.75), new Rotation2d())
     );
     
     PathConstraints constraint = new PathConstraints(1.0, 1.0, Units.degreesToRadians(180), Units.degreesToRadians(180));

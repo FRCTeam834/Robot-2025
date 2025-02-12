@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.SwerveConstants;
+import frc.robot.commands.DriveToPose;
 import frc.robot.commands.DriveWithSpeeds;
 import frc.robot.commands.RotateToPathTarget;
 import frc.robot.subsystems.drivetrain.DriveTrain;
@@ -73,6 +74,11 @@ public class RobotContainer {
       driveTrain.zeroOdometry(new Rotation2d());
       cams[1].seedLL4IMU();
 
+      FL.resetDriveEncoder();
+      FR.resetDriveEncoder();
+      BL.resetDriveEncoder();
+      BR.resetDriveEncoder();
+
       System.out.println("Zeroed the odometry");
     }));
 
@@ -84,8 +90,9 @@ public class RobotContainer {
       System.out.println("Updated CANCoder zero");
     }));
 
+    leftJoystick7.whileTrue(new DriveToPose(new Pose2d(Units.inchesToMeters(144 - 47), Units.inchesToMeters(158.50 + 10.75), new Rotation2d()), new Rotation2d(Math.PI - 0.139), 0.01, driveTrain, estimator));
     //leftJoystick7.whileTrue(driveTrain.makePath(estimator));
-    leftJoystick7.whileTrue(driveTrain.pathFindToPose(new Pose2d(Units.inchesToMeters(144 - 47), Units.inchesToMeters(158.50 + 10.75), new Rotation2d(Math.PI - 0.139))));
+    //leftJoystick7.whileTrue(driveTrain.pathFindToPose(new Pose2d(Units.inchesToMeters(144 - 47), Units.inchesToMeters(158.50 + 10.75), new Rotation2d(Math.PI - 0.139))));
 
     leftJoystick6.whileTrue(new RotateToPathTarget(driveTrain, Rotation2d.fromDegrees(90)));
 
