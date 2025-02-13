@@ -49,9 +49,8 @@ public class DriveTrain extends SubsystemBase {
     SwerveConstants.moduleTranslations[3]
   );
 
-  private SlewRateLimiter xaccelerationLimiter = new SlewRateLimiter(3.0);
-  private SlewRateLimiter yaccelerationLimiter = new SlewRateLimiter(3.0);
-  private SlewRateLimiter omegaLimiter = new SlewRateLimiter(3.0);
+  private SlewRateLimiter translationLimiter = new SlewRateLimiter(Units.feetToMeters(24));
+  private SlewRateLimiter omegaLimiter = new SlewRateLimiter(Math.toRadians(1080));
 
   private boolean stopped = false;
   private ChassisSpeeds setpoint = new ChassisSpeeds();
@@ -87,6 +86,14 @@ public class DriveTrain extends SubsystemBase {
   }
 
   public void drive(double xSpeed, double ySpeed, double rot) {
+    if(Math.abs(xSpeed) > 0.01 || Math.abs(ySpeed) > 0.01) {
+      double angle = Math.atan2(ySpeed, xSpeed);
+      double mag = translationLimiter.calculate(Math.hypot(xSpeed, ySpeed));
+      xSpeed = mag * Math.cos(angle);
+      ySpeed = mag * Math.sin(angle);
+    }
+    rot = omegaLimiter.calculate(rot);
+
     ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getYaw());
     setDesiredSpeeds(speeds);
   }
@@ -96,9 +103,8 @@ public class DriveTrain extends SubsystemBase {
     setpoint = speeds;
   }
 
-  public void setChassisSlewRate(double xLimit, double yLimit, double omegaLimit) {
-    xaccelerationLimiter = new SlewRateLimiter(xLimit);
-    yaccelerationLimiter = new SlewRateLimiter(yLimit);
+  public void setChassisSlewRate(double translationLimit, double omegaLimit) {
+    translationLimiter = new SlewRateLimiter(translationLimit);
     omegaLimiter = new SlewRateLimiter(omegaLimit);
   }
 
@@ -151,10 +157,6 @@ public class DriveTrain extends SubsystemBase {
       stop();
       return;
     }
-
-    setpoint.vxMetersPerSecond = xaccelerationLimiter.calculate(setpoint.vxMetersPerSecond);
-    setpoint.vyMetersPerSecond = yaccelerationLimiter.calculate(setpoint.vyMetersPerSecond);
-    setpoint.omegaRadiansPerSecond = omegaLimiter.calculate(setpoint.omegaRadiansPerSecond);
 
     SwerveModuleState[] desiredStates = kinematics.toSwerveModuleStates(setpoint);
     SwerveDriveKinematics.desaturateWheelSpeeds(

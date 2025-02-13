@@ -90,7 +90,9 @@ public class RobotContainer {
       System.out.println("Updated CANCoder zero");
     }));
 
-    leftJoystick7.whileTrue(new DriveToPose(new Pose2d(Units.inchesToMeters(144 - 47), Units.inchesToMeters(158.50 + 10.75), new Rotation2d()), new Rotation2d(Math.PI - 0.139), 0.01, driveTrain, estimator));
+    //6 inches left and right
+
+    leftJoystick7.whileTrue(new DriveToPose(new Pose2d(Units.inchesToMeters(160.39 + (6 * Math.sin(1.047))), Units.inchesToMeters(130.17 + (6 * Math.cos(1.047))), new Rotation2d()), new Rotation2d(Units.degreesToRadians(0)), 0.01, driveTrain, estimator));
     //leftJoystick7.whileTrue(driveTrain.makePath(estimator));
     //leftJoystick7.whileTrue(driveTrain.pathFindToPose(new Pose2d(Units.inchesToMeters(144 - 47), Units.inchesToMeters(158.50 + 10.75), new Rotation2d(Math.PI - 0.139))));
 
