@@ -4,11 +4,14 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.auto.AutoBuilder;
+import java.io.IOException;
+import java.nio.file.Path;
 import com.pathplanner.lib.config.RobotConfig;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Filesystem;
 
 /** Add your docs here. */
 public class Constants {
@@ -60,6 +63,8 @@ public class Constants {
         public static final LimelightStrategies STRATEGY = LimelightStrategies.ALL_ESTIMATES;
     }
 
+    public static AprilTagFieldLayout aprilTagFieldLayout;
+
     public static enum LimelightStrategies {
         ALL_ESTIMATES,
         BEST_ESTIMATE,
@@ -72,6 +77,12 @@ public class Constants {
         try {
             PATHPLANNER_CONFIG = RobotConfig.fromGUISettings();
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            aprilTagFieldLayout = new AprilTagFieldLayout(Path.of(Filesystem.getDeployDirectory().getPath(), "apriltagLayout.json"));
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
