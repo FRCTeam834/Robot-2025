@@ -14,6 +14,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator3d;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Timer;
@@ -153,6 +154,15 @@ public class PoseEstimator extends SubsystemBase {
 
   private double getLL4IMUYaw() {
     return LimelightHelpers.getIMUData(Constants.VisionConstants.CAM_TWO_NAME).Yaw;
+  }
+
+  public Pose2d getClosestScoringPose2d() {
+    double bestDistance = Double.MIN_VALUE;
+    Pose2d bestPose;
+
+    for(Constants.BLUE_TAG_SCORINGPOSES pose : Constants.BLUE_TAG_SCORINGPOSES.values()) {
+      //TODO: FINISH
+    }
   }
 
   @Override

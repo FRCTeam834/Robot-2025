@@ -60,9 +60,9 @@ public class RobotContainer {
   public RobotContainer() {
     driveTrain.setDefaultCommand(new DriveWithSpeeds(
       driveTrain,
-      OI::getLeftJoystickX,
-      OI::getLeftJoystickY,
-      OI::getRightJoystickX
+      OI::getRightJoystickX,
+      OI::getRightJoystickY,
+      OI::getLeftJoystickX
     ));
 
     driveTrain.configureAutoBuilder(estimator);

@@ -9,6 +9,8 @@ import java.nio.file.Path;
 import com.pathplanner.lib.config.RobotConfig;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -64,6 +66,35 @@ public class Constants {
     }
 
     public static AprilTagFieldLayout aprilTagFieldLayout;
+
+    public static Pose2d[] blue_reefTagPoses = {
+        new Pose2d(Units.inchesToMeters(144), Units.inchesToMeters(158.5), new Rotation2d()), // 18
+        new Pose2d(Units.inchesToMeters(160.39), Units.inchesToMeters(186.83), new Rotation2d()), // 19
+        new Pose2d(Units.inchesToMeters(193.10), Units.inchesToMeters(186.83), new Rotation2d()), // 20
+        new Pose2d(Units.inchesToMeters(209.49), Units.inchesToMeters(158.50), new Rotation2d()), // 21
+        new Pose2d(Units.inchesToMeters(193.10), Units.inchesToMeters(130.17), new Rotation2d()), // 22
+        new Pose2d(Units.inchesToMeters(160.39), Units.inchesToMeters(130.17), new Rotation2d()) // 17
+    };
+
+    public static enum BLUE_TAG_SCORINGPOSES {
+        EIGHTEEN (new Pose2d(Units.inchesToMeters(144), Units.inchesToMeters(158.5), new Rotation2d())),
+        NINETEEN (new Pose2d(Units.inchesToMeters(160.39), Units.inchesToMeters(186.83), new Rotation2d())),
+        TWENTY (new Pose2d(Units.inchesToMeters(193.10), Units.inchesToMeters(186.83), new Rotation2d())),
+        TWENTYONE (new Pose2d(Units.inchesToMeters(209.49), Units.inchesToMeters(158.50), new Rotation2d())),
+        TWENTYTWO (new Pose2d(Units.inchesToMeters(193.10), Units.inchesToMeters(130.17), new Rotation2d())),
+        SEVENTEEN (new Pose2d(Units.inchesToMeters(160.39), Units.inchesToMeters(130.17), new Rotation2d()));
+
+        private final Pose2d pose;
+        BLUE_TAG_SCORINGPOSES(Pose2d pose) { 
+            this.pose = pose;
+        }
+
+        public Pose2d getPose() { return pose; }
+    }
+
+    public static Pose2d[] red_reefTagPoses = {
+
+    };
 
     public static enum LimelightStrategies {
         ALL_ESTIMATES,
