@@ -65,36 +65,25 @@ public class Constants {
         public static final LimelightStrategies STRATEGY = LimelightStrategies.ALL_ESTIMATES;
     }
 
-    public static AprilTagFieldLayout aprilTagFieldLayout;
-
-    public static Pose2d[] blue_reefTagPoses = {
-        new Pose2d(Units.inchesToMeters(144), Units.inchesToMeters(158.5), new Rotation2d()), // 18
-        new Pose2d(Units.inchesToMeters(160.39), Units.inchesToMeters(186.83), new Rotation2d()), // 19
-        new Pose2d(Units.inchesToMeters(193.10), Units.inchesToMeters(186.83), new Rotation2d()), // 20
-        new Pose2d(Units.inchesToMeters(209.49), Units.inchesToMeters(158.50), new Rotation2d()), // 21
-        new Pose2d(Units.inchesToMeters(193.10), Units.inchesToMeters(130.17), new Rotation2d()), // 22
-        new Pose2d(Units.inchesToMeters(160.39), Units.inchesToMeters(130.17), new Rotation2d()) // 17
-    };
-
-    public static enum BLUE_TAG_SCORINGPOSES {
-        EIGHTEEN (new Pose2d(Units.inchesToMeters(144), Units.inchesToMeters(158.5), new Rotation2d())),
-        NINETEEN (new Pose2d(Units.inchesToMeters(160.39), Units.inchesToMeters(186.83), new Rotation2d())),
-        TWENTY (new Pose2d(Units.inchesToMeters(193.10), Units.inchesToMeters(186.83), new Rotation2d())),
-        TWENTYONE (new Pose2d(Units.inchesToMeters(209.49), Units.inchesToMeters(158.50), new Rotation2d())),
-        TWENTYTWO (new Pose2d(Units.inchesToMeters(193.10), Units.inchesToMeters(130.17), new Rotation2d())),
-        SEVENTEEN (new Pose2d(Units.inchesToMeters(160.39), Units.inchesToMeters(130.17), new Rotation2d()));
+    public static enum BLUE_TAG_POSES {
+        EIGHTEEN (new Pose2d(Units.inchesToMeters(144), Units.inchesToMeters(158.5), Rotation2d.fromDegrees(180))),
+        NINETEEN (new Pose2d(Units.inchesToMeters(160.39), Units.inchesToMeters(186.83), Rotation2d.fromDegrees(120))),
+        TWENTY (new Pose2d(Units.inchesToMeters(193.10), Units.inchesToMeters(186.83), Rotation2d.fromDegrees(60))),
+        TWENTYONE (new Pose2d(Units.inchesToMeters(209.49), Units.inchesToMeters(158.50), Rotation2d.fromDegrees(0))),
+        TWENTYTWO (new Pose2d(Units.inchesToMeters(193.10), Units.inchesToMeters(130.17), Rotation2d.fromDegrees(-60))),
+        SEVENTEEN (new Pose2d(Units.inchesToMeters(160.39), Units.inchesToMeters(130.17), Rotation2d.fromDegrees(-120)));
 
         private final Pose2d pose;
-        BLUE_TAG_SCORINGPOSES(Pose2d pose) { 
+        BLUE_TAG_POSES(Pose2d pose) { 
             this.pose = pose;
         }
 
         public Pose2d getPose() { return pose; }
     }
 
-    public static Pose2d[] red_reefTagPoses = {
+    public static enum RED_TAG_POSES {
 
-    };
+    }
 
     public static enum LimelightStrategies {
         ALL_ESTIMATES,
@@ -108,12 +97,6 @@ public class Constants {
         try {
             PATHPLANNER_CONFIG = RobotConfig.fromGUISettings();
         } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        try {
-            aprilTagFieldLayout = new AprilTagFieldLayout(Path.of(Filesystem.getDeployDirectory().getPath(), "apriltagLayout.json"));
-        } catch (IOException e) {
             e.printStackTrace();
         }
     }

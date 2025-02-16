@@ -156,15 +156,6 @@ public class PoseEstimator extends SubsystemBase {
     return LimelightHelpers.getIMUData(Constants.VisionConstants.CAM_TWO_NAME).Yaw;
   }
 
-  public Pose2d getClosestScoringPose2d() {
-    double bestDistance = Double.MIN_VALUE;
-    Pose2d bestPose;
-
-    for(Constants.BLUE_TAG_SCORINGPOSES pose : Constants.BLUE_TAG_SCORINGPOSES.values()) {
-      //TODO: FINISH
-    }
-  }
-
   @Override
   public void initSendable (SendableBuilder builder) {
     builder.setSmartDashboardType("PoseEstimator");
