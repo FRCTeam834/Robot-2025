@@ -16,21 +16,13 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
-////import com.revrobotics.spark.config.AlternateEncoderConfig.Type;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-////import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.util.Units;
-////import edu.wpi.first.math.controller.PIDController;
-////import edu.wpi.first.math.controller.ProfiledPIDController;
-////import edu.wpi.first.math.trajectory.TrapezoidProfile;
-////import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
-////import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.utility.TunableNumber;
-////import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 
 public class Elevator extends SubsystemBase {
   /** Creates a new Elevator. */
@@ -61,7 +53,7 @@ public class Elevator extends SubsystemBase {
   private SparkMaxConfig motor1Config = new SparkMaxConfig();
   private SparkMaxConfig motor2Config = new SparkMaxConfig();
 
-  private double setpoint = 0.0; //m
+  private double setpointHeight = 0.0; //m
   private boolean elevatorStopped = false;
 
   static {
@@ -88,14 +80,14 @@ public class Elevator extends SubsystemBase {
     //Configure motors
     motor1Config
     .idleMode(IdleMode.kBrake)
-    .smartCurrentLimit(50)
+    .smartCurrentLimit(40)
     .voltageCompensation(12)
     .closedLoopRampRate(0.2)
     .inverted(false);
 
     //Configure motor encoders
     motor1Config.encoder
-    .positionConversionFactor(Math.PI * Units.inchesToMeters(1.5))
+    .positionConversionFactor(Math.PI * Units.inchesToMeters(1.5)) // Add gearing
     .velocityConversionFactor(Math.PI * Units.inchesToMeters(1.5) / 60);
 
     //Configure PID controller
@@ -104,8 +96,8 @@ public class Elevator extends SubsystemBase {
     .pid(elevatorkP.get(), elevatorkI.get(), elevatorkD.get())
     .outputRange(-1, 1)
     .maxMotion
-    .maxAcceleration(1.0)
-    .maxVelocity(1.0)
+    .maxAcceleration(0.5)
+    .maxVelocity(0.5)
     .allowedClosedLoopError(0.1);
 
     //Second motor should have the same configurations as the first motor
@@ -114,6 +106,8 @@ public class Elevator extends SubsystemBase {
 
     elevatorMotor1.configure(motor1Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     elevatorMotor2.configure(motor2Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+    relativeEncoder.setPosition(0.0);
 
     //Send all data to the Smart Dashboard
     SmartDashboard.putData(this);
@@ -138,8 +132,20 @@ public class Elevator extends SubsystemBase {
 
     //Update PID controller
     if (!elevatorStopped) {
-      pid_controller.setReference(setpoint, ControlType.kPosition, ClosedLoopSlot.kSlot0, elevatorFeedforward.calculate(relativeEncoder.getVelocity()));
+      pid_controller.setReference(setpointHeight, ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0, elevatorFeedforward.calculate(relativeEncoder.getVelocity()));
     }
+  }
+
+  public void zeroEncoder() {
+    relativeEncoder.setPosition(0.0);
+  }
+
+  public double getElevatorPosition() {
+    return relativeEncoder.getPosition();
+  }
+
+  public void setElevatorSpeed(double speed) {
+    elevatorMotor1.set(speed);
   }
 
   //Stop the elevator motors
@@ -149,16 +155,19 @@ public class Elevator extends SubsystemBase {
   }
 
   //Update the setpoint for the elevator
-  public void setElevatorSetpoint(double setpoint) {
+  public void setDesiredPosition(double height) {
     elevatorStopped = false;
-    this.setpoint = setpoint;
+    this.setpointHeight = height;
+  }
+
+  public boolean isAtSetpoint() {
+    return Math.abs(getElevatorPosition() - setpointHeight) < Units.inchesToMeters(1);
   }
 
   //TODO:
   /*
    * Methods for isAtGoal()
    * Set position of relative encoder to zero in constructor
-   * getHeight method (I'd make a convertRotationsToDistance method)
    */
 
   @Override
