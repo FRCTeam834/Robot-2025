@@ -13,22 +13,21 @@ import frc.robot.subsystems.Elevator;
 public class MoveWithXbox extends Command {
   /** Creates a new MoveWithXbox. */
   private final Elevator elevator;
-  private final DoubleSupplier rightYSupplier;
   
-  public MoveWithXbox(Elevator elevator, DoubleSupplier rightYSupplier) {
+  public MoveWithXbox(Elevator elevator) {
     this.elevator = elevator;
-    this.rightYSupplier = rightYSupplier;
     addRequirements(elevator);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    elevator.setElevatorSpeed(0.4);
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    elevator.setElevatorSpeed(rightYSupplier.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.

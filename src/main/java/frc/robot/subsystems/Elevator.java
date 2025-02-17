@@ -55,42 +55,41 @@ public class Elevator extends SubsystemBase {
   private SparkMaxConfig motor2Config = new SparkMaxConfig();
 
   private double setpointHeight = 0.0; //m
-  private boolean elevatorStopped = false;
+  private boolean elevatorStopped = true;
 
   static {
     //TODO: Intitialize default constants
-    elevatorkP.initDefault(1);
+    elevatorkP.initDefault(6);
     elevatorkI.initDefault(0);
     elevatorkD.initDefault(0);
 
-    elevatorkS.initDefault(0);
-    elevatorkG.initDefault(0);
-    elevatorkV.initDefault(0);
+    elevatorkS.initDefault(2);
+    elevatorkG.initDefault(2);
+    elevatorkV.initDefault(2);
     elevatorkA.initDefault(0);
   }
 
   //Elevator constructor
   public Elevator() {
     //Initialize motors, encoders, PID controller
-    elevatorMotor1 = new SparkMax(15, MotorType.kBrushless);
-    elevatorMotor2 = new SparkMax(16, MotorType.kBrushless);
+    elevatorMotor1 = new SparkMax(10, MotorType.kBrushless);
+    elevatorMotor2 = new SparkMax(11, MotorType.kBrushless);
     relativeEncoder = elevatorMotor1.getEncoder();
     
     pid_controller = elevatorMotor1.getClosedLoopController();
-
 
     //Configure motors
     motor1Config
     .idleMode(IdleMode.kBrake)
     .smartCurrentLimit(40)
     .voltageCompensation(12)
-    .closedLoopRampRate(0.2)
-    .inverted(false);
+    //.closedLoopRampRate(0.2)
+    .inverted(true);
 
     //Configure motor encoders
     motor1Config.encoder
-    .positionConversionFactor(Math.PI * Units.inchesToMeters(1.5)) // Add gearing
-    .velocityConversionFactor(Math.PI * Units.inchesToMeters(1.5) / 60);
+    .positionConversionFactor((Math.PI * Units.inchesToMeters(1.5)) / 5) // Add gearing
+    .velocityConversionFactor(((Math.PI * Units.inchesToMeters(1.5)) / 5) / 60);
 
     //Configure PID controller
     motor1Config.closedLoop
@@ -104,7 +103,7 @@ public class Elevator extends SubsystemBase {
 
     //Second motor should have the same configurations as the first motor
     motor2Config.apply(motor1Config);
-    motor2Config.follow(elevatorMotor1);
+    motor2Config.follow(elevatorMotor1, true);
 
     elevatorMotor1.configure(motor1Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     elevatorMotor2.configure(motor2Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
