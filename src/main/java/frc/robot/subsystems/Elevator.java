@@ -50,6 +50,7 @@ public class Elevator extends SubsystemBase {
   //PID controller
   private SparkClosedLoopController pid_controller;
 
+  //Motor configurations
   private SparkMaxConfig motor1Config = new SparkMaxConfig();
   private SparkMaxConfig motor2Config = new SparkMaxConfig();
 
@@ -70,12 +71,13 @@ public class Elevator extends SubsystemBase {
 
   //Elevator constructor
   public Elevator() {
-    //Initialize and configure motors
+    //Initialize motors, encoders, PID controller
     elevatorMotor1 = new SparkMax(15, MotorType.kBrushless);
     elevatorMotor2 = new SparkMax(16, MotorType.kBrushless);
     relativeEncoder = elevatorMotor1.getEncoder();
-
+    
     pid_controller = elevatorMotor1.getClosedLoopController();
+
 
     //Configure motors
     motor1Config
@@ -164,11 +166,15 @@ public class Elevator extends SubsystemBase {
     return Math.abs(getElevatorPosition() - setpointHeight) < Units.inchesToMeters(1);
   }
 
-  //TODO:
-  /*
-   * Methods for isAtGoal()
-   * Set position of relative encoder to zero in constructor
-   */
+  //Converts the rotations of the motor to the distance the elevator rises
+  public double convertRotationsToDistance(double rotations) {
+    return Units.inchesToMeters(0.75) * rotations;
+  }
+
+  //Returns the current height of the elevator
+  public double getHeight() {
+    return convertRotationsToDistance(relativeEncoder.getPosition());
+  }
 
   @Override
   public void initSendable (SendableBuilder builder) {
