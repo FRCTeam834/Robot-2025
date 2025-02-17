@@ -103,9 +103,26 @@ public class DriveTrain extends SubsystemBase {
     setpoint = speeds;
   }
 
+  public void setDesiredSpeedsFromHolonomicController(ChassisSpeeds speeds) {
+    double angle = Math.atan2(speeds.vyMetersPerSecond, speeds.vxMetersPerSecond);
+    double mag = translationLimiter.calculate(Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond));
+    speeds.vxMetersPerSecond = mag * Math.cos(angle);
+    speeds.vyMetersPerSecond = mag * Math.sin(angle);
+    speeds.omegaRadiansPerSecond = omegaLimiter.calculate(speeds.omegaRadiansPerSecond);
+
+    stopped = false;
+    setpoint = speeds;
+  }
+
   public void setChassisSlewRate(double translationLimit, double omegaLimit) {
+    double lastTranslationValue = translationLimiter.lastValue();
+    double lastOmegaLimiterValue = omegaLimiter.lastValue();
+
     translationLimiter = new SlewRateLimiter(translationLimit);
     omegaLimiter = new SlewRateLimiter(omegaLimit);
+
+    translationLimiter.reset(lastTranslationValue);
+    omegaLimiter.reset(lastOmegaLimiterValue);
   }
 
   public SwerveModulePosition[] getModulePositions() {

@@ -9,4 +9,4 @@ public class UnitQuad {
     public static final double calculate (double value) {
         return Math.copySign(value * value, value);
     }
-}
+} 

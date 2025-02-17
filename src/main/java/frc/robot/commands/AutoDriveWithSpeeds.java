@@ -35,11 +35,12 @@ public class AutoDriveWithSpeeds extends Command {
      new TrapezoidProfile.Constraints(Units.degreesToRadians(180), Units.degreesToRadians(180)))
   );
 
-  private Pose2d desiredPose;
-  private Rotation2d desiredHeading;
   private double desiredLinearVelocity;
 
-  private double joystickTolerance = 0.01;
+  private double joystickTolerance = 0.15;
+  private boolean doesCalculateScoringPosition = true;
+
+  private Pose2d closestScoringPose;
 
   public AutoDriveWithSpeeds(DriveTrain driveTrain, PoseEstimator poseEstimator) {
     this.driveTrain = driveTrain;
@@ -62,22 +63,40 @@ public class AutoDriveWithSpeeds extends Command {
     double leftJoystickx = OI.getLeftJoystickX();
 
     Pose2d robotPose = poseEstimator.getPoseEstimate();
-    
+
+    // While matt is manually driving robot recalculate most optimal scoring position
+    if (doesCalculateScoringPosition) {
+      double bestCost = Double.MAX_VALUE;
+
+      for(Constants.SCORING_POSES_BLUE scoringPose : Constants.SCORING_POSES_BLUE.values()) {
+        double distanceError = robotPose.getTranslation().getDistance(scoringPose.getPose().getTranslation());
+        double angleError = Math.abs(robotPose.getRotation().minus(scoringPose.getPose().getRotation()).getDegrees());
+
+        double cost = (distanceError * 0.5 + angleError * 5); // angleError more important than distanceError
+        if (cost < bestCost) {
+          bestCost = cost;
+          closestScoringPose = scoringPose.getPose(); 
+        }
+      }
+    }
+
     if(Math.abs(rightJoystickx) > joystickTolerance || Math.abs(rightJoysticky) > joystickTolerance || Math.abs(leftJoystickx) > joystickTolerance) {
       driveTrain.drive(
-      rightJoystickx * SwerveConstants.MAX_TRANSLATION_SPEED, 
-      -rightJoysticky * SwerveConstants.MAX_TRANSLATION_SPEED, 
-      -leftJoystickx * SwerveConstants.MAX_STEER_SPEED
+        rightJoystickx * SwerveConstants.MAX_TRANSLATION_SPEED, 
+        -rightJoysticky * SwerveConstants.MAX_TRANSLATION_SPEED, 
+        -leftJoystickx * SwerveConstants.MAX_STEER_SPEED
       );
+      doesCalculateScoringPosition = true;
     } else {
       ChassisSpeeds speeds = holonomicDriveController.calculate(
-        poseEstimator.getPoseEstimate(), 
-        new Pose2d(desiredPose.getTranslation(), new Rotation2d()), 
+        robotPose, 
+        new Pose2d(closestScoringPose.getTranslation(), new Rotation2d()), 
         desiredLinearVelocity, // m/s
-        desiredHeading
+        closestScoringPose.getRotation()
       );
 
-      driveTrain.setDesiredSpeeds(speeds);
+      driveTrain.setDesiredSpeedsFromHolonomicController(speeds);
+      doesCalculateScoringPosition = false;
     }
   }
 

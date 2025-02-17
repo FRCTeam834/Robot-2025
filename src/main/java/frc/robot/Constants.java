@@ -65,23 +65,30 @@ public class Constants {
         public static final LimelightStrategies STRATEGY = LimelightStrategies.ALL_ESTIMATES;
     }
 
-    public static enum BLUE_TAG_POSES {
-        EIGHTEEN (new Pose2d(Units.inchesToMeters(144), Units.inchesToMeters(158.5), Rotation2d.fromDegrees(180))),
-        NINETEEN (new Pose2d(Units.inchesToMeters(160.39), Units.inchesToMeters(186.83), Rotation2d.fromDegrees(120))),
-        TWENTY (new Pose2d(Units.inchesToMeters(193.10), Units.inchesToMeters(186.83), Rotation2d.fromDegrees(60))),
-        TWENTYONE (new Pose2d(Units.inchesToMeters(209.49), Units.inchesToMeters(158.50), Rotation2d.fromDegrees(0))),
-        TWENTYTWO (new Pose2d(Units.inchesToMeters(193.10), Units.inchesToMeters(130.17), Rotation2d.fromDegrees(-60))),
-        SEVENTEEN (new Pose2d(Units.inchesToMeters(160.39), Units.inchesToMeters(130.17), Rotation2d.fromDegrees(-120)));
+    public static enum SCORING_POSES_BLUE {
+        TWENTY_LEFT (new Pose2d(5.291, 5.082, Rotation2d.fromDegrees(-120))),
+        TWENTY_RIGHT (new Pose2d(4.995, 5.248, Rotation2d.fromDegrees(-120))),
+        NINETEEN_LEFT (new Pose2d(3.978, 5.241, Rotation2d.fromDegrees(-60))),
+        NINETEEN_RIGHT (new Pose2d(3.689, 5.072, Rotation2d.fromDegrees(-60))),
+        EIGHTEEN_LEFT (new Pose2d(3.180, 4.192, Rotation2d.fromDegrees(0))),
+        EIGHTEEN_RIGHT (new Pose2d(3.180, 3.860, Rotation2d.fromDegrees(0))),
+        SEVENTEEN_LEFT (new Pose2d(3.688, 2.978, Rotation2d.fromDegrees(60))),
+        SEVENTEEN_RIGHT (new Pose2d(3.979, 2.815, Rotation2d.fromDegrees(60))),
+        TWENTYTWO_LEFT (new Pose2d(4.994, 2.814, Rotation2d.fromDegrees(120))),
+        TWENTYTWO_RIGHT (new Pose2d(5.278, 2.979, Rotation2d.fromDegrees(120))),
+        TWENTYONE_LEFT (new Pose2d(5.790, 3.855, Rotation2d.fromDegrees(180))), 
+        TWENTYONE_RIGHT (new Pose2d(5.790, 4.190, Rotation2d.fromDegrees(180)));
+        
 
         private final Pose2d pose;
-        BLUE_TAG_POSES(Pose2d pose) { 
+        SCORING_POSES_BLUE(Pose2d pose) { 
             this.pose = pose;
         }
 
         public Pose2d getPose() { return pose; }
     }
 
-    public static enum RED_TAG_POSES {
+    public static enum SCORING_POSES_RED {
 
     }
 
@@ -89,6 +96,12 @@ public class Constants {
         ALL_ESTIMATES,
         BEST_ESTIMATE,
         AVERAGE_ESTIMATE
+    }
+
+    public static final RobotMode robotMode = RobotMode.DEVELOPMENT;
+    public static enum RobotMode {
+        COMPETITION,
+        DEVELOPMENT
     }
 
     public static RobotConfig PATHPLANNER_CONFIG;
