@@ -6,7 +6,6 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-////import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkClosedLoopController;
@@ -17,6 +16,7 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.util.Units;
@@ -59,14 +59,14 @@ public class Elevator extends SubsystemBase {
 
   static {
     //TODO: Intitialize default constants
-    elevatorkP.initDefault(6);
+    elevatorkP.initDefault(5);
     elevatorkI.initDefault(0);
     elevatorkD.initDefault(0);
 
-    elevatorkS.initDefault(2);
-    elevatorkG.initDefault(2);
-    elevatorkV.initDefault(2);
-    elevatorkA.initDefault(0);
+    elevatorkS.initDefault(0.5); 
+    elevatorkG.initDefault(0.8);
+    elevatorkV.initDefault(0.0); // Do not use with MAXMotion
+    elevatorkA.initDefault(0.0);
   }
 
   //Elevator constructor
@@ -81,7 +81,7 @@ public class Elevator extends SubsystemBase {
     //Configure motors
     motor1Config
     .idleMode(IdleMode.kBrake)
-    .smartCurrentLimit(40)
+    .smartCurrentLimit(50)
     .voltageCompensation(12)
     //.closedLoopRampRate(0.2)
     .inverted(true);
@@ -97,9 +97,10 @@ public class Elevator extends SubsystemBase {
     .pid(elevatorkP.get(), elevatorkI.get(), elevatorkD.get())
     .outputRange(-1, 1)
     .maxMotion
-    .maxAcceleration(0.5)
+    .maxAcceleration(1)
     .maxVelocity(0.5)
-    .allowedClosedLoopError(0.1);
+    .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
+    .allowedClosedLoopError(0.01);
 
     //Second motor should have the same configurations as the first motor
     motor2Config.apply(motor1Config);
@@ -141,7 +142,7 @@ public class Elevator extends SubsystemBase {
     relativeEncoder.setPosition(0.0);
   }
 
-  public double getElevatorPosition() {
+  public double getElevatorHeight() {
     return relativeEncoder.getPosition();
   }
 
@@ -162,17 +163,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public boolean isAtSetpoint() {
-    return Math.abs(getElevatorPosition() - setpointHeight) < Units.inchesToMeters(1);
-  }
-
-  //Converts the rotations of the motor to the distance the elevator rises
-  public double convertRotationsToDistance(double rotations) {
-    return Units.inchesToMeters(0.75) * rotations;
-  }
-
-  //Returns the current height of the elevator
-  public double getHeight() {
-    return convertRotationsToDistance(relativeEncoder.getPosition());
+    return Math.abs(getElevatorHeight() - setpointHeight) < Units.inchesToMeters(1);
   }
 
   @Override
