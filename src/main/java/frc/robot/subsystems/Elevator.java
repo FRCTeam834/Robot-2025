@@ -4,7 +4,9 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.ClosedLoopSlot;
@@ -18,7 +20,11 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -49,6 +55,9 @@ public class Elevator extends SubsystemBase {
 
   //PID controller
   private SparkClosedLoopController pid_controller;
+  private ProfiledPIDController trapezoidPID = new ProfiledPIDController(0.0, 0.0, 0.0,
+      new TrapezoidProfile.Constraints(1.75, 0.75)
+  );
 
   //Motor configurations
   private SparkMaxConfig motor1Config = new SparkMaxConfig();
@@ -63,7 +72,7 @@ public class Elevator extends SubsystemBase {
     elevatorkI.initDefault(0);
     elevatorkD.initDefault(0);
 
-    elevatorkS.initDefault(0.5); 
+    elevatorkS.initDefault(0.0); 
     elevatorkG.initDefault(0.8);
     elevatorkV.initDefault(0.0); // Do not use with MAXMotion
     elevatorkA.initDefault(0.0);
@@ -81,7 +90,7 @@ public class Elevator extends SubsystemBase {
     //Configure motors
     motor1Config
     .idleMode(IdleMode.kBrake)
-    .smartCurrentLimit(50)
+    .smartCurrentLimit(40)
     .voltageCompensation(12)
     //.closedLoopRampRate(0.2)
     .inverted(true);
@@ -121,6 +130,8 @@ public class Elevator extends SubsystemBase {
     
     //Update the elevator PID if the constants have changed
     if (elevatorkP.hasChanged(hashCode()) || elevatorkI.hasChanged(hashCode()) || elevatorkD.hasChanged(hashCode())) {
+      trapezoidPID.setPID(elevatorkP.get(), elevatorkI.get(), elevatorkD.get());
+
       motor1Config.closedLoop.pid(elevatorkP.get(), elevatorkI.get(), elevatorkD.get());
       motor2Config.closedLoop.pid(elevatorkP.get(), elevatorkI.get(), elevatorkD.get());
       elevatorMotor1.configureAsync(motor1Config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
@@ -134,7 +145,8 @@ public class Elevator extends SubsystemBase {
 
     //Update PID controller
     if (!elevatorStopped) {
-      pid_controller.setReference(setpointHeight, ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0, elevatorFeedforward.calculate(relativeEncoder.getVelocity()));
+      //pid_controller.setReference(setpointHeight, ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0, elevatorFeedforward.calculate(relativeEncoder.getVelocity()));
+      setElevatorVoltage(trapezoidPID.calculate(setpointHeight) + elevatorFeedforward.calculate(trapezoidPID.getSetpoint().velocity));
     }
   }
 
@@ -150,6 +162,10 @@ public class Elevator extends SubsystemBase {
     elevatorMotor1.set(speed);
   }
 
+  public void setElevatorVoltage(double voltage) {
+    elevatorMotor1.setVoltage(voltage);
+  }
+
   //Stop the elevator motors
   public void stop() {
     elevatorStopped = true;
@@ -157,9 +173,10 @@ public class Elevator extends SubsystemBase {
   }
 
   //Update the setpoint for the elevator
-  public void setDesiredPosition(double height) {
+  public void setDesiredHeight(double height) {
     elevatorStopped = false;
-    this.setpointHeight = height;
+    setpointHeight = MathUtil.clamp(height, 0, 2);
+    trapezoidPID.setGoal(setpointHeight);
   }
 
   public boolean isAtSetpoint() {
@@ -169,5 +186,7 @@ public class Elevator extends SubsystemBase {
   @Override
   public void initSendable (SendableBuilder builder) {
     builder.setSmartDashboardType("Elevator");
+    builder.addDoubleProperty("Elevator Height", this::getElevatorHeight, null);
+    builder.addDoubleProperty("Elevator Setpoint", () -> {return setpointHeight;}, null);
   }
 }

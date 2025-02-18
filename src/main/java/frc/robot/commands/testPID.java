@@ -29,7 +29,7 @@ public class testPID extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    elevator.setDesiredPosition(0.6);
+    elevator.setDesiredHeight(0.6);
     System.out.println("RUNNING");
   }
 
