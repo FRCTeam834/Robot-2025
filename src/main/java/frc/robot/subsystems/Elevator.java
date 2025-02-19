@@ -4,9 +4,14 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.ClosedLoopSlot;
@@ -26,7 +31,12 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.BaseUnits;
+import edu.wpi.first.units.measure.MutDistance;
+import edu.wpi.first.units.measure.MutLinearVelocity;
+import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.utility.TunableNumber;
 
@@ -56,7 +66,7 @@ public class Elevator extends SubsystemBase {
   //PID controller
   private SparkClosedLoopController pid_controller;
   private ProfiledPIDController trapezoidPID = new ProfiledPIDController(0.0, 0.0, 0.0,
-      new TrapezoidProfile.Constraints(1.5, 0.75)
+      new TrapezoidProfile.Constraints(1.75, 1)
   );
 
   //Motor configurations
@@ -78,6 +88,12 @@ public class Elevator extends SubsystemBase {
     elevatorkA.initDefault(0.0);
   }
 
+  private final MutVoltage m_appliedVoltage = BaseUnits.VoltageUnit.mutable(0);
+  private final MutDistance m_distance = BaseUnits.DistanceUnit.mutable(0);
+  private final MutLinearVelocity m_velocity = MetersPerSecond.mutable(0);
+
+  private final SysIdRoutine m_sysIdRoutine;
+
   //Elevator constructor
   public Elevator() {
     //Initialize motors, encoders, PID controller
@@ -97,8 +113,8 @@ public class Elevator extends SubsystemBase {
 
     //Configure motor encoders
     motor1Config.encoder
-    .positionConversionFactor(2 * (Math.PI * Units.inchesToMeters(1.75)) / 5) // Add gearing
-    .velocityConversionFactor(2 * ((Math.PI * Units.inchesToMeters(1.75)) / 5) / 60);
+    .positionConversionFactor(2 * (Math.PI * Units.inchesToMeters(1.5)) / 5) // Add gearing
+    .velocityConversionFactor(2 * ((Math.PI * Units.inchesToMeters(1.5)) / 5) / 60);
 
     //Configure PID controller
     motor1Config.closedLoop
@@ -119,6 +135,36 @@ public class Elevator extends SubsystemBase {
     elevatorMotor2.configure(motor2Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     relativeEncoder.setPosition(0.0);
+
+    m_sysIdRoutine = new SysIdRoutine(
+        // Empty config defaults to 1 volt/second ramp rate and 7 volt step voltage.
+        new SysIdRoutine.Config(),
+        new SysIdRoutine.Mechanism(
+            // Tell SysId how to plumb the driving voltage to the motors.
+            voltage -> {
+              elevatorMotor1.setVoltage(voltage);
+            },
+            // Tell SysId how to record a frame of data for each motor on the mechanism being
+            // characterized.
+            log -> {
+              // Record a frame for the left motors.  Since these share an encoder, we consider
+              // the entire group to be one motor.
+              log.motor("elevatorMotor")
+                  .voltage(
+                      m_appliedVoltage.mut_replace(
+                          elevatorMotor1.get() * RobotController.getBatteryVoltage(), Volts))
+                  .linearPosition(m_distance.mut_replace(relativeEncoder.getPosition(), Meters))
+                  .linearVelocity(
+                      m_velocity.mut_replace(relativeEncoder.getVelocity(), MetersPerSecond));
+              // Record a frame for the right motors.  Since these share an encoder, we consider
+              // the entire group to be one motor.
+            
+            },
+            // Tell SysId to make generated commands require this subsystem, suffix test state in
+            // WPILog with this subsystem's name ("drive")
+            this));
+
+
 
     //Send all data to the Smart Dashboard
     SmartDashboard.putData(this);
@@ -145,8 +191,8 @@ public class Elevator extends SubsystemBase {
 
     //Update PID controller
     if (!elevatorStopped) {
-      //pid_controller.setReference(setpointHeight, ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0, elevatorFeedforward.calculate(relativeEncoder.getVelocity()));
-      elevatorMotor1.setVoltage(trapezoidPID.calculate(setpointHeight) + elevatorFeedforward.calculate(trapezoidPID.getSetpoint().velocity));
+      //elevatorMotor1.setVoltage(trapezoidPID.calculate(setpointHeight) + elevatorFeedforward.calculate(trapezoidPID.getSetpoint().velocity));
+      elevatorMotor1.setVoltage(elevatorFeedforward.calculate(trapezoidPID.getSetpoint().velocity));
     }
   }
 
@@ -164,6 +210,14 @@ public class Elevator extends SubsystemBase {
 
   public void setElevatorVoltage(double voltage) {
     elevatorMotor1.setVoltage(voltage);
+  }
+
+  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    return m_sysIdRoutine.quasistatic(direction);
+  }
+
+  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    return m_sysIdRoutine.dynamic(direction);
   }
 
   //Stop the elevator motors
