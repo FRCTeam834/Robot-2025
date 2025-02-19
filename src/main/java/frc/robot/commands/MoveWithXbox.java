@@ -22,7 +22,7 @@ public class MoveWithXbox extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    elevator.setElevatorSpeed(0.4);
+    elevator.setElevatorSpeed(0.15);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

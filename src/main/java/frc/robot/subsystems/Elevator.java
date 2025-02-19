@@ -56,7 +56,7 @@ public class Elevator extends SubsystemBase {
   //PID controller
   private SparkClosedLoopController pid_controller;
   private ProfiledPIDController trapezoidPID = new ProfiledPIDController(0.0, 0.0, 0.0,
-      new TrapezoidProfile.Constraints(1.75, 0.75)
+      new TrapezoidProfile.Constraints(1.5, 0.75)
   );
 
   //Motor configurations
@@ -97,8 +97,8 @@ public class Elevator extends SubsystemBase {
 
     //Configure motor encoders
     motor1Config.encoder
-    .positionConversionFactor((Math.PI * Units.inchesToMeters(1.5)) / 5) // Add gearing
-    .velocityConversionFactor(((Math.PI * Units.inchesToMeters(1.5)) / 5) / 60);
+    .positionConversionFactor(2 * (Math.PI * Units.inchesToMeters(1.75)) / 5) // Add gearing
+    .velocityConversionFactor(2 * ((Math.PI * Units.inchesToMeters(1.75)) / 5) / 60);
 
     //Configure PID controller
     motor1Config.closedLoop
@@ -146,7 +146,7 @@ public class Elevator extends SubsystemBase {
     //Update PID controller
     if (!elevatorStopped) {
       //pid_controller.setReference(setpointHeight, ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0, elevatorFeedforward.calculate(relativeEncoder.getVelocity()));
-      setElevatorVoltage(trapezoidPID.calculate(setpointHeight) + elevatorFeedforward.calculate(trapezoidPID.getSetpoint().velocity));
+      elevatorMotor1.setVoltage(trapezoidPID.calculate(setpointHeight) + elevatorFeedforward.calculate(trapezoidPID.getSetpoint().velocity));
     }
   }
 
