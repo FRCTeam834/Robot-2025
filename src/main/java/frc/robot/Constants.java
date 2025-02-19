@@ -58,11 +58,25 @@ public class Constants {
         public static final boolean useMegatag2 = true;
         public static final double maxDegreesPerSecond = 180;
 
-        public static final String CAM_ONE_NAME = "limelight-one"; // 3G
-        public static final String CAM_TWO_NAME = "limelight-two"; // 4
-        public static final String CAM_THREE_NAME = "limelight-three"; // 4
+        public static final String CAM_FRONT_NAME = "limelight-front"; 
+        public static final String CAM_BACK_NAME = "limelight-two"; 
         
         public static final LimelightStrategies STRATEGY = LimelightStrategies.ALL_ESTIMATES;
+    }
+
+    public static class ArmConstants {
+        public static final int laserCANID = 30;
+        public static final int pivotCANID = 12;
+        public static final int intakeCANID = 13;
+    }
+
+    public static class ElevatorConstants {
+        public static final int elevatorMotor1_ID = 10;
+        public static final int elevatorMotor2_ID = 11;
+    }
+
+    public static class ClimberConstants {
+        public static final int climberMotorID = 15;
     }
 
     public static enum SCORING_POSES_BLUE {

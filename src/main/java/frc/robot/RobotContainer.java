@@ -20,12 +20,16 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.SwerveConstants;
-import frc.robot.commands.DriveToPose;
-import frc.robot.commands.DriveWithSpeeds;
-import frc.robot.commands.RotateToPathTarget;
+import frc.robot.commands.drivetrain.DriveToPose;
+import frc.robot.commands.drivetrain.DriveWithSpeeds;
+import frc.robot.commands.drivetrain.RotateToPathTarget;
+import frc.robot.commands.elevator.TuneElevator;
+import frc.robot.commands.elevator.testElevatorPID;
+import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.drivetrain.DriveTrain;
 import frc.robot.subsystems.drivetrain.Gyro;
 import frc.robot.subsystems.drivetrain.SwerveModule;
+import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.vision.Limelight;
 import frc.robot.utility.PoseEstimator;
 
@@ -37,10 +41,10 @@ public class RobotContainer {
   JoystickButton leftJoystick7 = new JoystickButton(OI.leftJoystick, 7);
   JoystickButton leftJoystick6 = new JoystickButton(OI.leftJoystick, 6);
 
-  private static SwerveModule FL = new SwerveModule(3, 2, 10, SwerveConstants.CAN_CODER_OFFSET_FL, false);
-  private static SwerveModule FR = new SwerveModule(5, 4, 11, SwerveConstants.CAN_CODER_OFFSET_FR, true);
-  private static SwerveModule BL = new SwerveModule(9, 8, 13, SwerveConstants.CAN_CODER_OFFSET_BL, false);
-  private static SwerveModule BR = new SwerveModule(7, 6, 12, SwerveConstants.CAN_CODER_OFFSET_BR, true);
+  private static SwerveModule FL = new SwerveModule(3, 2, 20, SwerveConstants.CAN_CODER_OFFSET_FL, false);
+  private static SwerveModule FR = new SwerveModule(5, 4, 21, SwerveConstants.CAN_CODER_OFFSET_FR, true);
+  private static SwerveModule BL = new SwerveModule(9, 8, 22, SwerveConstants.CAN_CODER_OFFSET_BL, false);
+  private static SwerveModule BR = new SwerveModule(7, 6, 23, SwerveConstants.CAN_CODER_OFFSET_BR, true);
 
   public static Gyro gyro = new Gyro();
   public static DriveTrain driveTrain = new DriveTrain(
@@ -50,23 +54,31 @@ public class RobotContainer {
 
 
   private static Limelight[] cams = {
-    new Limelight(Constants.VisionConstants.CAM_ONE_NAME, false, driveTrain, gyro), 
-    new Limelight(Constants.VisionConstants.CAM_TWO_NAME, true, driveTrain, gyro)
+    new Limelight(Constants.VisionConstants.CAM_FRONT_NAME, true, driveTrain, gyro), 
+    new Limelight(Constants.VisionConstants.CAM_BACK_NAME, true, driveTrain, gyro)
   };
-
   public static PoseEstimator estimator = new PoseEstimator(driveTrain, cams);
+  public static Elevator elevator = new Elevator();
+  public static Arm arm = new Arm();
 
-  /* AUTON STUFF */
   public RobotContainer() {
-    driveTrain.setDefaultCommand(new DriveWithSpeeds(
-      driveTrain,
-      OI::getRightJoystickX,
-      OI::getRightJoystickY,
-      OI::getLeftJoystickX
-    ));
+    // driveTrain.setDefaultCommand(new DriveWithSpeeds(
+    //   driveTrain,
+    //   OI::getRightJoystickX,
+    //   OI::getRightJoystickY,
+    //   OI::getLeftJoystickX
+    // ));
+    // driveTrain.configureAutoBuilder(estimator);
 
-    driveTrain.configureAutoBuilder(estimator);
-    configureBindings();
+    elevator.setDefaultCommand(new TuneElevator(elevator, OI::getXboxRightJoystickY));
+
+    //configureBindings();
+    configureTestingBindings();
+  }
+
+  private void configureTestingBindings() {
+    leftJoystick10.whileTrue(new testElevatorPID(elevator));
+
   }
 
   private void configureBindings() {
@@ -90,14 +102,7 @@ public class RobotContainer {
       System.out.println("Updated CANCoder zero");
     }));
 
-    //6 inches left and right
-
-    leftJoystick7.whileTrue(new DriveToPose(new Pose2d(Units.inchesToMeters(160.39 + (6 * Math.sin(1.047))), Units.inchesToMeters(130.17 + (6 * Math.cos(1.047))), new Rotation2d()), new Rotation2d(Units.degreesToRadians(0)), 0.01, driveTrain, estimator));
-    //leftJoystick7.whileTrue(driveTrain.makePath(estimator));
-    //leftJoystick7.whileTrue(driveTrain.pathFindToPose(new Pose2d(Units.inchesToMeters(144 - 47), Units.inchesToMeters(158.50 + 10.75), new Rotation2d(Math.PI - 0.139))));
-
-    leftJoystick6.whileTrue(new RotateToPathTarget(driveTrain, Rotation2d.fromDegrees(90)));
-
+    
     leftJoystick11.onTrue(new InstantCommand(() -> {
       FL.seedTurnEncoder();
       FR.seedTurnEncoder();

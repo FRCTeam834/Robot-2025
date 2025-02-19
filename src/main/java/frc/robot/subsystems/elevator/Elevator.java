@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.elevator;
 
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -28,6 +28,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.utility.TunableNumber;
 
 public class Elevator extends SubsystemBase {
@@ -54,7 +55,6 @@ public class Elevator extends SubsystemBase {
   private ElevatorFeedforward elevatorFeedforward = new ElevatorFeedforward(0.0, 0.0, 0.0, 0.0);
 
   //PID controller
-  private SparkClosedLoopController pid_controller;
   private ProfiledPIDController trapezoidPID = new ProfiledPIDController(0.0, 0.0, 0.0,
       new TrapezoidProfile.Constraints(1.75, 0.75)
   );
@@ -67,25 +67,22 @@ public class Elevator extends SubsystemBase {
   private boolean elevatorStopped = true;
 
   static {
-    //TODO: Intitialize default constants
     elevatorkP.initDefault(5);
     elevatorkI.initDefault(0);
     elevatorkD.initDefault(0);
 
     elevatorkS.initDefault(0.0); 
     elevatorkG.initDefault(0.8);
-    elevatorkV.initDefault(0.0); // Do not use with MAXMotion
+    elevatorkV.initDefault(0.0); 
     elevatorkA.initDefault(0.0);
   }
 
   //Elevator constructor
   public Elevator() {
     //Initialize motors, encoders, PID controller
-    elevatorMotor1 = new SparkMax(10, MotorType.kBrushless);
-    elevatorMotor2 = new SparkMax(11, MotorType.kBrushless);
+    elevatorMotor1 = new SparkMax(ElevatorConstants.elevatorMotor1_ID, MotorType.kBrushless);
+    elevatorMotor2 = new SparkMax(ElevatorConstants.elevatorMotor2_ID, MotorType.kBrushless);
     relativeEncoder = elevatorMotor1.getEncoder();
-    
-    pid_controller = elevatorMotor1.getClosedLoopController();
 
     //Configure motors
     motor1Config
@@ -131,11 +128,6 @@ public class Elevator extends SubsystemBase {
     //Update the elevator PID if the constants have changed
     if (elevatorkP.hasChanged(hashCode()) || elevatorkI.hasChanged(hashCode()) || elevatorkD.hasChanged(hashCode())) {
       trapezoidPID.setPID(elevatorkP.get(), elevatorkI.get(), elevatorkD.get());
-
-      motor1Config.closedLoop.pid(elevatorkP.get(), elevatorkI.get(), elevatorkD.get());
-      motor2Config.closedLoop.pid(elevatorkP.get(), elevatorkI.get(), elevatorkD.get());
-      elevatorMotor1.configureAsync(motor1Config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-      elevatorMotor2.configureAsync(motor2Config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
     //Update the elevator feedforward if the constants have changed
@@ -145,8 +137,7 @@ public class Elevator extends SubsystemBase {
 
     //Update PID controller
     if (!elevatorStopped) {
-      //pid_controller.setReference(setpointHeight, ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0, elevatorFeedforward.calculate(relativeEncoder.getVelocity()));
-      setElevatorVoltage(trapezoidPID.calculate(setpointHeight) + elevatorFeedforward.calculate(trapezoidPID.getSetpoint().velocity));
+      elevatorMotor1.setVoltage(trapezoidPID.calculate(setpointHeight) + elevatorFeedforward.calculate(trapezoidPID.getSetpoint().velocity));
     }
   }
 
@@ -175,7 +166,7 @@ public class Elevator extends SubsystemBase {
   //Update the setpoint for the elevator
   public void setDesiredHeight(double height) {
     elevatorStopped = false;
-    setpointHeight = MathUtil.clamp(height, 0, 2);
+    setpointHeight = MathUtil.clamp(height, 0, 1.5);
     trapezoidPID.setGoal(setpointHeight);
   }
 
@@ -188,5 +179,8 @@ public class Elevator extends SubsystemBase {
     builder.setSmartDashboardType("Elevator");
     builder.addDoubleProperty("Elevator Height", this::getElevatorHeight, null);
     builder.addDoubleProperty("Elevator Setpoint", () -> {return setpointHeight;}, null);
+
+    builder.addDoubleProperty("Elevator FF voltage", () -> { return elevatorFeedforward.calculate(trapezoidPID.getSetpoint().velocity); }, null);
+    builder.addDoubleProperty("Elevator PID voltage", () -> { return trapezoidPID.calculate(setpointHeight); }, null);
   }
 }

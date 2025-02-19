@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.arm;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -21,8 +21,11 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.utility.TunableNumber;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+
+import au.grapplerobotics.LaserCan;
 
 public class Arm extends SubsystemBase {
   /** Creates a new Arm. */
@@ -33,6 +36,8 @@ public class Arm extends SubsystemBase {
   
   //Arm absolute encoder
   private final AbsoluteEncoder pivotAbsoluteEncoder;
+
+  private LaserCan laserCAN;
 
   //Arm PID constants
   private static final TunableNumber pivotkP = new TunableNumber("Arm/armkP");
@@ -79,8 +84,9 @@ public class Arm extends SubsystemBase {
   //Arm constructor
   public Arm() {
     //Initialize motor
-    pivotMotor = new SparkMax(17, MotorType.kBrushless);
-    intakeMotor = new SparkMax(18, MotorType.kBrushless);
+    pivotMotor = new SparkMax(ArmConstants.pivotCANID, MotorType.kBrushless);
+    intakeMotor = new SparkMax(ArmConstants.intakeCANID, MotorType.kBrushless);
+    laserCAN = new LaserCan(ArmConstants.laserCANID);
     
     //Initialize arm absolute encoder
     pivotAbsoluteEncoder = pivotMotor.getAbsoluteEncoder();
@@ -153,9 +159,16 @@ public class Arm extends SubsystemBase {
     return pivotAbsoluteEncoder.getPosition();
   }
 
+  public double getLaserCANMeasurement() {
+    LaserCan.Measurement measurement = laserCAN.getMeasurement();
+    if (measurement == null || measurement.status != LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) return -1.0;
+    return laserCAN.getMeasurement().distance_mm;
+  }
+
   public void initSendable (SendableBuilder builder) {
     builder.setSmartDashboardType("Arm");
     builder.addDoubleProperty("CurrentAngle", this::getCurrentPivotAngle, null);
     builder.addDoubleProperty("SetpointAngle", () -> {return this.pivotAngleSetpoint;}, null);
+    builder.addDoubleProperty("laserCAN_distance", this::getLaserCANMeasurement, null);
   }
 }
