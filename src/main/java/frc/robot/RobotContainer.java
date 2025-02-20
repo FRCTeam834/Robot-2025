@@ -68,7 +68,7 @@ public class RobotContainer {
     // ));
     // driveTrain.configureAutoBuilder(estimator);
 
-    elevator.setDefaultCommand(new TuneElevator(elevator, OI::getXboxRightJoystickY));
+    elevator.setDefaultCommand(new TuneElevator(elevator));
 
     //configureBindings();
     configureTestingBindings();
@@ -76,7 +76,6 @@ public class RobotContainer {
 
   private void configureTestingBindings() {
     leftJoystick10.whileTrue(new testElevatorPID(elevator));
-
   }
 
   private void configureBindings() {

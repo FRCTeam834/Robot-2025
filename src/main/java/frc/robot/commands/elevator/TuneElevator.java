@@ -9,34 +9,39 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.OI;
 import frc.robot.subsystems.elevator.Elevator;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class TuneElevator extends Command {
   /** Creates a new TuneElevator. */
   private final Elevator elevator;
-  private final DoubleSupplier rightJoystickY;
 
   private double voltageSetpoint = 0;
   
-  public TuneElevator(Elevator elevator, DoubleSupplier rightJoystickY) {
+  public TuneElevator(Elevator elevator) {
     this.elevator = elevator;
-    this.rightJoystickY = rightJoystickY;
-
     addRequirements(elevator);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    voltageSetpoint = 0;
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    voltageSetpoint += rightJoystickY.getAsDouble();
+    double joystickInput = OI.xbox.getRightY();
+    if (Math.abs(joystickInput) < 0.1) {
+      joystickInput = 0;
+    }
+
+    voltageSetpoint += joystickInput * 0.05;
 
     SmartDashboard.putNumber("Applied Static Voltage", voltageSetpoint);
-    elevator.setElevatorVoltage(MathUtil.clamp(voltageSetpoint, -12, 12));
+    elevator.setElevatorVoltage(MathUtil.clamp(voltageSetpoint, -4, 4));
   }
 
   // Called once the command ends or is interrupted.
