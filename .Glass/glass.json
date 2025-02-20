@@ -2,16 +2,7 @@
   "NetworkTables": {
     "transitory": {
       "SmartDashboard": {
-        "SwerveModule 2": {
-          "open": true
-        },
-        "SwerveModule 4": {
-          "open": true
-        },
-        "SwerveModule 6": {
-          "open": true
-        },
-        "SwerveModule 8": {
+        "Elevator": {
           "open": true
         },
         "open": true
@@ -116,6 +107,42 @@
                 1.0
               ],
               "id": "NT:/SmartDashboard/SwerveModule 8/Setpoint Angle"
+            }
+          ]
+        }
+      ],
+      "window": {
+        "visible": false
+      }
+    },
+    "Plot <1>": {
+      "plots": [
+        {
+          "backgroundColor": [
+            0.0,
+            0.0,
+            0.0,
+            0.8500000238418579
+          ],
+          "height": 1278,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Elevator/Position setpoint"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Elevator/Elevator Height"
             }
           ]
         }

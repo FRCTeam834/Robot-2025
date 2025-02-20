@@ -56,7 +56,7 @@ public class Elevator extends SubsystemBase {
 
   //PID controller
   private ProfiledPIDController trapezoidPID = new ProfiledPIDController(0.0, 0.0, 0.0,
-      new TrapezoidProfile.Constraints(1.75, 0.75)
+      new TrapezoidProfile.Constraints(1, 1.5)
   );
 
   //Motor configurations
@@ -67,12 +67,12 @@ public class Elevator extends SubsystemBase {
   private boolean elevatorStopped = true;
 
   static {
-    elevatorkP.initDefault(5);
+    elevatorkP.initDefault(10);
     elevatorkI.initDefault(0);
     elevatorkD.initDefault(0);
 
-    elevatorkS.initDefault(0.0); 
-    elevatorkG.initDefault(0.8);
+    elevatorkS.initDefault(0.45); 
+    elevatorkG.initDefault(0.36);
     elevatorkV.initDefault(0.0); 
     elevatorkA.initDefault(0.0);
   }
@@ -94,8 +94,8 @@ public class Elevator extends SubsystemBase {
 
     //Configure motor encoders
     motor1Config.encoder
-    .positionConversionFactor((Math.PI * Units.inchesToMeters(1.5)) / 5) // Add gearing
-    .velocityConversionFactor(((Math.PI * Units.inchesToMeters(1.5)) / 5) / 60);
+    .positionConversionFactor(2 * (Math.PI * Units.inchesToMeters(1.5)) / 5) 
+    .velocityConversionFactor(2 * ((Math.PI * Units.inchesToMeters(1.5)) / 5) / 60);
 
     //Configure PID controller
     motor1Config.closedLoop
@@ -137,7 +137,7 @@ public class Elevator extends SubsystemBase {
 
     //Update PID controller
     if (!elevatorStopped) {
-      elevatorMotor1.setVoltage(trapezoidPID.calculate(setpointHeight) + elevatorFeedforward.calculate(trapezoidPID.getSetpoint().velocity));
+      elevatorMotor1.setVoltage(trapezoidPID.calculate(getElevatorHeight()) + elevatorFeedforward.calculate(trapezoidPID.getSetpoint().velocity));
     }
   }
 
@@ -167,7 +167,7 @@ public class Elevator extends SubsystemBase {
   public void setDesiredHeight(double height) {
     elevatorStopped = false;
     setpointHeight = MathUtil.clamp(height, 0, 1.5);
-    trapezoidPID.setGoal(setpointHeight);
+    trapezoidPID.setGoal(new TrapezoidProfile.State(setpointHeight, 0.0));
   }
 
   public boolean isAtSetpoint() {
@@ -181,6 +181,8 @@ public class Elevator extends SubsystemBase {
     builder.addDoubleProperty("Elevator Setpoint", () -> {return setpointHeight;}, null);
 
     builder.addDoubleProperty("Elevator FF voltage", () -> { return elevatorFeedforward.calculate(trapezoidPID.getSetpoint().velocity); }, null);
-    builder.addDoubleProperty("Elevator PID voltage", () -> { return trapezoidPID.calculate(setpointHeight); }, null);
+    builder.addDoubleProperty("Elevator PID voltage", () -> { return trapezoidPID.calculate(getElevatorHeight()); }, null);
+    builder.addDoubleProperty("PID+FF Output", () -> { return (trapezoidPID.calculate(getElevatorHeight()) + elevatorFeedforward.calculate(trapezoidPID.getSetpoint().velocity)); }, null);
+    builder.addDoubleProperty("Position setpoint", () -> { return trapezoidPID.getSetpoint().position; }, null);
   }
 }

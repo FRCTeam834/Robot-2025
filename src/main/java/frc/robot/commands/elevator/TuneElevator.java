@@ -33,10 +33,10 @@ public class TuneElevator extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    voltageSetpoint += MathUtil.clamp(rightJoystickY.getAsDouble() * 0.1, -12, 12);
+    voltageSetpoint += rightJoystickY.getAsDouble();
 
     SmartDashboard.putNumber("Applied Static Voltage", voltageSetpoint);
-    elevator.setElevatorVoltage(voltageSetpoint);
+    elevator.setElevatorVoltage(MathUtil.clamp(voltageSetpoint, -12, 12));
   }
 
   // Called once the command ends or is interrupted.

@@ -33,6 +33,7 @@ public class testElevatorPID extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    elevator.setDesiredHeight(0.0);
     elevator.stop();
   }
 
