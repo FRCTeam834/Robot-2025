@@ -7,6 +7,7 @@ package frc.robot.subsystems.arm;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -76,8 +77,8 @@ public class Arm extends SubsystemBase {
     pivotkI.initDefault(0);
     pivotkD.initDefault(0);
 
-    pivotkS.initDefault(0);
-    pivotkG.initDefault(0);
+    pivotkS.initDefault(0.4);
+    pivotkG.initDefault(1.22);
     pivotkV.initDefault(0);
   }
 
@@ -96,19 +97,18 @@ public class Arm extends SubsystemBase {
     .idleMode(IdleMode.kBrake)
     .smartCurrentLimit(40)
     .voltageCompensation(12)
-    .inverted(false);
+    .inverted(true);
+
+    pivotMotorConfig.absoluteEncoder
+    .positionConversionFactor(2 * Math.PI)
+    .velocityConversionFactor(2 * Math.PI / 60)
+    .zeroOffset(ArmConstants.PIVOT_ZERO_OFFSET);
 
     intakeMotorConfig
     .idleMode(IdleMode.kBrake)
     .smartCurrentLimit(40)
     .voltageCompensation(12)
     .inverted(false);
-
-    pivotEncoderConfig
-    .positionConversionFactor(2 * Math.PI)
-    .velocityConversionFactor(2 * Math.PI / 60)
-    .zeroOffset(0)
-    .setSparkMaxDataPortConfig(); //revolutions
 
     //Apply configurations
     pivotMotor.configure(pivotMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -148,11 +148,15 @@ public class Arm extends SubsystemBase {
   //Update the arm angle setpoint
   public void setDesiredPivotAngle (double angle) {
     armStopped = false;
-    pivotAngleSetpoint = MathUtil.clamp(angle, 0, Math.PI);
+    pivotAngleSetpoint = MathUtil.clamp(angle, 0, 0.975);
   }
 
   public void setIntakeVoltage (double volts) {
     intakeMotor.setVoltage(volts);
+  }
+
+  public void setPivotVoltage(double volts) {
+    pivotMotor.setVoltage(volts);
   }
 
   public double getCurrentPivotAngle() {
@@ -162,7 +166,7 @@ public class Arm extends SubsystemBase {
   public double getLaserCANMeasurement() {
     LaserCan.Measurement measurement = laserCAN.getMeasurement();
     if (measurement == null || measurement.status != LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) return -1.0;
-    return laserCAN.getMeasurement().distance_mm;
+    return measurement.distance_mm;
   }
 
   public void initSendable (SendableBuilder builder) {

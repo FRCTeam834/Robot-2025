@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.SwerveConstants;
+import frc.robot.commands.arm.TuneArm;
 import frc.robot.commands.drivetrain.DriveToPose;
 import frc.robot.commands.drivetrain.DriveWithSpeeds;
 import frc.robot.commands.drivetrain.RotateToPathTarget;
@@ -68,7 +69,8 @@ public class RobotContainer {
     // ));
     // driveTrain.configureAutoBuilder(estimator);
 
-    elevator.setDefaultCommand(new TuneElevator(elevator));
+    //elevator.setDefaultCommand(new TuneElevator(elevator));
+    arm.setDefaultCommand(new TuneArm(arm));
 
     //configureBindings();
     configureTestingBindings();

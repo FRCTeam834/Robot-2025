@@ -68,6 +68,9 @@ public class Constants {
         public static final int laserCANID = 30;
         public static final int pivotCANID = 12;
         public static final int intakeCANID = 13;
+
+        public static final double PIVOT_ZERO_OFFSET = 0.192;
+        public static final double MAXIMUM_ANGLE = 0.975;
     }
 
     public static class ElevatorConstants {
@@ -77,6 +80,10 @@ public class Constants {
 
     public static class ClimberConstants {
         public static final int climberMotorID = 15;
+    }
+
+    public static class FunnelConstants {
+        public static final int funnelMotorID = 14;
     }
 
     public static enum SCORING_POSES_BLUE {
