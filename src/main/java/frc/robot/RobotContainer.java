@@ -14,11 +14,13 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.SwerveConstants;
+import frc.robot.commands.arm.TestArmPID;
 import frc.robot.commands.arm.TuneArm;
 import frc.robot.commands.drivetrain.DriveToPose;
 import frc.robot.commands.drivetrain.DriveWithSpeeds;
@@ -40,6 +42,11 @@ public class RobotContainer {
   JoystickButton leftJoystick11 = new JoystickButton(OI.leftJoystick, 11);
   JoystickButton leftJoystick7 = new JoystickButton(OI.leftJoystick, 7);
   JoystickButton leftJoystick6 = new JoystickButton(OI.leftJoystick, 6);
+
+  JoystickButton aButton = new JoystickButton(OI.xbox, 1);
+  JoystickButton bButton = new JoystickButton(OI.xbox, 2);
+  JoystickButton xButton = new JoystickButton(OI.xbox, 3);
+  JoystickButton yButton = new JoystickButton(OI.xbox, 4);
 
   private static SwerveModule FL = new SwerveModule(3, 2, 20, SwerveConstants.CAN_CODER_OFFSET_FL, false);
   private static SwerveModule FR = new SwerveModule(5, 4, 21, SwerveConstants.CAN_CODER_OFFSET_FR, true);
@@ -78,7 +85,10 @@ public class RobotContainer {
   }
 
   private void configureTestingBindings() {
-    leftJoystick10.whileTrue(new testElevatorPID(elevator));
+    aButton.onTrue(new TestArmPID(arm, -0.3));
+    bButton.onTrue(new TestArmPID(arm, -0.5));
+    xButton.onTrue(new TestArmPID(arm, -0.7));
+    yButton.onTrue(new TestArmPID(arm, -0.1));
   }
 
   private void configureBindings() {
