@@ -51,7 +51,7 @@ public class Funnel extends SubsystemBase {
     motorEncoder.setPosition(0.0);
   }
 
-  public double getCurrentAngle() {
+  public double getCurrentRotorAngle() {
     return motorEncoder.getPosition();
   }
 

@@ -38,7 +38,7 @@ public class TuneElevator extends Command {
       joystickInput = 0;
     }
 
-    voltageSetpoint += joystickInput * 0.005;
+    voltageSetpoint -= joystickInput * 0.005;
 
     SmartDashboard.putNumber("Applied Static Voltage", voltageSetpoint);
     elevator.setElevatorVoltage(MathUtil.clamp(voltageSetpoint, -10, 10));

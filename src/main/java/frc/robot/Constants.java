@@ -71,11 +71,19 @@ public class Constants {
 
         public static final double PIVOT_ZERO_OFFSET = 0.192;
         public static final double MAXIMUM_ANGLE = 0.975;
+
+
     }
 
     public static class ElevatorConstants {
         public static final int elevatorMotor1_ID = 10;
         public static final int elevatorMotor2_ID = 11;
+
+        public static final double MAXMIMUM_HEIGHT = 1.4;
+        public static final double LVL1_HEIGHT = 0.0;
+        public static final double LVL2_HEIGHT = 0.0;
+        public static final double LVL3_HEIGHT = 0.0;
+        public static final double LVL4_HEIGHT = 0.0;
     }
 
     public static class ClimberConstants {
@@ -110,8 +118,55 @@ public class Constants {
     }
 
     public static enum SCORING_POSES_RED {
+        EIGHT_LEFT (new Pose2d(5.291 + 8.57, 5.082, Rotation2d.fromDegrees(-120))),
+        EIGHT_RIGHT (new Pose2d(4.995 + 8.57, 5.248, Rotation2d.fromDegrees(-120))),
+        NINE_LEFT (new Pose2d(3.978 + 8.57, 5.241, Rotation2d.fromDegrees(-60))),
+        NINE_RIGHT (new Pose2d(3.689 + 8.57, 5.072, Rotation2d.fromDegrees(-60))),
+        TEN_LEFT (new Pose2d(3.180 + 8.57, 4.192, Rotation2d.fromDegrees(0))),
+        TEN_RIGHT (new Pose2d(3.180 + 8.57, 3.860, Rotation2d.fromDegrees(0))),
+        ELEVEN_LEFT (new Pose2d(3.688 + 8.57, 2.978, Rotation2d.fromDegrees(60))),
+        ELEVEN_RIGHT (new Pose2d(3.979 + 8.57, 2.815, Rotation2d.fromDegrees(60))),
+        SIX_LEFT (new Pose2d(4.994 + 8.57, 2.814, Rotation2d.fromDegrees(120))),
+        SIX_RIGHT (new Pose2d(5.278 + 8.57, 2.979, Rotation2d.fromDegrees(120))),
+        SEVEN_LEFT (new Pose2d(5.790 + 8.57, 3.855, Rotation2d.fromDegrees(180))), 
+        SEVEN_RIGHT (new Pose2d(5.790 + 8.57, 4.190, Rotation2d.fromDegrees(180)));
 
+        private final Pose2d pose;
+        SCORING_POSES_RED(Pose2d pose) { 
+            this.pose = pose;
+        }
+
+        public Pose2d getPose() { return pose; }
     }
+
+    public static final Pose2d[] scoringPoses = {
+        new Pose2d(5.291, 5.082, Rotation2d.fromDegrees(-120)),
+        new Pose2d(4.995, 5.248, Rotation2d.fromDegrees(-120)),
+        new Pose2d(3.978, 5.241, Rotation2d.fromDegrees(-60)),
+        new Pose2d(3.689, 5.072, Rotation2d.fromDegrees(-60)),
+        new Pose2d(3.180, 4.192, Rotation2d.fromDegrees(0)),
+        new Pose2d(3.180, 3.860, Rotation2d.fromDegrees(0)),
+        new Pose2d(3.688, 2.978, Rotation2d.fromDegrees(60)),
+        new Pose2d(3.979, 2.815, Rotation2d.fromDegrees(60)),
+        new Pose2d(4.994, 2.814, Rotation2d.fromDegrees(120)),
+        new Pose2d(5.278, 2.979, Rotation2d.fromDegrees(120)),
+        new Pose2d(5.790, 3.855, Rotation2d.fromDegrees(180)), 
+        new Pose2d(5.790, 4.190, Rotation2d.fromDegrees(180)),
+        new Pose2d(5.291 + 8.57, 5.082, Rotation2d.fromDegrees(-120)),
+        new Pose2d(4.995 + 8.57, 5.248, Rotation2d.fromDegrees(-120)),
+        new Pose2d(3.978 + 8.57, 5.241, Rotation2d.fromDegrees(-60)),
+        new Pose2d(3.689 + 8.57, 5.072, Rotation2d.fromDegrees(-60)),
+        new Pose2d(3.180 + 8.57, 4.192, Rotation2d.fromDegrees(0)),
+        new Pose2d(3.180 + 8.57, 3.860, Rotation2d.fromDegrees(0)),
+        new Pose2d(3.688 + 8.57, 2.978, Rotation2d.fromDegrees(60)),
+        new Pose2d(3.979 + 8.57, 2.815, Rotation2d.fromDegrees(60)),
+        new Pose2d(4.994 + 8.57, 2.814, Rotation2d.fromDegrees(120)),
+        new Pose2d(5.278 + 8.57, 2.979, Rotation2d.fromDegrees(120)),
+        new Pose2d(5.790 + 8.57, 3.855, Rotation2d.fromDegrees(180)), 
+        new Pose2d(5.790 + 8.57, 4.190, Rotation2d.fromDegrees(180))
+    };
+
+    
 
     public static enum LimelightStrategies {
         ALL_ESTIMATES,

@@ -4,6 +4,8 @@
 
 package frc.robot.commands.drivetrain;
 
+import java.util.Arrays;
+
 import com.fasterxml.jackson.databind.node.POJONode;
 
 import edu.wpi.first.math.controller.HolonomicDriveController;
@@ -16,6 +18,8 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants;
@@ -36,11 +40,10 @@ public class AutoDriveWithSpeeds extends Command {
   );
 
   private double desiredLinearVelocity;
+  private Pose2d closestScoringPose;
 
   private double joystickTolerance = 0.15;
   private boolean doesCalculateScoringPosition = true;
-
-  private Pose2d closestScoringPose;
 
   public AutoDriveWithSpeeds(DriveTrain driveTrain, PoseEstimator poseEstimator) {
     this.driveTrain = driveTrain;
@@ -66,18 +69,19 @@ public class AutoDriveWithSpeeds extends Command {
 
     // While matt is manually driving robot recalculate most optimal scoring position
     if (doesCalculateScoringPosition) {
+
       double bestCost = Double.MAX_VALUE;
+      for(Pose2d scoringPose : Constants.scoringPoses) {
+        double distanceError = robotPose.getTranslation().getDistance(scoringPose.getTranslation());
+        double angleError = Math.abs(robotPose.getRotation().minus(scoringPose.getRotation()).getRadians());
 
-      for(Constants.SCORING_POSES_BLUE scoringPose : Constants.SCORING_POSES_BLUE.values()) {
-        double distanceError = robotPose.getTranslation().getDistance(scoringPose.getPose().getTranslation());
-        double angleError = Math.abs(robotPose.getRotation().minus(scoringPose.getPose().getRotation()).getDegrees());
-
-        double cost = (distanceError * 0.5 + angleError * 5); // angleError more important than distanceError
+        double cost = (distanceError * 0.5 + angleError * 5);
         if (cost < bestCost) {
           bestCost = cost;
-          closestScoringPose = scoringPose.getPose(); 
+          closestScoringPose = scoringPose; 
         }
       }
+      
     }
 
     if(Math.abs(rightJoystickx) > joystickTolerance || Math.abs(rightJoysticky) > joystickTolerance || Math.abs(leftJoystickx) > joystickTolerance) {

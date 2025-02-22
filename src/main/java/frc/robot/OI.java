@@ -8,6 +8,7 @@ import frc.robot.utility.UnitQuad;
 public class OI {
     public static final Joystick leftJoystick = new Joystick(0);
     public static final Joystick rightJoystick = new Joystick(1);
+    public static final Joystick numpad = new Joystick(3);
     public static final XboxController xbox = new XboxController(2);
 
     public static final double flightJoystickDeadzone = 0.05;

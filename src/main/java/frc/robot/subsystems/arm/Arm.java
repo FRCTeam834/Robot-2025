@@ -133,8 +133,8 @@ public class Arm extends SubsystemBase {
 
     //Set the position of the arm motor
     if (!armStopped) {
-      pivotMotor.setVoltage(trapezoidPID.calculate(pivotAngleSetpoint) + 
-      armFeedforward.calculate(trapezoidPID.getSetpoint().position, trapezoidPID.getSetpoint().velocity));
+      pivotMotor.setVoltage(trapezoidPID.calculate(getCurrentPivotAngle()) + 
+      armFeedforward.calculate(trapezoidPID.getSetpoint().position + (Math.PI/2), trapezoidPID.getSetpoint().velocity));
     }
   }
 
@@ -148,7 +148,7 @@ public class Arm extends SubsystemBase {
   //Update the arm angle setpoint
   public void setDesiredPivotAngle (double angle) {
     armStopped = false;
-    pivotAngleSetpoint = MathUtil.clamp(angle, 0, 0.975);
+    pivotAngleSetpoint = MathUtil.clamp(angle, 0, ArmConstants.MAXIMUM_ANGLE);
   }
 
   public void setIntakeVoltage (double volts) {
@@ -157,6 +157,14 @@ public class Arm extends SubsystemBase {
 
   public void setPivotVoltage(double volts) {
     pivotMotor.setVoltage(volts);
+  }
+
+  public void stowArm() {
+    setDesiredPivotAngle(0.0);
+  }
+
+  public void homeArm() {
+    setDesiredPivotAngle(0.3);
   }
 
   public double getCurrentPivotAngle() {

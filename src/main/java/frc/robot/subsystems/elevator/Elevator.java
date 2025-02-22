@@ -124,6 +124,11 @@ public class Elevator extends SubsystemBase {
   //Called once per scheduler run
   @Override
   public void periodic() {
+
+    // temp while tuning
+    if(getElevatorHeight() > 1.3 && elevatorMotor1.getAppliedOutput() > 0) {
+      stop();
+    }
     
     //Update the elevator PID if the constants have changed
     if (elevatorkP.hasChanged(hashCode()) || elevatorkI.hasChanged(hashCode()) || elevatorkD.hasChanged(hashCode())) {
@@ -163,10 +168,9 @@ public class Elevator extends SubsystemBase {
     elevatorMotor1.setVoltage(0.0); //Stop motors
   }
 
-  //Update the setpoint for the elevator
   public void setDesiredHeight(double height) {
     elevatorStopped = false;
-    setpointHeight = MathUtil.clamp(height, 0, 1.5);
+    setpointHeight = MathUtil.clamp(height, 0, ElevatorConstants.MAXMIMUM_HEIGHT);
     trapezoidPID.setGoal(new TrapezoidProfile.State(setpointHeight, 0.0));
   }
 
