@@ -71,10 +71,10 @@ public class Elevator extends SubsystemBase {
     elevatorkI.initDefault(0);
     elevatorkD.initDefault(0);
 
-    elevatorkS.initDefault(0.45); 
-    elevatorkG.initDefault(0.36);
-    elevatorkV.initDefault(0.0); 
-    elevatorkA.initDefault(0.0);
+    elevatorkS.initDefault(0.0); 
+    elevatorkG.initDefault(0.0);
+    elevatorkV.initDefault(2.15); 
+    elevatorkA.initDefault(0.05);
   }
 
   //Elevator constructor
@@ -94,8 +94,8 @@ public class Elevator extends SubsystemBase {
 
     //Configure motor encoders
     motor1Config.encoder
-    .positionConversionFactor(2 * (Math.PI * Units.inchesToMeters(1.5)) / 5) 
-    .velocityConversionFactor(2 * ((Math.PI * Units.inchesToMeters(1.5)) / 5) / 60);
+    .positionConversionFactor(2 * (Math.PI * Units.inchesToMeters(1.75)) / 5) 
+    .velocityConversionFactor(2 * ((Math.PI * Units.inchesToMeters(1.75)) / 5) / 60);
 
     //Configure PID controller
     motor1Config.closedLoop
@@ -126,7 +126,7 @@ public class Elevator extends SubsystemBase {
   public void periodic() {
 
     // temp while tuning
-    if(getElevatorHeight() > 1.3 && elevatorMotor1.getAppliedOutput() > 0) {
+    if(getElevatorHeight() > 1 && Math.abs(elevatorMotor1.getAppliedOutput()) > 0) {
       stop();
     }
     

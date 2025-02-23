@@ -40,7 +40,7 @@ public class TuneArm extends Command {
     voltageSetpoint -= joystickInput * 0.005;
 
     SmartDashboard.putNumber("Applied Static Voltage", voltageSetpoint);
-    arm.setPivotVoltage(MathUtil.clamp(voltageSetpoint, -5, 5));
+    arm.setPivotVoltage(MathUtil.clamp(voltageSetpoint, -10, 10));
   }
 
   // Called once the command ends or is interrupted.

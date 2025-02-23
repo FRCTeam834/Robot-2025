@@ -69,8 +69,8 @@ public class Constants {
         public static final int pivotCANID = 12;
         public static final int intakeCANID = 13;
 
-        public static final double PIVOT_ZERO_OFFSET = 0.192;
-        public static final double MAXIMUM_ANGLE = 0.975;
+        public static final double PIVOT_ZERO_OFFSET = 0.2047741;
+        public static final double MAXIMUM_ANGLE = -0.975;
 
 
     }
@@ -79,7 +79,7 @@ public class Constants {
         public static final int elevatorMotor1_ID = 10;
         public static final int elevatorMotor2_ID = 11;
 
-        public static final double MAXMIMUM_HEIGHT = 1.4;
+        public static final double MAXMIMUM_HEIGHT = 1.16;
         public static final double LVL1_HEIGHT = 0.0;
         public static final double LVL2_HEIGHT = 0.0;
         public static final double LVL3_HEIGHT = 0.0;

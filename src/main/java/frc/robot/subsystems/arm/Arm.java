@@ -49,13 +49,14 @@ public class Arm extends SubsystemBase {
   private static final TunableNumber pivotkS = new TunableNumber("Arm/armkS"); //static friction
   private static final TunableNumber pivotkG = new TunableNumber("Arm/armkG"); //gravity
   private static final TunableNumber pivotkV = new TunableNumber("Arm/armkV"); //velocity
+  private static final TunableNumber pivotkA = new TunableNumber("Arm/armkA");
 
   //Initialize arm feedforward
   private ArmFeedforward armFeedforward = new ArmFeedforward(0.0, 0.0, 0.0);
   
   //Arm PID controller
   private ProfiledPIDController trapezoidPID = new ProfiledPIDController(0, 0, 0, 
-    new TrapezoidProfile.Constraints(Units.degreesToRadians(180), Units.degreesToRadians(180))
+    new TrapezoidProfile.Constraints(Units.degreesToRadians(70), Units.degreesToRadians(70))
   );
 
   //Booleans for if the arm is stopped
@@ -68,7 +69,6 @@ public class Arm extends SubsystemBase {
   //Configuration for the motors
   private SparkMaxConfig pivotMotorConfig = new SparkMaxConfig();
   private SparkMaxConfig intakeMotorConfig = new SparkMaxConfig();
-  private AbsoluteEncoderConfig pivotEncoderConfig = new AbsoluteEncoderConfig();
  
   //Arm PID and feedforward constants
   static {
@@ -77,9 +77,10 @@ public class Arm extends SubsystemBase {
     pivotkI.initDefault(0);
     pivotkD.initDefault(0);
 
-    pivotkS.initDefault(0.4);
-    pivotkG.initDefault(1.22);
-    pivotkV.initDefault(0);
+    pivotkS.initDefault(0.66);
+    pivotkG.initDefault(0.35); //0.55
+    pivotkV.initDefault(2.3); // 1.6
+    pivotkA.initDefault(0.04);
   }
 
   //Arm constructor
@@ -102,7 +103,7 @@ public class Arm extends SubsystemBase {
     pivotMotorConfig.absoluteEncoder
     .positionConversionFactor(2 * Math.PI)
     .velocityConversionFactor(2 * Math.PI / 60)
-    .zeroOffset(ArmConstants.PIVOT_ZERO_OFFSET);
+    .inverted(true);
 
     intakeMotorConfig
     .idleMode(IdleMode.kBrake)
@@ -119,16 +120,15 @@ public class Arm extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-    
+    // This method will be called once per scheduler run    
     //Update the arm PID if the constants have changed
     if (pivotkP.hasChanged(hashCode()) || pivotkI.hasChanged(hashCode()) || pivotkD.hasChanged(hashCode())) {
       trapezoidPID.setPID(pivotkP.get(), pivotkI.get(), pivotkD.get());
     }
 
     //Update the arm feedforward if the constants have changed
-    if (pivotkS.hasChanged(hashCode()) || pivotkG.hasChanged(hashCode()) || pivotkV.hasChanged(hashCode())) {
-      armFeedforward = new ArmFeedforward(pivotkS.get(), pivotkG.get(), pivotkV.get());
+    if (pivotkS.hasChanged(hashCode()) || pivotkG.hasChanged(hashCode()) || pivotkV.hasChanged(hashCode()) || pivotkA.hasChanged(hashCode())) {
+      armFeedforward = new ArmFeedforward(pivotkS.get(), pivotkG.get(), pivotkV.get(), pivotkA.get());
     }
 
     //Set the position of the arm motor
@@ -148,7 +148,9 @@ public class Arm extends SubsystemBase {
   //Update the arm angle setpoint
   public void setDesiredPivotAngle (double angle) {
     armStopped = false;
-    pivotAngleSetpoint = MathUtil.clamp(angle, 0, ArmConstants.MAXIMUM_ANGLE);
+    pivotAngleSetpoint = MathUtil.clamp(angle, ArmConstants.MAXIMUM_ANGLE, 0);
+    trapezoidPID.reset(getCurrentPivotAngle());
+    trapezoidPID.setGoal(new TrapezoidProfile.State(pivotAngleSetpoint, 0.0));
   }
 
   public void setIntakeVoltage (double volts) {
@@ -168,7 +170,7 @@ public class Arm extends SubsystemBase {
   }
 
   public double getCurrentPivotAngle() {
-    return pivotAbsoluteEncoder.getPosition();
+    return MathUtil.angleModulus(pivotAbsoluteEncoder.getPosition());
   }
 
   public double getLaserCANMeasurement() {
@@ -182,5 +184,11 @@ public class Arm extends SubsystemBase {
     builder.addDoubleProperty("CurrentAngle", this::getCurrentPivotAngle, null);
     builder.addDoubleProperty("SetpointAngle", () -> {return this.pivotAngleSetpoint;}, null);
     builder.addDoubleProperty("laserCAN_distance", this::getLaserCANMeasurement, null);
+
+    builder.addDoubleProperty("PIDSetpoint_Position", () -> { return trapezoidPID.getSetpoint().position; }, null);
+    builder.addDoubleProperty("PIDSetpoint_Velocity", () -> { return trapezoidPID.getSetpoint().velocity; }, null);
+
+    builder.addDoubleProperty("PIDVoltage", () -> { return trapezoidPID.calculate(getCurrentPivotAngle()); }, null);
+    builder.addDoubleProperty("FF Voltage", () -> { return armFeedforward.calculate(trapezoidPID.getSetpoint().position + (Math.PI/2), trapezoidPID.getSetpoint().velocity); }, null);
   }
 }
