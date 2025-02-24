@@ -85,10 +85,15 @@ public class RobotContainer {
   }
 
   private void configureTestingBindings() {
-    aButton.onTrue(new TestArmPID(arm, -0.3));
-    bButton.onTrue(new TestArmPID(arm, -0.5));
-    xButton.onTrue(new TestArmPID(arm, -0.7));
-    yButton.onTrue(new TestArmPID(arm, -0.1));
+    // aButton.onTrue(new TestArmPID(arm, -0.3));
+    // bButton.onTrue(new TestArmPID(arm, -0.5));
+    // xButton.onTrue(new TestArmPID(arm, -0.7));
+    // yButton.onTrue(new TestArmPID(arm, -0.1));
+
+    aButton.onTrue(new testElevatorPID(elevator, 0.2));
+    bButton.onTrue(new testElevatorPID(elevator, 0.5));
+    xButton.onTrue(new testElevatorPID(elevator, 0.8));
+    yButton.onTrue(new testElevatorPID(elevator, 1));
   }
 
   private void configureBindings() {

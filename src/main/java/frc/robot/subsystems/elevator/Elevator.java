@@ -56,7 +56,7 @@ public class Elevator extends SubsystemBase {
 
   //PID controller
   private ProfiledPIDController trapezoidPID = new ProfiledPIDController(0.0, 0.0, 0.0,
-      new TrapezoidProfile.Constraints(1, 1.5)
+      new TrapezoidProfile.Constraints(1, 1)
   );
 
   //Motor configurations
@@ -71,8 +71,8 @@ public class Elevator extends SubsystemBase {
     elevatorkI.initDefault(0);
     elevatorkD.initDefault(0);
 
-    elevatorkS.initDefault(0.0); 
-    elevatorkG.initDefault(0.0);
+    elevatorkS.initDefault(0.584); 
+    elevatorkG.initDefault(0.366);
     elevatorkV.initDefault(2.15); 
     elevatorkA.initDefault(0.05);
   }

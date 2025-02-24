@@ -12,29 +12,29 @@ public class testElevatorPID extends Command {
   /** Creates a new testPID. */
 
   private final Elevator elevator;
+  private final double setpointHeight;
 
-  public testElevatorPID(Elevator elevator) {
+  public testElevatorPID(Elevator elevator, double setpointHeight) {
     this.elevator = elevator;
+    this.setpointHeight = setpointHeight;
     addRequirements(elevator);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    elevator.stop();
+    elevator.setDesiredHeight(setpointHeight);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    elevator.setDesiredHeight(0.4);
+
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    elevator.setDesiredHeight(0.0);
-    elevator.stop();
   }
 
   // Returns true when the command should end.
