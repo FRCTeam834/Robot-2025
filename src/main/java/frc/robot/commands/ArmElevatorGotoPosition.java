@@ -72,7 +72,7 @@ public class ArmElevatorGotoPosition extends SequentialCommandGroup {
         elevator.setDesiredHeight(desiredElevatorHeight);
       });
     } else if (
-      (!currentElevatorCollides && desiredElevatorCollides && currentArmCollides && !currentArmCollides) // (low, in) -> (high, out)
+      (!currentElevatorCollides && desiredElevatorCollides && currentArmCollides && !desiredArmCollides) // (low, in) -> (high, out)
     ) {
       // move arm first
       return new SequentialCommandGroup(
@@ -87,7 +87,7 @@ public class ArmElevatorGotoPosition extends SequentialCommandGroup {
         })
       );
     } else if (
-      (currentElevatorCollides && !desiredElevatorCollides && !currentArmCollides && currentArmCollides) // (high, out) -> (low, in)
+      (currentElevatorCollides && !desiredElevatorCollides && !currentArmCollides && desiredArmCollides) // (high, out) -> (low, in)
     ) {
       // move elevator first
       return new SequentialCommandGroup(
