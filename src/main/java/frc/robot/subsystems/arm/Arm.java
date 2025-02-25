@@ -157,6 +157,10 @@ public class Arm extends SubsystemBase {
     intakeMotor.setVoltage(volts);
   }
 
+  public double getIntakeOutputCurrent () {
+    return intakeMotor.getAppliedOutput();
+  }
+
   public void setPivotVoltage(double volts) {
     pivotMotor.setVoltage(volts);
   }
@@ -173,10 +177,18 @@ public class Arm extends SubsystemBase {
     return MathUtil.angleModulus(pivotAbsoluteEncoder.getPosition());
   }
 
+  public boolean atSetpointAngle () {
+    return Math.abs(getCurrentPivotAngle() - pivotAngleSetpoint) < ArmConstants.ANGLE_TOLERANCE;
+  }
+
   public double getLaserCANMeasurement() {
     LaserCan.Measurement measurement = laserCAN.getMeasurement();
-    if (measurement == null || measurement.status != LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) return -1.0;
+    if (measurement == null || measurement.status != LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT) return 999;
     return measurement.distance_mm;
+  }
+
+  public boolean hasCoral () {
+    return getLaserCANMeasurement() < 0.0;
   }
 
   public void initSendable (SendableBuilder builder) {

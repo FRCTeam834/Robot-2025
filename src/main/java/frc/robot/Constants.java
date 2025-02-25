@@ -71,19 +71,30 @@ public class Constants {
 
         public static final double PIVOT_ZERO_OFFSET = 0.2047741;
         public static final double MAXIMUM_ANGLE = -0.975;
+        public static final double ANGLE_TOLERANCE = 0.0;
 
-
+        public static final double STOW_ANGLE = 0.0; // default angle. this should be greater than NOCOLLISION_MIN_ARM_ANGLE
+        public static final double CORAL_INTAKE_ANGLE = 0.0; // angle when intaking coral from funnel
     }
 
     public static class ElevatorConstants {
         public static final int elevatorMotor1_ID = 10;
         public static final int elevatorMotor2_ID = 11;
 
+        public static final double HEIGHT_TOLERANCE = 0.0;
+
         public static final double MAXMIMUM_HEIGHT = 1.16;
+        public static final double INTAKE_HEIGHT = 0.0;
         public static final double LVL1_HEIGHT = 0.0;
         public static final double LVL2_HEIGHT = 0.0;
         public static final double LVL3_HEIGHT = 0.0;
         public static final double LVL4_HEIGHT = 0.0;
+    }
+
+    public static class ArmElevatorSuperconstants {
+        // *collision occurs when the arm is near vertical and the elevator moves up, the arm will hit the top edge of the first stage
+        public static final double NOCOLLISION_MIN_ARM_ANGLE = 0.0; // minimum angle needed for arm not to collide
+        public static final double NOCOLLISION_MAX_ELEVATOR_HEIGHT = 0.0; // max elevator height while not colliding
     }
 
     public static class ClimberConstants {
