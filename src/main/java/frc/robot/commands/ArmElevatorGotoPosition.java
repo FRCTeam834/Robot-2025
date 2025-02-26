@@ -34,7 +34,7 @@ public class ArmElevatorGotoPosition extends SequentialCommandGroup {
     addCommands(
       getSequence().onlyIf(() -> {
         if (
-          desiredArmAngle < ArmElevatorSuperconstants.NOCOLLISION_MIN_ARM_ANGLE &&
+          desiredArmAngle > ArmElevatorSuperconstants.NOCOLLISION_MIN_ARM_ANGLE &&
           desiredElevatorHeight > ArmElevatorSuperconstants.NOCOLLISION_MAX_ELEVATOR_HEIGHT
         ) {
           // this state is not attainable
@@ -56,10 +56,11 @@ public class ArmElevatorGotoPosition extends SequentialCommandGroup {
    * @return
    */
   private Command getSequence () {
-    boolean currentArmCollides = arm.getCurrentPivotAngle() < ArmElevatorSuperconstants.NOCOLLISION_MIN_ARM_ANGLE;
+    // IMPORTANT NOTE: Remember that negative angle is farther out, therefore it's >
+    boolean currentArmCollides = arm.getCurrentPivotAngle() > ArmElevatorSuperconstants.NOCOLLISION_MIN_ARM_ANGLE;
     boolean currentElevatorCollides = elevator.getElevatorHeight() > ArmElevatorSuperconstants.NOCOLLISION_MAX_ELEVATOR_HEIGHT;
 
-    boolean desiredArmCollides = desiredArmAngle < ArmElevatorSuperconstants.NOCOLLISION_MIN_ARM_ANGLE;
+    boolean desiredArmCollides = desiredArmAngle > ArmElevatorSuperconstants.NOCOLLISION_MIN_ARM_ANGLE;
     boolean desiredElevatorCollides = desiredElevatorHeight > ArmElevatorSuperconstants.NOCOLLISION_MAX_ELEVATOR_HEIGHT;
 
     if (
@@ -67,20 +68,23 @@ public class ArmElevatorGotoPosition extends SequentialCommandGroup {
       (!currentElevatorCollides && !desiredElevatorCollides) // elevator always stays out of the way
     ) {
       // will never collide
+      System.out.println("CASE: Never Collide: " + desiredArmAngle + ", " + desiredElevatorHeight);
       return new InstantCommand(() -> {
-        arm.setDesiredPivotAngle(desiredArmAngle); 
+        arm.setDesiredPivotAngle(desiredArmAngle);
         elevator.setDesiredHeight(desiredElevatorHeight);
       });
     } else if (
       (!currentElevatorCollides && desiredElevatorCollides && currentArmCollides && !desiredArmCollides) // (low, in) -> (high, out)
     ) {
       // move arm first
+      System.out.println("CASE: Move arm first: " + desiredArmAngle + ", " + desiredElevatorHeight);
       return new SequentialCommandGroup(
         new InstantCommand(() -> {
+          elevator.setDesiredHeight(elevator.getElevatorHeight()); // keep elevator still
           arm.setDesiredPivotAngle(desiredArmAngle);
         }),
         new WaitUntilCommand(() -> {
-          return arm.getCurrentPivotAngle() > ArmElevatorSuperconstants.NOCOLLISION_MIN_ARM_ANGLE;
+          return arm.getCurrentPivotAngle() < ArmElevatorSuperconstants.NOCOLLISION_MIN_ARM_ANGLE;
         }),
         new InstantCommand(() -> {
           elevator.setDesiredHeight(desiredElevatorHeight);
@@ -90,8 +94,10 @@ public class ArmElevatorGotoPosition extends SequentialCommandGroup {
       (currentElevatorCollides && !desiredElevatorCollides && !currentArmCollides && desiredArmCollides) // (high, out) -> (low, in)
     ) {
       // move elevator first
+      System.out.println("CASE: Move elevator first: " + desiredArmAngle + ", " + desiredElevatorHeight);
       return new SequentialCommandGroup(
         new InstantCommand(() -> {
+          arm.setDesiredPivotAngle(arm.getCurrentPivotAngle()); // keep arm still
           elevator.setDesiredHeight(desiredElevatorHeight);
         }),
         new WaitUntilCommand(() -> {
@@ -103,7 +109,9 @@ public class ArmElevatorGotoPosition extends SequentialCommandGroup {
       );
     }
 
-    return null;
+    return new InstantCommand(() -> {
+      System.out.println("Some case was not handled... " + desiredArmAngle + ", " + desiredElevatorHeight);
+    });
     
     // this should cover all cases?
     // note: (high, in) is physically impossible

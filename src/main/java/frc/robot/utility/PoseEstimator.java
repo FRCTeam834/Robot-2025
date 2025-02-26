@@ -64,6 +64,22 @@ public class PoseEstimator extends SubsystemBase {
     return poseEstimator.getEstimatedPosition();
   }
 
+  /**
+   * 
+   * @param pose
+   * @param translationTolerance - meters
+   * @param rotationTolerance - radians
+   * @return
+   */
+  public boolean isAtPose (Pose2d pose, double translationTolerance, double rotationTolerance) {
+    Pose2d diff = getPoseEstimate().relativeTo(pose);
+    return (
+      Math.abs(diff.getX()) < translationTolerance &&
+      Math.abs(diff.getY()) < translationTolerance &&
+      Math.abs(diff.getRotation().getRadians()) < rotationTolerance
+    );
+  }
+
   public void resetPose(Pose2d pose) {
     poseEstimator.resetPosition(driveTrain.getYaw(), driveTrain.getModulePositions(), pose);
   }

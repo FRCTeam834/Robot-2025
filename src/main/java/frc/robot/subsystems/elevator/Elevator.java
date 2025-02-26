@@ -56,7 +56,8 @@ public class Elevator extends SubsystemBase {
 
   //PID controller
   private ProfiledPIDController trapezoidPID = new ProfiledPIDController(0.0, 0.0, 0.0,
-      new TrapezoidProfile.Constraints(1, 1)
+      new TrapezoidProfile.Constraints(0.5, 0.5)
+      //new TrapezoidProfile.Constraints(1, 1)
   );
 
   //Motor configurations
@@ -126,9 +127,9 @@ public class Elevator extends SubsystemBase {
   public void periodic() {
 
     // temp while tuning
-    if(getElevatorHeight() > 1 && Math.abs(elevatorMotor1.getAppliedOutput()) > 0) {
-      stop();
-    }
+    //if(getElevatorHeight() > 1 && Math.abs(elevatorMotor1.getAppliedOutput()) > 0) {
+    //  stop();
+    //}
     
     //Update the elevator PID if the constants have changed
     if (elevatorkP.hasChanged(hashCode()) || elevatorkI.hasChanged(hashCode()) || elevatorkD.hasChanged(hashCode())) {

@@ -11,6 +11,9 @@
         "Arm": {
           "open": true
         },
+        "Elevator": {
+          "open": true
+        },
         "Tunable": {
           "Arm": {
             "open": true
@@ -110,10 +113,7 @@
             }
           ]
         }
-      ],
-      "window": {
-        "visible": false
-      }
+      ]
     },
     "Plot <1>": {
       "plots": [
@@ -152,6 +152,30 @@
                 1.0
               ],
               "id": "NT:/SmartDashboard/Arm/FF Voltage"
+            }
+          ]
+        }
+      ]
+    },
+    "Plot <2>": {
+      "plots": [
+        {
+          "backgroundColor": [
+            0.0,
+            0.0,
+            0.0,
+            0.8500000238418579
+          ],
+          "height": 1040,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Arm/CurrentAngle"
             }
           ]
         }

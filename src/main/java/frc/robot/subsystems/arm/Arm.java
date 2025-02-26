@@ -56,7 +56,8 @@ public class Arm extends SubsystemBase {
   
   //Arm PID controller
   private ProfiledPIDController trapezoidPID = new ProfiledPIDController(0, 0, 0, 
-    new TrapezoidProfile.Constraints(Units.degreesToRadians(70), Units.degreesToRadians(70))
+    new TrapezoidProfile.Constraints(Units.degreesToRadians(30), Units.degreesToRadians(30))
+    //new TrapezoidProfile.Constraints(Units.degreesToRadians(70), Units.degreesToRadians(70))
   );
 
   //Booleans for if the arm is stopped

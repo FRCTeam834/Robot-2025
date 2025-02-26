@@ -61,6 +61,10 @@ public class Funnel extends SubsystemBase {
     funnelPID.setSetpoint(setpointAngle);
   }
 
+  public void setVoltage(double voltage) {
+    funnelMotor.setVoltage(voltage);
+  }
+
   public void stop() {
     isMotorRunning = false;
     funnelMotor.setVoltage(0.0);
