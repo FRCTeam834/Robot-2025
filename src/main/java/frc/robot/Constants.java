@@ -28,14 +28,14 @@ public class Constants {
 
         public static final double drivingVelocityFeedForward = 1.4; // Allegedly 1/473 Kv but 2022 code uses 3.248 
 
-        public static final double CAN_CODER_OFFSET_FL = 0.394; // rotations
-        public static final double CAN_CODER_OFFSET_FR = 0.275658;
-        public static final double CAN_CODER_OFFSET_BR = 0.193359;
-        public static final double CAN_CODER_OFFSET_BL = 0.3125;
+        public static final double CAN_CODER_OFFSET_FL = -0.399658; //0.394; // rotations
+        public static final double CAN_CODER_OFFSET_FR = 0.0551757; // 0.275658;
+        public static final double CAN_CODER_OFFSET_BR = -0.311767; // 0.193359;
+        public static final double CAN_CODER_OFFSET_BL = -0.538330; // 0.3125;
 
         // DriveTrain.java
-        public static final double DRIVE_LENGTH = Units.inchesToMeters(30); //m // should be 60cm
-        public static final double DRIVE_WIDTH = Units.inchesToMeters(30); //m
+        public static final double DRIVE_LENGTH = Units.inchesToMeters(27.5); //m // should be 60cm
+        public static final double DRIVE_WIDTH = Units.inchesToMeters(19.375); //m
         public static final double MAX_MODULE_SPEED = 3; // 8 // m/s
         public static final double MAX_TRANSLATION_SPEED = 2; // 4 // m/s
         public static final double MAX_STEER_SPEED = Units.degreesToRadians(270);
@@ -93,13 +93,14 @@ public class Constants {
         public static final double L2_HEIGHT = 0.3; // this is a random default value
         public static final double L3_HEIGHT = 0.6; // this is a random default value
         public static final double L4_HEIGHT = 1.0; // this is a random default value
-        public static final double MAXMIMUM_HEIGHT = 1.16;
+        public static final double MAXMIMUM_HEIGHT = 1.39;
     }
 
     public static class ArmElevatorSuperconstants {
         // *collision occurs when the arm is near vertical and the elevator moves up, the arm will hit the top edge of the first stage
-        public static final double NOCOLLISION_MIN_ARM_ANGLE = -0.15 - 0.05; // -0.15 is the real value, I added 0.05 buffer. minimum angle needed for arm not to collide
+        public static final double NOCOLLISION_MIN_ARM_ANGLE = -0.3 - 0.05; // -0.15 is the real value, I added 0.05 buffer. minimum angle needed for arm not to collide
         public static final double NOCOLLISION_MAX_ELEVATOR_HEIGHT = 0.42 - 0.1; // 0.42 is the real value, I added 0.1 buffer. max elevator height while not colliding
+        public static final double MIN_HIGH_ARM_ANGLE = -0.1;
     }
 
     public static class ClimberConstants {

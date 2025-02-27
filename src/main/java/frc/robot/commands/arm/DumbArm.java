@@ -7,6 +7,7 @@ package frc.robot.commands.arm;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.OI;
 import frc.robot.subsystems.arm.Arm;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
@@ -29,6 +30,13 @@ public class DumbArm extends Command {
   @Override
   public void execute() {
     arm.setPivotVoltage(input.getAsDouble() * 1);
+    if (OI.isDPadUpPressed()) {
+      arm.setIntakeVoltage(-1.0);
+    } else if (OI.isDPadDownPressed()) {
+      arm.setIntakeVoltage(1.0);
+    } else {
+      arm.setIntakeVoltage(0.0);
+    }
     // System.out.println("Arm: " + input.getAsDouble());
   }
 

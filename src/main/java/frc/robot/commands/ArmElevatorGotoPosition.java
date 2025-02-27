@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants.ArmElevatorSuperconstants;
+import frc.robot.commands.arm.ArmDefaultStow;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.elevator.Elevator;
 
@@ -34,7 +35,7 @@ public class ArmElevatorGotoPosition extends SequentialCommandGroup {
     addCommands(
       getSequence().onlyIf(() -> {
         if (
-          desiredArmAngle > ArmElevatorSuperconstants.NOCOLLISION_MIN_ARM_ANGLE &&
+          desiredArmAngle > ArmElevatorSuperconstants.MIN_HIGH_ARM_ANGLE &&
           desiredElevatorHeight > ArmElevatorSuperconstants.NOCOLLISION_MAX_ELEVATOR_HEIGHT
         ) {
           // this state is not attainable
@@ -68,18 +69,22 @@ public class ArmElevatorGotoPosition extends SequentialCommandGroup {
       (!currentElevatorCollides && !desiredElevatorCollides) // elevator always stays out of the way
     ) {
       // will never collide
-      System.out.println("CASE: Never Collide: " + desiredArmAngle + ", " + desiredElevatorHeight);
       return new InstantCommand(() -> {
-        arm.setDesiredPivotAngle(desiredArmAngle);
-        elevator.setDesiredHeight(desiredElevatorHeight);
+        System.out.println("CASE: Never Collide: " + arm.getCurrentPivotAngle() + ", " + elevator.getElevatorHeight() + ", " + desiredArmAngle + ", " + desiredElevatorHeight);
+        System.out.println(currentArmCollides);
+        System.out.println(desiredArmCollides);
+        System.out.println(currentElevatorCollides);
+        System.out.println(desiredElevatorCollides);
+        // arm.setDesiredPivotAngle(desiredArmAngle);
+        // elevator.setDesiredHeight(desiredElevatorHeight);
       });
     } else if (
       (!currentElevatorCollides && desiredElevatorCollides && currentArmCollides && !desiredArmCollides) // (low, in) -> (high, out)
     ) {
       // move arm first
-      System.out.println("CASE: Move arm first: " + desiredArmAngle + ", " + desiredElevatorHeight);
       return new SequentialCommandGroup(
         new InstantCommand(() -> {
+          System.out.println("CASE: Move arm first: " + desiredArmAngle + ", " + desiredElevatorHeight);
           elevator.setDesiredHeight(elevator.getElevatorHeight()); // keep elevator still
           arm.setDesiredPivotAngle(desiredArmAngle);
         }),
@@ -94,14 +99,38 @@ public class ArmElevatorGotoPosition extends SequentialCommandGroup {
       (currentElevatorCollides && !desiredElevatorCollides && !currentArmCollides && desiredArmCollides) // (high, out) -> (low, in)
     ) {
       // move elevator first
-      System.out.println("CASE: Move elevator first: " + desiredArmAngle + ", " + desiredElevatorHeight);
       return new SequentialCommandGroup(
         new InstantCommand(() -> {
+          System.out.println("CASE: Move elevator first: " + desiredArmAngle + ", " + desiredElevatorHeight);
           arm.setDesiredPivotAngle(arm.getCurrentPivotAngle()); // keep arm still
           elevator.setDesiredHeight(desiredElevatorHeight);
         }),
         new WaitUntilCommand(() -> {
           return elevator.getElevatorHeight() < ArmElevatorSuperconstants.NOCOLLISION_MAX_ELEVATOR_HEIGHT;
+        }),
+        new InstantCommand(() -> {
+          arm.setDesiredPivotAngle(desiredArmAngle);
+        })
+      );
+    } else if (
+      (!currentElevatorCollides && desiredElevatorCollides && currentArmCollides && desiredArmCollides && desiredArmAngle < ArmElevatorSuperconstants.MIN_HIGH_ARM_ANGLE) ||
+      (currentElevatorCollides && !desiredElevatorCollides && currentArmCollides && desiredArmCollides)
+    ) {
+      // move arm first
+      return new SequentialCommandGroup(
+        new InstantCommand(() -> {
+          System.out.println("CASE: Move arm first then move arm back");
+          elevator.setDesiredHeight(elevator.getElevatorHeight()); // keep elevator still
+          arm.setDesiredPivotAngle(ArmElevatorSuperconstants.NOCOLLISION_MIN_ARM_ANGLE - 0.05);
+        }),
+        new WaitUntilCommand(() -> {
+          return arm.getCurrentPivotAngle() < ArmElevatorSuperconstants.NOCOLLISION_MIN_ARM_ANGLE;
+        }),
+        new InstantCommand(() -> {
+          elevator.setDesiredHeight(desiredElevatorHeight);
+        }),
+        new WaitUntilCommand(() -> {
+          return elevator.getElevatorHeight() > ArmElevatorSuperconstants.NOCOLLISION_MAX_ELEVATOR_HEIGHT;
         }),
         new InstantCommand(() -> {
           arm.setDesiredPivotAngle(desiredArmAngle);

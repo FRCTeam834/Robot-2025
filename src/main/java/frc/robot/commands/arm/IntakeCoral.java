@@ -23,7 +23,7 @@ public class IntakeCoral extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    arm.setIntakeVoltage(0.2);
+    arm.setIntakeVoltage(8); // 4 was good
     timer.reset();
     timer.stop();
   }
@@ -33,7 +33,7 @@ public class IntakeCoral extends Command {
   public void execute() {
     if (arm.hasCoral() && timer.get() == 0) {
       timer.start();
-      arm.setIntakeVoltage(0.1); // a lower voltage to move it past elevator stage
+      arm.setIntakeVoltage(1); // a lower voltage to move it past elevator stage
     }
 
     if (timer.get() > 1.0) {

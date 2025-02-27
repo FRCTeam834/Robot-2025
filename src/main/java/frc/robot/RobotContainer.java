@@ -22,6 +22,8 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.ArmElevatorGotoPosition;
 import frc.robot.commands.arm.DumbArm;
+import frc.robot.commands.arm.IntakeCoral;
+import frc.robot.commands.arm.OuttakeCoral;
 import frc.robot.commands.arm.TestArmPID;
 import frc.robot.commands.arm.TuneArm;
 import frc.robot.commands.drivetrain.DriveToPose;
@@ -72,21 +74,21 @@ public class RobotContainer {
   public static Arm arm = new Arm();
 
   public RobotContainer() {
-    // driveTrain.setDefaultCommand(new DriveWithSpeeds(
-    //   driveTrain,
-    //   OI::getRightJoystickX,
-    //   OI::getRightJoystickY,
-    //   OI::getLeftJoystickX
-    // ));
-    // driveTrain.configureAutoBuilder(estimator);
+    driveTrain.setDefaultCommand(new DriveWithSpeeds(
+      driveTrain,
+      OI::getRightJoystickX,
+      OI::getRightJoystickY,
+      OI::getLeftJoystickX
+    ));
+    driveTrain.configureAutoBuilder(estimator);
 
     //elevator.setDefaultCommand(new TuneElevator(elevator));
     //arm.setDefaultCommand(new TuneArm(arm));
 
-    //configureBindings();
+    configureBindings();
 
-    // elevator.setDefaultCommand(new DumbElevator(elevator, OI::getXboxLeftJoystickY));
-    // arm.setDefaultCommand(new DumbArm(arm, OI::getXboxRightJoystickY));
+    //elevator.setDefaultCommand(new DumbElevator(elevator, OI::getXboxLeftJoystickY));
+    //arm.setDefaultCommand(new DumbArm(arm, OI::getXboxRightJoystickY));
     configureTestingBindings();
   }
 
@@ -100,9 +102,13 @@ public class RobotContainer {
     //bButton.onTrue(new testElevatorPID(elevator, 0.5));
     //xButton.onTrue(new testElevatorPID(elevator, 0.8));
     //yButton.onTrue(new testElevatorPID(elevator, 1));
-    aButton.onTrue(new ArmElevatorGotoPosition(-0.3, 0.3, arm, elevator));
-    bButton.onTrue(new ArmElevatorGotoPosition(-0.3, 0.7, arm, elevator));
-    xButton.onTrue(new ArmElevatorGotoPosition(-0.1, 0.1, arm, elevator));
+    
+    aButton.onTrue(new ArmElevatorGotoPosition(-0.21, 1.38, arm, elevator));
+    //bButton.onTrue(new ArmElevatorGotoPosition(-0.3, 0.7, arm, elevator));
+    xButton.onTrue(new ArmElevatorGotoPosition(0.5, 0.0, arm, elevator));
+    yButton.whileTrue(new IntakeCoral(arm));
+
+    bButton.whileTrue(new OuttakeCoral(arm));
   }
 
   private void configureBindings() {
