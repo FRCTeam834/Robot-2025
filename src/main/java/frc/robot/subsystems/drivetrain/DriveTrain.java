@@ -104,11 +104,11 @@ public class DriveTrain extends SubsystemBase {
   }
 
   public void setDesiredSpeedsFromHolonomicController(ChassisSpeeds speeds) {
-    double angle = Math.atan2(speeds.vyMetersPerSecond, speeds.vxMetersPerSecond);
-    double mag = translationLimiter.calculate(Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond));
-    speeds.vxMetersPerSecond = mag * Math.cos(angle);
-    speeds.vyMetersPerSecond = mag * Math.sin(angle);
-    speeds.omegaRadiansPerSecond = omegaLimiter.calculate(speeds.omegaRadiansPerSecond);
+    // double angle = Math.atan2(speeds.vyMetersPerSecond, speeds.vxMetersPerSecond);
+    // double mag = translationLimiter.calculate(Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond));
+    // speeds.vxMetersPerSecond = mag * Math.cos(angle);
+    // speeds.vyMetersPerSecond = mag * Math.sin(angle);
+    // speeds.omegaRadiansPerSecond = omegaLimiter.calculate(speeds.omegaRadiansPerSecond);
 
     stopped = false;
     setpoint = speeds;
@@ -154,6 +154,14 @@ public class DriveTrain extends SubsystemBase {
 
   public ChassisSpeeds getRobotRelativeSpeeds () {
     return kinematics.toChassisSpeeds(getModuleStates());
+  }
+
+  public double getRobotVeloMagnitude() {
+    ChassisSpeeds currentSpeeds = kinematics.toChassisSpeeds(getModuleStates());
+    double vx = currentSpeeds.vxMetersPerSecond;
+    double vy = currentSpeeds.vyMetersPerSecond;
+
+    return Math.hypot(vx, vy);
   }
   
   public SwerveDriveKinematics getKinematics() {

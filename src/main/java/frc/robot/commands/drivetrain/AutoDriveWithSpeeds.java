@@ -16,15 +16,20 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants;
 import frc.robot.OI;
 import frc.robot.subsystems.drivetrain.DriveTrain;
+import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.utility.PoseEstimator;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
@@ -45,6 +50,10 @@ public class AutoDriveWithSpeeds extends Command {
   private double joystickTolerance = 0.15;
   private boolean doesCalculateScoringPosition = true;
 
+  private Trajectory desiredTrajectory;
+  private TrajectoryConfig trajectoryConfig;
+  private Timer driveTimer = new Timer();
+
   public AutoDriveWithSpeeds(DriveTrain driveTrain, PoseEstimator poseEstimator) {
     this.driveTrain = driveTrain;
     this.poseEstimator = poseEstimator;
@@ -56,7 +65,9 @@ public class AutoDriveWithSpeeds extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -69,6 +80,7 @@ public class AutoDriveWithSpeeds extends Command {
 
     // While matt is manually driving robot recalculate most optimal scoring position
     if (doesCalculateScoringPosition) {
+      driveTimer.stop();
 
       double bestCost = Double.MAX_VALUE;
       for(Pose2d scoringPose : Constants.scoringPoses) {
@@ -81,7 +93,9 @@ public class AutoDriveWithSpeeds extends Command {
           closestScoringPose = scoringPose; 
         }
       }
-      
+
+      trajectoryConfig = new TrajectoryConfig(2, 2);
+      trajectoryConfig.setStartVelocity(driveTrain.getRobotVeloMagnitude());      
     }
 
     if(Math.abs(rightJoystickx) > joystickTolerance || Math.abs(rightJoysticky) > joystickTolerance || Math.abs(leftJoystickx) > joystickTolerance) {
@@ -92,10 +106,17 @@ public class AutoDriveWithSpeeds extends Command {
       );
       doesCalculateScoringPosition = true;
     } else {
+      driveTimer.start();
+
+      desiredTrajectory = TrajectoryGenerator.generateTrajectory(
+        robotPose, 
+        null, 
+        closestScoringPose, 
+        trajectoryConfig);
+
       ChassisSpeeds speeds = holonomicDriveController.calculate(
         robotPose, 
-        new Pose2d(closestScoringPose.getTranslation(), new Rotation2d()), 
-        desiredLinearVelocity, // m/s
+        desiredTrajectory.sample(driveTimer.get()), // m/s
         closestScoringPose.getRotation()
       );
 
