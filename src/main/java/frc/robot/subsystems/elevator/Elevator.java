@@ -125,12 +125,6 @@ public class Elevator extends SubsystemBase {
   //Called once per scheduler run
   @Override
   public void periodic() {
-
-    // temp while tuning
-    //if(getElevatorHeight() > 1 && Math.abs(elevatorMotor1.getAppliedOutput()) > 0) {
-    //  stop();
-    //}
-    
     //Update the elevator PID if the constants have changed
     if (elevatorkP.hasChanged(hashCode()) || elevatorkI.hasChanged(hashCode()) || elevatorkD.hasChanged(hashCode())) {
       trapezoidPID.setPID(elevatorkP.get(), elevatorkI.get(), elevatorkD.get());

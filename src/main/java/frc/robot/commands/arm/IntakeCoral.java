@@ -24,8 +24,8 @@ public class IntakeCoral extends Command {
   @Override
   public void initialize() {
     arm.setIntakeVoltage(8); // 4 was good
-    timer.reset();
     timer.stop();
+    timer.reset();
   }
 
   // Called every time the scheduler runs while the command is scheduled.

@@ -149,7 +149,7 @@ public class Arm extends SubsystemBase {
   //Update the arm angle setpoint
   public void setDesiredPivotAngle (double angle) {
     armStopped = false;
-    pivotAngleSetpoint = MathUtil.clamp(angle, ArmConstants.MAXIMUM_ANGLE, 0);
+    pivotAngleSetpoint = MathUtil.clamp(angle, ArmConstants.MAXIMUM_ANGLE, 0.1);
     trapezoidPID.reset(getCurrentPivotAngle());
     trapezoidPID.setGoal(new TrapezoidProfile.State(pivotAngleSetpoint, 0.0));
   }
@@ -189,7 +189,7 @@ public class Arm extends SubsystemBase {
   }
 
   public boolean hasCoral () {
-    return getLaserCANMeasurement() < 0.0;
+    return getLaserCANMeasurement() < 30.0;
   }
 
   public void initSendable (SendableBuilder builder) {

@@ -74,13 +74,13 @@ public class RobotContainer {
   public static Arm arm = new Arm();
 
   public RobotContainer() {
-    driveTrain.setDefaultCommand(new DriveWithSpeeds(
-      driveTrain,
-      OI::getRightJoystickX,
-      OI::getRightJoystickY,
-      OI::getLeftJoystickX
-    ));
-    driveTrain.configureAutoBuilder(estimator);
+    // driveTrain.setDefaultCommand(new DriveWithSpeeds(
+    //   driveTrain,
+    //   OI::getRightJoystickX,
+    //   OI::getRightJoystickY,
+    //   OI::getLeftJoystickX
+    // ));
+    // driveTrain.configureAutoBuilder(estimator);
 
     //elevator.setDefaultCommand(new TuneElevator(elevator));
     //arm.setDefaultCommand(new TuneArm(arm));
@@ -105,7 +105,7 @@ public class RobotContainer {
     
     aButton.onTrue(new ArmElevatorGotoPosition(-0.21, 1.38, arm, elevator));
     //bButton.onTrue(new ArmElevatorGotoPosition(-0.3, 0.7, arm, elevator));
-    xButton.onTrue(new ArmElevatorGotoPosition(0.5, 0.0, arm, elevator));
+    xButton.onTrue(new ArmElevatorGotoPosition(0.1, 0.0, arm, elevator));
     yButton.whileTrue(new IntakeCoral(arm));
 
     bButton.whileTrue(new OuttakeCoral(arm));
