@@ -117,7 +117,7 @@ public class ArmElevatorGotoPosition extends SequentialCommandGroup {
         })
       );
     } else if (
-      (!currentElevatorCollides && desiredElevatorCollides && currentArmCollides && desiredArmCollides && desiredArmAngle < ArmElevatorSuperconstants.MIN_HIGH_ARM_ANGLE)
+      (!currentElevatorCollides && desiredElevatorCollides && currentArmCollides && desiredArmCollides && desiredArmAngle <= ArmElevatorSuperconstants.MIN_HIGH_ARM_ANGLE)
     ) {
       // move arm first
       return new SequentialCommandGroup(

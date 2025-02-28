@@ -19,6 +19,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.ArmElevatorGotoPosition;
 import frc.robot.commands.arm.DumbArm;
@@ -39,6 +41,8 @@ import frc.robot.subsystems.drivetrain.SwerveModule;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.vision.Limelight;
 import frc.robot.utility.PoseEstimator;
+import frc.robot.subsystems.climber.Climber;
+import frc.robot.commands.climb.ManualClimb;
 
 public class RobotContainer {
 
@@ -72,14 +76,15 @@ public class RobotContainer {
   public static PoseEstimator estimator = new PoseEstimator(driveTrain, cams);
   public static Elevator elevator = new Elevator();
   public static Arm arm = new Arm();
+  public static Climber climber = new Climber();
 
   public RobotContainer() {
-    // driveTrain.setDefaultCommand(new DriveWithSpeeds(
-    //   driveTrain,
-    //   OI::getRightJoystickX,
-    //   OI::getRightJoystickY,
-    //   OI::getLeftJoystickX
-    // ));
+    driveTrain.setDefaultCommand(new DriveWithSpeeds(
+      driveTrain,
+      OI::getRightJoystickX,
+      OI::getRightJoystickY,
+      OI::getLeftJoystickX
+    ));
     // driveTrain.configureAutoBuilder(estimator);
 
     //elevator.setDefaultCommand(new TuneElevator(elevator));
@@ -103,12 +108,13 @@ public class RobotContainer {
     //xButton.onTrue(new testElevatorPID(elevator, 0.8));
     //yButton.onTrue(new testElevatorPID(elevator, 1));
     
-    aButton.onTrue(new ArmElevatorGotoPosition(-0.21, 1.38, arm, elevator));
-    //bButton.onTrue(new ArmElevatorGotoPosition(-0.3, 0.7, arm, elevator));
-    xButton.onTrue(new ArmElevatorGotoPosition(0.1, 0.0, arm, elevator));
-    yButton.whileTrue(new IntakeCoral(arm));
+    //aButton.onTrue(new ArmElevatorGotoPosition(ArmConstants.L1_ANGLE, ElevatorConstants.L1_HEIGHT, arm, elevator));
+    xButton.onTrue(new ArmElevatorGotoPosition(0.2, 0, arm, elevator));
+    //xButton.onTrue(new ArmElevatorGotoPosition(ArmConstants.L3_ANGLE, ElevatorConstants.L3_HEIGHT, arm, elevator));
+    yButton.onTrue(new ArmElevatorGotoPosition(ArmConstants.L4_ANGLE, ElevatorConstants.L4_HEIGHT, arm, elevator));
 
-    bButton.whileTrue(new OuttakeCoral(arm));
+    aButton.onTrue(new IntakeCoral(arm));
+    bButton.onTrue(new OuttakeCoral(arm));
   }
 
   private void configureBindings() {
@@ -139,6 +145,8 @@ public class RobotContainer {
       BL.seedTurnEncoder();
       BR.seedTurnEncoder();
     }));
+
+    climber.setDefaultCommand(new ManualClimb(climber, OI::getXboxRightJoystickY));
   }
 
   public Command getAutonomousCommand() {

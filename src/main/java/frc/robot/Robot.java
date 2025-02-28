@@ -30,6 +30,7 @@ public class Robot extends TimedRobot {
       //RobotContainer.limelight.setIMUMode(1);
       RobotContainer.elevator.stop();
       RobotContainer.arm.stop();
+      RobotContainer.driveTrain.stop();
     }
   } 
 

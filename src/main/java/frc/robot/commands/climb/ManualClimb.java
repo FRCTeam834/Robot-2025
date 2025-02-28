@@ -29,7 +29,7 @@ public class ManualClimb extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    climber.setClimberVoltage(input.getAsDouble() * 0.0);
+    climber.setClimberVoltage(input.getAsDouble() * 12.0);
   }
 
   // Called once the command ends or is interrupted.

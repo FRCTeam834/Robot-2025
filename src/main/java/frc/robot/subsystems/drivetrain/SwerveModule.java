@@ -20,6 +20,7 @@ import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -73,6 +74,8 @@ public class SwerveModule extends SubsystemBase {
     //.closedLoopRampRate(0.5);
 
     driveMotorConfig.encoder
+    .quadratureAverageDepth(4)
+    .quadratureMeasurementPeriod(5)
     .positionConversionFactor((Math.PI * SwerveConstants.MODULE_WHEEL_DIAMETER) / SwerveConstants.DRIVE_GEAR_RATIO) // meters 
     .velocityConversionFactor((Math.PI * SwerveConstants.MODULE_WHEEL_DIAMETER) / (60.0 * SwerveConstants.DRIVE_GEAR_RATIO)); // meters per second
 
@@ -93,6 +96,8 @@ public class SwerveModule extends SubsystemBase {
     .inverted(false);
 
     turnMotorConfig.encoder
+    .quadratureAverageDepth(4)
+    .quadratureMeasurementPeriod(5)
     .positionConversionFactor(2 * Math.PI / SwerveConstants.STEER_GEAR_RATIO)
     .velocityConversionFactor(2 * Math.PI / (60 * SwerveConstants.STEER_GEAR_RATIO));
 
@@ -126,6 +131,24 @@ public class SwerveModule extends SubsystemBase {
 
   public double getDriveVelocity() {
     return driveEncoder.getVelocity();
+  }
+
+  public void updateFeedforward(SimpleMotorFeedforward feedforward) {
+    ff = feedforward;
+  }
+
+  public void updateDriveP(double p) {
+    SparkMaxConfig config = new SparkMaxConfig();
+    config.closedLoop.p(p);
+
+    driveMotor.configureAsync(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+  }
+
+  public void updateTurnP(double p) {
+    SparkMaxConfig config = new SparkMaxConfig();
+    config.closedLoop.p(p);
+
+    turnMotor.configureAsync(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
   }
 
   public double getTurnVelocity() {
@@ -203,7 +226,6 @@ public class SwerveModule extends SubsystemBase {
 
   @Override
   public void periodic() {
-    //checkAndSeedTurnEncoder();
   }
 
   @Override
@@ -213,6 +235,8 @@ public class SwerveModule extends SubsystemBase {
     builder.addDoubleProperty("AbsoluteEncoderAngle", this::getCANCoderAngle, null);
     builder.addDoubleProperty("Setpoint Speed", this::getSetpointSpeed, null);
     builder.addDoubleProperty("Setpoint Angle", this::getSetpointAngle, null);
+    builder.addDoubleProperty("Clamped Setpoint Angle ", () -> MathUtil.inputModulus(getSetpointAngle(), 0, Math.PI), null);
+    builder.addDoubleProperty("Clamped Angle", () -> MathUtil.inputModulus(getTurnAngle(), 0, Math.PI), null);
     builder.addDoubleProperty("Speed", this::getDriveVelocity, null);
     builder.addDoubleProperty("Angle", this::getTurnAngle, null);
   }

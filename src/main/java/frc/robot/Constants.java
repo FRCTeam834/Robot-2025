@@ -80,7 +80,7 @@ public class Constants {
         public static final double L1_ANGLE = -0.7; // this is a random default value
         public static final double L2_ANGLE = -0.5; // this is a random default value
         public static final double L3_ANGLE = -0.5; // this is a random default value
-        public static final double L4_ANGLE = -0.5; // this is a random default value
+        public static final double L4_ANGLE = -0.25; // this is a random default value
     }
 
     public static class ElevatorConstants {
@@ -94,8 +94,8 @@ public class Constants {
         public static final double L1_HEIGHT = 0.0; // this is a random default value
         public static final double L2_HEIGHT = 0.3; // this is a random default value
         public static final double L3_HEIGHT = 0.6; // this is a random default value
-        public static final double L4_HEIGHT = 1.0; // this is a random default value
-        public static final double MAXMIMUM_HEIGHT = 1.39;
+        public static final double L4_HEIGHT = 1.44; // this is a random default value
+        public static final double MAXMIMUM_HEIGHT = 1.44;
     }
 
     public static class ArmElevatorSuperconstants {

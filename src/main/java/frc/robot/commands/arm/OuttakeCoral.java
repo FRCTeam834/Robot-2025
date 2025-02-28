@@ -23,7 +23,7 @@ public class OuttakeCoral extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    arm.setIntakeVoltage(4);
+    arm.setIntakeVoltage(8);
     timer.reset();
     timer.stop();
   }

@@ -14,6 +14,7 @@ import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.Waypoint;
 
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -33,6 +34,7 @@ import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.*;
 import frc.robot.utility.PoseEstimator;
+import frc.robot.utility.TunableNumber;
 
 public class DriveTrain extends SubsystemBase {
   private final SwerveModule flSwerveModule;
@@ -52,8 +54,21 @@ public class DriveTrain extends SubsystemBase {
   private SlewRateLimiter translationLimiter = new SlewRateLimiter(Units.feetToMeters(24));
   private SlewRateLimiter omegaLimiter = new SlewRateLimiter(Math.toRadians(1080));
 
+  private static TunableNumber kS_TunableNumber = new TunableNumber("SwerveModule/kS");
+  private static TunableNumber kV_TunableNumber = new TunableNumber("SwerveModule/kV");
+
+  private static TunableNumber kP_Drive = new TunableNumber("SwerveModule/drivekP");
+  private static TunableNumber kP_Turn = new TunableNumber("SwerveModule/turnkP");
+
   private boolean stopped = false;
   private ChassisSpeeds setpoint = new ChassisSpeeds();
+
+  static {
+    kS_TunableNumber.initDefault(0.2);
+    kV_TunableNumber.initDefault(3);
+    kP_Drive.initDefault(0);
+    kP_Turn.initDefault(0.17);
+  }
 
   public DriveTrain(
   SwerveModule flSwerveModule,
@@ -178,6 +193,27 @@ public class DriveTrain extends SubsystemBase {
  
   @Override
   public void periodic() {
+    if (kS_TunableNumber.hasChanged(hashCode()) || kV_TunableNumber.hasChanged(hashCode())) {
+      flSwerveModule.updateFeedforward(new SimpleMotorFeedforward(kS_TunableNumber.get(), kV_TunableNumber.get()));
+      frSwerveModule.updateFeedforward(new SimpleMotorFeedforward(kS_TunableNumber.get(), kV_TunableNumber.get()));
+      blSwerveModule.updateFeedforward(new SimpleMotorFeedforward(kS_TunableNumber.get(), kV_TunableNumber.get()));
+      brSwerveModule.updateFeedforward(new SimpleMotorFeedforward(kS_TunableNumber.get(), kV_TunableNumber.get()));
+    }
+
+    if (kP_Drive.hasChanged(hashCode())) {
+      flSwerveModule.updateDriveP(kP_Drive.get());
+      frSwerveModule.updateDriveP(kP_Drive.get());
+      blSwerveModule.updateDriveP(kP_Drive.get());
+      brSwerveModule.updateDriveP(kP_Drive.get());
+    }
+
+    if (kP_Turn.hasChanged(hashCode())) {
+      flSwerveModule.updateTurnP(kP_Turn.get());
+      frSwerveModule.updateTurnP(kP_Turn.get() - 0.02);
+      blSwerveModule.updateTurnP(kP_Turn.get());
+      brSwerveModule.updateTurnP(kP_Turn.get());
+    }
+
     if (DriverStation.isDisabled() || stopped) {
       stop();
       return;

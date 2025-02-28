@@ -36,7 +36,7 @@ public class IntakeCoral extends Command {
       arm.setIntakeVoltage(1); // a lower voltage to move it past elevator stage
     }
 
-    if (timer.get() > 1.0) {
+    if (timer.get() > 0.75) {
       cancel();
     }
   }
