@@ -239,5 +239,7 @@ public class SwerveModule extends SubsystemBase {
     builder.addDoubleProperty("Clamped Angle", () -> MathUtil.inputModulus(getTurnAngle(), 0, Math.PI), null);
     builder.addDoubleProperty("Speed", this::getDriveVelocity, null);
     builder.addDoubleProperty("Angle", this::getTurnAngle, null);
+    builder.addDoubleProperty("Drive Voltage", () -> { return driveMotor.get() * driveMotor.getBusVoltage(); }, null);
+    builder.addDoubleProperty("Turn Voltage", () -> { return turnMotor.get() * turnMotor.getBusVoltage(); }, null);
   }
 }
