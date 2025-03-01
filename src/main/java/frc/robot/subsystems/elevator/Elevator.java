@@ -56,7 +56,7 @@ public class Elevator extends SubsystemBase {
 
   //PID controller
   private ProfiledPIDController trapezoidPID = new ProfiledPIDController(0.0, 0.0, 0.0,
-      new TrapezoidProfile.Constraints(0.5, 0.5)
+      new TrapezoidProfile.Constraints(0.75, 1)
       //new TrapezoidProfile.Constraints(1, 1)
   );
 

@@ -23,7 +23,9 @@ import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.ArmElevatorGotoPosition;
+import frc.robot.commands.CoralIntakeSequence;
 import frc.robot.commands.arm.DumbArm;
+import frc.robot.commands.arm.IntakeAlgae;
 import frc.robot.commands.arm.IntakeCoral;
 import frc.robot.commands.arm.OuttakeCoral;
 import frc.robot.commands.arm.TestArmPID;
@@ -39,10 +41,12 @@ import frc.robot.subsystems.drivetrain.DriveTrain;
 import frc.robot.subsystems.drivetrain.Gyro;
 import frc.robot.subsystems.drivetrain.SwerveModule;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.funnel.Funnel;
 import frc.robot.subsystems.vision.Limelight;
 import frc.robot.utility.PoseEstimator;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.commands.climb.ManualClimb;
+import frc.robot.commands.climb.ManualFunnel;
 
 public class RobotContainer {
 
@@ -77,6 +81,7 @@ public class RobotContainer {
   public static Elevator elevator = new Elevator();
   public static Arm arm = new Arm();
   public static Climber climber = new Climber();
+  public static Funnel funnel = new Funnel();
 
   public RobotContainer() {
     driveTrain.setDefaultCommand(new DriveWithSpeeds(
@@ -109,15 +114,34 @@ public class RobotContainer {
     //yButton.onTrue(new testElevatorPID(elevator, 1));
     
     //aButton.onTrue(new ArmElevatorGotoPosition(ArmConstants.L1_ANGLE, ElevatorConstants.L1_HEIGHT, arm, elevator));
-    xButton.onTrue(new ArmElevatorGotoPosition(0.2, 0, arm, elevator));
+    //xButton.onTrue(new ArmElevatorGotoPosition(0.2, 0, arm, elevator));
     //xButton.onTrue(new ArmElevatorGotoPosition(ArmConstants.L3_ANGLE, ElevatorConstants.L3_HEIGHT, arm, elevator));
-    yButton.onTrue(new ArmElevatorGotoPosition(ArmConstants.L4_ANGLE, ElevatorConstants.L4_HEIGHT, arm, elevator));
+    //yButton.onTrue(new ArmElevatorGotoPosition(ArmConstants.L4_ANGLE, ElevatorConstants.L4_HEIGHT, arm, elevator));
 
-    aButton.onTrue(new IntakeCoral(arm));
-    bButton.onTrue(new OuttakeCoral(arm));
+    //aButton.onTrue(new IntakeCoral(arm));
+    //bButton.onTrue(new OuttakeCoral(arm));
   }
 
   private void configureBindings() {
+    // stow
+    OI.getKeypad0().onTrue(new ArmElevatorGotoPosition(ArmConstants.STOW_ANGLE, ElevatorConstants.STOW_HEIGHT, arm, elevator));
+
+    // coral
+    OI.getKeypad1().onTrue(new ArmElevatorGotoPosition(ArmConstants.L1_ANGLE, ElevatorConstants.L1_HEIGHT, arm, elevator));
+    OI.getKeypad4().onTrue(new ArmElevatorGotoPosition(ArmConstants.L2_ANGLE, ElevatorConstants.L2_HEIGHT, arm, elevator));
+    OI.getKeypad7().onTrue(new ArmElevatorGotoPosition(ArmConstants.L3_ANGLE, ElevatorConstants.L3_HEIGHT, arm, elevator));
+    OI.getKeypadNum().onTrue(new ArmElevatorGotoPosition(ArmConstants.L4_ANGLE, ElevatorConstants.L4_HEIGHT, arm, elevator));
+
+    // algae
+    OI.getKeypad2().onTrue(new ArmElevatorGotoPosition(ArmConstants.ALGAE_L1_ANGLE, ElevatorConstants.ALGAE_L1_HEIGHT, arm, elevator));
+    OI.getKeypad5().onTrue(new ArmElevatorGotoPosition(ArmConstants.ALGAE_L2_ANGLE, ElevatorConstants.ALGAE_L2_HEIGHT, arm, elevator));
+
+    aButton.onTrue(new CoralIntakeSequence(arm, elevator));
+    xButton.onTrue(new IntakeAlgae(arm));
+    bButton.onTrue(new OuttakeCoral(arm));
+
+    funnel.setDefaultCommand(new ManualFunnel(funnel, OI::getXboxLeftJoystickY));
+
     leftJoystick10.onTrue(new InstantCommand(() -> {
       driveTrain.zeroOdometry(new Rotation2d());
       cams[1].seedLL4IMU();
@@ -147,6 +171,7 @@ public class RobotContainer {
     }));
 
     climber.setDefaultCommand(new ManualClimb(climber, OI::getXboxRightJoystickY));
+
   }
 
   public Command getAutonomousCommand() {

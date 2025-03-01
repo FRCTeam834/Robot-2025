@@ -117,7 +117,7 @@ public class DriveTrain extends SubsystemBase {
 
     ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getYaw());
 
-    speeds = keepHeadingOutput(speeds);
+    //speeds = keepHeadingOutput(speeds);
     setDesiredSpeeds(speeds);
   }
 

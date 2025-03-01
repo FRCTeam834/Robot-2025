@@ -23,6 +23,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.GamePiece;
 import frc.robot.utility.TunableNumber;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
@@ -40,6 +41,8 @@ public class Arm extends SubsystemBase {
 
   private LaserCan laserCAN;
 
+  public GamePiece currentPiece = GamePiece.NONE;
+
   //Arm PID constants
   private static final TunableNumber pivotkP = new TunableNumber("Arm/armkP");
   private static final TunableNumber pivotkI = new TunableNumber("Arm/armkI");
@@ -56,7 +59,7 @@ public class Arm extends SubsystemBase {
   
   //Arm PID controller
   private ProfiledPIDController trapezoidPID = new ProfiledPIDController(0, 0, 0, 
-    new TrapezoidProfile.Constraints(Units.degreesToRadians(30), Units.degreesToRadians(30))
+    new TrapezoidProfile.Constraints(Units.degreesToRadians(45), Units.degreesToRadians(45))
     //new TrapezoidProfile.Constraints(Units.degreesToRadians(70), Units.degreesToRadians(70))
   );
 
@@ -149,7 +152,7 @@ public class Arm extends SubsystemBase {
   //Update the arm angle setpoint
   public void setDesiredPivotAngle (double angle) {
     armStopped = false;
-    pivotAngleSetpoint = MathUtil.clamp(angle, ArmConstants.MAXIMUM_ANGLE, 0.1);
+    pivotAngleSetpoint = MathUtil.clamp(angle, ArmConstants.MAXIMUM_ANGLE, 0.2);
     trapezoidPID.reset(getCurrentPivotAngle());
     trapezoidPID.setGoal(new TrapezoidProfile.State(pivotAngleSetpoint, 0.0));
   }

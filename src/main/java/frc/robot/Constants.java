@@ -73,14 +73,16 @@ public class Constants {
 
         public static final double PIVOT_ZERO_OFFSET = 0.2047741;
         public static final double MAXIMUM_ANGLE = -0.975;
-        public static final double ANGLE_TOLERANCE = 0.0; // this is a random default value
+        public static final double ANGLE_TOLERANCE = Units.radiansToDegrees(1.0); // this is a random default value
 
-        public static final double CORAL_INTAKE_ANGLE = 0.0; // this is a random default value. angle when intaking coral from funnel
+        public static final double CORAL_INTAKE_ANGLE = 0.1; // this is a random default value. angle when intaking coral from funnel
         public static final double STOW_ANGLE = -0.2; // this is a random default value. this should be greater than NOCOLLISION_MIN_ARM_ANGLE
-        public static final double L1_ANGLE = -0.7; // this is a random default value
-        public static final double L2_ANGLE = -0.5; // this is a random default value
-        public static final double L3_ANGLE = -0.5; // this is a random default value
-        public static final double L4_ANGLE = -0.25; // this is a random default value
+        public static final double L1_ANGLE = -0.1; // this is a random default value
+        public static final double L2_ANGLE = -0.4; // this is a random default value
+        public static final double L3_ANGLE = -0.4; // this is a random default value
+        public static final double L4_ANGLE = -0.25; // -0.25 // this is a random default value
+        public static final double ALGAE_L1_ANGLE = -0.3;
+        public static final double ALGAE_L2_ANGLE = -0.33;
     }
 
     public static class ElevatorConstants {
@@ -91,16 +93,18 @@ public class Constants {
 
         public static final double STOW_HEIGHT = 0.0; // this is a random default value
         public static final double INTAKE_HEIGHT = 0.0; // this is a random default value
-        public static final double L1_HEIGHT = 0.0; // this is a random default value
-        public static final double L2_HEIGHT = 0.3; // this is a random default value
-        public static final double L3_HEIGHT = 0.6; // this is a random default value
+        public static final double L1_HEIGHT = 0.05; // this is a random default value
+        public static final double L2_HEIGHT = 0.5; // this is a random default value
+        public static final double L3_HEIGHT = 0.9; // this is a random default value
         public static final double L4_HEIGHT = 1.44; // this is a random default value
+        public static final double ALGAE_L1_HEIGHT = 0.5;
+        public static final double ALGAE_L2_HEIGHT = 0.87;
         public static final double MAXMIMUM_HEIGHT = 1.44;
     }
 
     public static class ArmElevatorSuperconstants {
         // *collision occurs when the arm is near vertical and the elevator moves up, the arm will hit the top edge of the first stage
-        public static final double NOCOLLISION_MIN_ARM_ANGLE = -0.3 - 0.05; // -0.15 is the real value, I added 0.05 buffer. minimum angle needed for arm not to collide
+        public static final double NOCOLLISION_MIN_ARM_ANGLE = -0.2973; // -0.15 is the real value, I added 0.05 buffer. minimum angle needed for arm not to collide
         public static final double NOCOLLISION_MAX_ELEVATOR_HEIGHT = 0.42 - 0.1; // 0.42 is the real value, I added 0.1 buffer. max elevator height while not colliding
         public static final double MIN_HIGH_ARM_ANGLE = -0.1;
     }
@@ -184,6 +188,12 @@ public class Constants {
         new Pose2d(5.790 + 8.57, 3.855, Rotation2d.fromDegrees(180)), 
         new Pose2d(5.790 + 8.57, 4.190, Rotation2d.fromDegrees(180))
     };
+
+    public static enum GamePiece {
+        NONE,
+        CORAL,
+        ALGAE
+    }
 
     
 

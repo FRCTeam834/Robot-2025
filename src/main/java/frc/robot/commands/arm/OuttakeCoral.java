@@ -6,6 +6,7 @@ package frc.robot.commands.arm;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.GamePiece;
 import frc.robot.subsystems.arm.Arm;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
@@ -35,7 +36,7 @@ public class OuttakeCoral extends Command {
       timer.start();
     }
 
-    if (timer.get() > 0.2) {
+    if (timer.get() > 2) {
       cancel();
     }
   }

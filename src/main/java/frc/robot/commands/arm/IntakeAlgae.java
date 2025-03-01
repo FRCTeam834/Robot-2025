@@ -7,13 +7,14 @@ package frc.robot.commands.arm;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.GamePiece;
 import frc.robot.subsystems.arm.Arm;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class IntakeAlgae extends Command {
   /** Creates a new RunIntake. */
   private Arm arm;
-  private LinearFilter filter = LinearFilter.movingAverage(3);
+  private LinearFilter filter = LinearFilter.movingAverage(5);
 
   public IntakeAlgae(Arm arm) {
     this.arm = arm;
@@ -24,7 +25,7 @@ public class IntakeAlgae extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    arm.setIntakeVoltage(-0.2);
+    arm.setIntakeVoltage(-12);
     filter.reset();
   }
 
@@ -33,7 +34,8 @@ public class IntakeAlgae extends Command {
   public void execute() {
     double current = filter.calculate(arm.getIntakeOutputCurrent());
 
-    if (current > 0.0) { // some value
+    if (current > 6.0) { // some value
+      arm.currentPiece = GamePiece.ALGAE;
       cancel();
     }
   }
