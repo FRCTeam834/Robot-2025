@@ -14,6 +14,7 @@ import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.Waypoint;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -63,6 +64,9 @@ public class DriveTrain extends SubsystemBase {
   private boolean stopped = false;
   private ChassisSpeeds setpoint = new ChassisSpeeds();
 
+  private Rotation2d keepHeadingAngle = new Rotation2d();
+  private PIDController keepHeadingController = new PIDController(2, 0, 0);
+
   static {
     kS_TunableNumber.initDefault(0.2);
     kV_TunableNumber.initDefault(3);
@@ -81,6 +85,8 @@ public class DriveTrain extends SubsystemBase {
     this.blSwerveModule = blSwerveModule;
     this.brSwerveModule = brSwerveModule;
     this.gyro = gyro;
+
+    keepHeadingAngle = getYaw();
     SmartDashboard.putData(this);
   }
 
@@ -110,6 +116,8 @@ public class DriveTrain extends SubsystemBase {
     rot = omegaLimiter.calculate(rot);
 
     ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getYaw());
+
+    speeds = keepHeadingOutput(speeds);
     setDesiredSpeeds(speeds);
   }
 
@@ -240,6 +248,19 @@ public class DriveTrain extends SubsystemBase {
     frSwerveModule.stop();
     blSwerveModule.stop();
     brSwerveModule.stop();
+  }
+
+  private ChassisSpeeds keepHeadingOutput(ChassisSpeeds speeds) {
+    double error = keepHeadingAngle.minus(Rotation2d.fromDegrees(gyro.getYaw())).getDegrees();
+
+    if (Math.abs(speeds.omegaRadiansPerSecond) > 0.01) {
+      keepHeadingAngle = Rotation2d.fromDegrees(gyro.getYaw());
+    } 
+    else if (Math.abs(speeds.vxMetersPerSecond) + Math.abs(speeds.vyMetersPerSecond) > 0.01) {
+      speeds.omegaRadiansPerSecond = keepHeadingController.calculate(error); //uses pid 
+    }
+
+    return speeds;
   }
 
   public Command makePath(PoseEstimator poseEstimator) {
