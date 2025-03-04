@@ -3,18 +3,25 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
+import java.io.IOException;
+
+import org.json.simple.parser.ParseException;
+
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.Waypoint;
-
+import com.pathplanner.lib.util.FileVersionException;
+import com.pathplanner.lib.util.GeometryUtil;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -83,6 +90,8 @@ public class RobotContainer {
   public static Climber climber = new Climber();
   public static Funnel funnel = new Funnel();
 
+  private final SendableChooser<Command> autoChooser;
+
   public RobotContainer() {
     driveTrain.setDefaultCommand(new DriveWithSpeeds(
       driveTrain,
@@ -90,16 +99,24 @@ public class RobotContainer {
       OI::getRightJoystickY,
       OI::getLeftJoystickX
     ));
+
+    autoChooser = new SendableChooser<>();
+    autoChooser.setDefaultOption("Do Nothing", new InstantCommand());
+    autoChooser.addOption("Top", new PathPlannerAuto("Top-60L-120R-120L"));
+    autoChooser.addOption("Bottom", new PathPlannerAuto("Top-60L-120R-120L", true));
+
+    SmartDashboard.putData(autoChooser);
+
     // driveTrain.configureAutoBuilder(estimator);
 
     //elevator.setDefaultCommand(new TuneElevator(elevator));
     //arm.setDefaultCommand(new TuneArm(arm));
 
     configureBindings();
-
     //elevator.setDefaultCommand(new DumbElevator(elevator, OI::getXboxLeftJoystickY));
     //arm.setDefaultCommand(new DumbArm(arm, OI::getXboxRightJoystickY));
     configureTestingBindings();
+
   }
 
   private void configureTestingBindings() {
@@ -175,6 +192,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return null;
+    return autoChooser.getSelected();
   }
 }
