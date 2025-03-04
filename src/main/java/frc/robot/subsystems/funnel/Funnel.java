@@ -22,7 +22,7 @@ public class Funnel extends SubsystemBase {
   private final SparkMaxConfig motorConfig = new SparkMaxConfig();
 
   private final RelativeEncoder motorEncoder;
-  private final PIDController funnelPID = new PIDController(5, 0, 0);
+  private final PIDController funnelPID = new PIDController(1, 0, 0);
   
   private boolean isMotorRunning = false;
   private double setpointAngle = 0.0;

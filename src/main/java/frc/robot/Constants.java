@@ -38,7 +38,7 @@ public class Constants {
         // DriveTrain.java
         public static final double DRIVE_LENGTH = Units.inchesToMeters(27.5); //m // should be 60cm
         public static final double DRIVE_WIDTH = Units.inchesToMeters(19.375); //m
-        public static final double MAX_MODULE_SPEED = 3; // 8 // m/s
+        public static final double MAX_MODULE_SPEED = 4; // 3 // m/s
         public static final double MAX_TRANSLATION_SPEED = 2; // 4 // m/s
         public static final double MAX_STEER_SPEED = Units.degreesToRadians(270);
 
@@ -61,7 +61,7 @@ public class Constants {
         public static final double maxDegreesPerSecond = 180;
 
         public static final String CAM_FRONT_NAME = "limelight-front"; 
-        public static final String CAM_BACK_NAME = "limelight-two"; 
+        public static final String CAM_BACK_NAME = "limelight-back"; 
         
         public static final LimelightStrategies STRATEGY = LimelightStrategies.ALL_ESTIMATES;
     }

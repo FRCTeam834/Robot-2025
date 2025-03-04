@@ -1,0 +1,79 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Side-60L"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutonScoreL4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "60L-FeederTop"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "FeederTop-120R"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutonScoreL4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "120R-FeederTop"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "FeederTop-120L"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutonScoreL4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "120L-FeederTop"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

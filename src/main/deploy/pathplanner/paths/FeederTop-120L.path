@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.643546748161316,
-        "y": 7.355282088688441
+        "x": 1.6552840909090907,
+        "y": 7.300667613636364
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3388007955259793,
-        "y": 6.5931396751093105
+        "x": 2.5926136363636365,
+        "y": 7.200951704545455
       },
       "isLocked": false,
       "linkedName": "FeederTop"
     },
     {
       "anchor": {
-        "x": 3.7291114280098356,
-        "y": 5.056872046621222
+        "x": 3.6695454545454544,
+        "y": 5.146803977272728
       },
       "prevControl": {
-        "x": 3.205997948364365,
-        "y": 5.573339161231502
+        "x": 3.2510022083538,
+        "y": 5.894860907924233
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,13 +34,13 @@
   "eventMarkers": [
     {
       "name": "AutonGotoL4",
-      "waypointRelativePos": 0.7,
+      "waypointRelativePos": 0.6,
       "endWaypointRelativePos": null,
       "command": null
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
+    "maxVelocity": 2.0,
     "maxAcceleration": 3.0,
     "maxAngularVelocity": 180.0,
     "maxAngularAcceleration": 360.0,
@@ -55,7 +55,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -50.0
+    "rotation": -54.0
   },
   "useDefaultConstraints": true
 }
