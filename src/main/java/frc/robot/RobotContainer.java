@@ -37,6 +37,7 @@ import frc.robot.commands.arm.IntakeCoral;
 import frc.robot.commands.arm.OuttakeCoral;
 import frc.robot.commands.arm.TestArmPID;
 import frc.robot.commands.arm.TuneArm;
+import frc.robot.commands.drivetrain.AutoDrive;
 import frc.robot.commands.drivetrain.DriveToPose;
 import frc.robot.commands.drivetrain.DriveWithSpeeds;
 import frc.robot.commands.drivetrain.RotateToPathTarget;
@@ -62,6 +63,7 @@ public class RobotContainer {
   JoystickButton leftJoystick11 = new JoystickButton(OI.leftJoystick, 11);
   JoystickButton leftJoystick7 = new JoystickButton(OI.leftJoystick, 7);
   JoystickButton leftJoystick6 = new JoystickButton(OI.leftJoystick, 6);
+  JoystickButton rightJoystick1 = new JoystickButton(OI.rightJoystick, 1);
 
   JoystickButton aButton = new JoystickButton(OI.xbox, 1);
   JoystickButton bButton = new JoystickButton(OI.xbox, 2);
@@ -100,6 +102,8 @@ public class RobotContainer {
       OI::getLeftJoystickX
     ));
 
+    driveTrain.configureAutoBuilder(estimator);
+
     autoChooser = new SendableChooser<>();
     autoChooser.setDefaultOption("Do Nothing", new InstantCommand());
     autoChooser.addOption("Top", new PathPlannerAuto("Top-60L-120R-120L"));
@@ -107,7 +111,6 @@ public class RobotContainer {
 
     SmartDashboard.putData(autoChooser);
 
-    // driveTrain.configureAutoBuilder(estimator);
 
     //elevator.setDefaultCommand(new TuneElevator(elevator));
     //arm.setDefaultCommand(new TuneArm(arm));
@@ -156,6 +159,8 @@ public class RobotContainer {
     aButton.onTrue(new CoralIntakeSequence(arm, elevator));
     xButton.onTrue(new IntakeAlgae(arm));
     bButton.onTrue(new OuttakeCoral(arm));
+
+    rightJoystick1.whileTrue(new AutoDrive(driveTrain, estimator));
 
     funnel.setDefaultCommand(new ManualFunnel(funnel, OI::getXboxLeftJoystickY));
 

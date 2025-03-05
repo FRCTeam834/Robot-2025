@@ -10,7 +10,6 @@ import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.commands.ArmElevatorGotoPosition;
 import frc.robot.commands.arm.OuttakeCoral;
-import frc.robot.commands.drivetrain.AutoDriveWithSpeeds;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.drivetrain.DriveTrain;
 import frc.robot.subsystems.elevator.Elevator;
