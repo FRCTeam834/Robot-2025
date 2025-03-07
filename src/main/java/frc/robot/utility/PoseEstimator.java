@@ -89,6 +89,7 @@ public class PoseEstimator extends SubsystemBase {
     cameras[0].setRobotOrientation(driveTrain.getYaw()); 
     cameras[1].setRobotOrientation(driveTrain.getYaw());
     LimelightHelpers.PoseEstimate[] cam_estimates = {cameras[0].getPoseEstimate2d(), cameras[1].getPoseEstimate2d()};
+    cam_estimates[1] = null;
 
     poseEstimator.updateWithTime(Timer.getFPGATimestamp(), driveTrain.getYaw(), driveTrain.getModulePositions());
 

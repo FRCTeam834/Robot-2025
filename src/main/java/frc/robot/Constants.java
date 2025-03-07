@@ -190,12 +190,7 @@ public class Constants {
     };
 
     public static final Pose2d[] updatedScoringPoses = {
-        new Pose2d(3.937, 2.739, Rotation2d.fromDegrees(60)),
-        new Pose2d(3.647, 2.906, Rotation2d.fromDegrees(60)),   
-        new Pose2d(5.027, 2.747, Rotation2d.fromDegrees(120)),
-        new Pose2d(5.317, 2.914, Rotation2d.fromDegrees(120)),
-        new Pose2d(5.862, 3.858, Rotation2d.fromDegrees(180)),
-        new Pose2d(5.862, 4.185, Rotation2d.fromDegrees(180))
+        new Pose2d(3.909, 2.674, Rotation2d.fromDegrees(60))
     };
 
     public static enum GamePiece {

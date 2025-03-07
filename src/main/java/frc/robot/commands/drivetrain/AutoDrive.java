@@ -38,8 +38,8 @@ public class AutoDrive extends Command {
   private final PoseEstimator poseEstimator;
 
   private final HolonomicDriveController holonomicDriveController = new HolonomicDriveController(
-    new PIDController(5, 0, 0), new PIDController(5, 0, 0), 
-    new ProfiledPIDController(5, 0, 0,
+    new PIDController(0.5, 0, 0), new PIDController(0.5, 0, 0), 
+    new ProfiledPIDController(1, 0, 0,
      new TrapezoidProfile.Constraints(Units.degreesToRadians(180), Units.degreesToRadians(180)))
   );
 
@@ -75,7 +75,7 @@ public class AutoDrive extends Command {
       double distanceError = robotPose.getTranslation().getDistance(scoringPose.getTranslation());
       double angleError = Math.abs(robotPose.getRotation().minus(scoringPose.getRotation()).getRadians());
 
-      double cost = (distanceError * 0.5 + angleError * 5);
+      double cost = (distanceError * 0.5 + angleError * 3);
       if (cost < bestCost) {
         bestCost = cost;
         closestScoringPose = scoringPose; 
@@ -90,11 +90,6 @@ public class AutoDrive extends Command {
       trajectoryConfig
     );
 
-    // System.out.println("Closest scoring pose: " + closestScoringPose.toString());
-    // System.out.println("Current Pose: " + poseEstimator.getPoseEstimate().toString());
-    // System.out.println("Desired trajectory info: " + desiredTrajectory.toString());
-
-    System.out.println(desiredTrajectory.getInitialPose());
     System.out.println(desiredTrajectory.sample(desiredTrajectory.getTotalTimeSeconds()));
   }
 
@@ -103,9 +98,16 @@ public class AutoDrive extends Command {
   public void execute() {
     driveTimer.start();
 
+    // ChassisSpeeds speeds = holonomicDriveController.calculate(
+    //   poseEstimator.getPoseEstimate(), 
+    //   desiredTrajectory.sample(driveTimer.get()),
+    //   closestScoringPose.getRotation()
+    // );
+
     ChassisSpeeds speeds = holonomicDriveController.calculate(
-      poseEstimator.getPoseEstimate(), 
-      desiredTrajectory.sample(driveTimer.get()),
+      poseEstimator.getPoseEstimate(),
+      closestScoringPose,
+      0.2,
       closestScoringPose.getRotation()
     );
 
@@ -119,12 +121,13 @@ public class AutoDrive extends Command {
     System.out.println("Ended");
     driveTimer.stop();
     driveTimer.reset();
+    driveTrain.stop();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (Math.abs(closestScoringPose.getX() - poseEstimator.getPoseEstimate().getX()) < Units.inchesToMeters(1))
-    && (Math.abs(closestScoringPose.getY() - poseEstimator.getPoseEstimate().getY()) < Units.inchesToMeters(1));
+    return (Math.abs(closestScoringPose.getX() - poseEstimator.getPoseEstimate().getX()) < Units.inchesToMeters(0.5))
+    && (Math.abs(closestScoringPose.getY() - poseEstimator.getPoseEstimate().getY()) < Units.inchesToMeters(0.5));
   }
 }
