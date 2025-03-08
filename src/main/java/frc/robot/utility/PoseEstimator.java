@@ -95,11 +95,18 @@ public class PoseEstimator extends SubsystemBase {
 
     if(!VisionConstants.useVisionPoseEstimator) return;
 
-    poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
+    //poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
     
     if(Constants.VisionConstants.STRATEGY == Constants.LimelightStrategies.ALL_ESTIMATES) {
       for(LimelightHelpers.PoseEstimate estimate : cam_estimates) {
-        if(estimate != null) poseEstimator.addVisionMeasurement(estimate.pose, estimate.timestampSeconds);
+        if(estimate != null) poseEstimator.addVisionMeasurement(
+          estimate.pose, 
+          estimate.timestampSeconds,
+          VecBuilder.fill(
+            Math.pow(0.5, estimate.tagCount) * 2 * estimate.avgTagDist,
+            Math.pow(0.5, estimate.tagCount) * 2 * estimate.avgTagDist,
+            Double.POSITIVE_INFINITY
+        ));
       }
     }
 
