@@ -74,8 +74,6 @@ public class SwerveModule extends SubsystemBase {
     //.closedLoopRampRate(0.5);
 
     driveMotorConfig.encoder
-    .quadratureAverageDepth(4)
-    .quadratureMeasurementPeriod(5)
     .positionConversionFactor((Math.PI * SwerveConstants.MODULE_WHEEL_DIAMETER) / SwerveConstants.DRIVE_GEAR_RATIO) // meters 
     .velocityConversionFactor((Math.PI * SwerveConstants.MODULE_WHEEL_DIAMETER) / (60.0 * SwerveConstants.DRIVE_GEAR_RATIO)); // meters per second
 
@@ -231,7 +229,6 @@ public class SwerveModule extends SubsystemBase {
   @Override
   public void initSendable(SendableBuilder builder) {
     builder.setSmartDashboardType("SwerveModule");
-
     builder.addDoubleProperty("AbsoluteEncoderAngle", this::getCANCoderAngle, null);
     builder.addDoubleProperty("Setpoint Speed", this::getSetpointSpeed, null);
     builder.addDoubleProperty("Setpoint Angle", this::getSetpointAngle, null);

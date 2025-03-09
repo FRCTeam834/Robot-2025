@@ -35,7 +35,7 @@ public class AutoDriveToPose extends ParallelDeadlineGroup {
     );
 
     // temp values
-    PathConstraints constraints = new PathConstraints(0.5, 0.5, Units.degreesToRotations(180), Units.degreesToRadians(360));
+    PathConstraints constraints = new PathConstraints(0.5, 0.5, Units.degreesToRadians(180), Units.degreesToRadians(360));
 
     PathPlannerPath path = new PathPlannerPath(
       waypoints,

@@ -6,6 +6,7 @@ package frc.robot.commands.drivetrain;
 
 import java.util.List;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -38,8 +39,8 @@ public class AutoDrive extends Command {
   private final PoseEstimator poseEstimator;
 
   private final HolonomicDriveController holonomicDriveController = new HolonomicDriveController(
-    new PIDController(0.5, 0, 0), new PIDController(0.5, 0, 0), 
-    new ProfiledPIDController(1, 0, 0,
+    new PIDController(1.5, 0, 0), new PIDController(1.5, 0, 0), 
+    new ProfiledPIDController(1.5, 0, 0,
      new TrapezoidProfile.Constraints(Units.degreesToRadians(180), Units.degreesToRadians(180)))
   );
 
@@ -56,9 +57,7 @@ public class AutoDrive extends Command {
     this.poseEstimator = poseEstimator;
 
     holonomicDriveController.setTolerance(new Pose2d(Units.inchesToMeters(2), Units.inchesToMeters(2), Rotation2d.fromDegrees(2)));
-
     SmartDashboard.putData("Autodrivetestfield", testField);
-
     addRequirements(driveTrain);
   }
 
@@ -75,22 +74,20 @@ public class AutoDrive extends Command {
       double distanceError = robotPose.getTranslation().getDistance(scoringPose.getTranslation());
       double angleError = Math.abs(robotPose.getRotation().minus(scoringPose.getRotation()).getRadians());
 
-      double cost = (distanceError * 0.5 + angleError * 3);
+      double cost = (distanceError * 3 + angleError * 2);
       if (cost < bestCost) {
         bestCost = cost;
         closestScoringPose = scoringPose; 
       }
     }
 
-    trajectoryConfig = new TrajectoryConfig(0.5, 0.5);
+    trajectoryConfig = new TrajectoryConfig(0.25, 0.25);
     trajectoryConfig.setStartVelocity(driveTrain.getRobotVeloMagnitude());  
     //trajectoryConfig.setKinematics(driveTrain.getKinematics());
     desiredTrajectory = TrajectoryGenerator.generateTrajectory(
       List.of(robotPose, closestScoringPose),
       trajectoryConfig
     );
-
-    System.out.println(desiredTrajectory.sample(desiredTrajectory.getTotalTimeSeconds()));
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -104,14 +101,22 @@ public class AutoDrive extends Command {
     //   closestScoringPose.getRotation()
     // );
 
+    double distx = Math.abs(closestScoringPose.getX() - poseEstimator.getPoseEstimate().getX());
+    double disty = Math.abs(closestScoringPose.getY() - poseEstimator.getPoseEstimate().getY());
+    System.out.println(Units.metersToInches(Math.hypot(distx, disty)));
+
     ChassisSpeeds speeds = holonomicDriveController.calculate(
-      poseEstimator.getPoseEstimate(),
-      closestScoringPose,
-      0.2,
+      new Pose2d(poseEstimator.getPoseEstimate().getTranslation(), driveTrain.getYaw()),
+      new Pose2d(closestScoringPose.getTranslation(), new Rotation2d()),
+      0, //desiredTrajectory.sample(driveTimer.get()).velocityMetersPerSecond,
       closestScoringPose.getRotation()
     );
 
     testField.setRobotPose(desiredTrajectory.sample(driveTimer.get()).poseMeters);
+
+    speeds.vxMetersPerSecond = MathUtil.clamp(speeds.vxMetersPerSecond, -1, 1);
+    speeds.vyMetersPerSecond = MathUtil.clamp(speeds.vyMetersPerSecond, -1, 1);
+
     driveTrain.setDesiredSpeedsFromHolonomicController(speeds);
   }
 
@@ -127,7 +132,8 @@ public class AutoDrive extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (Math.abs(closestScoringPose.getX() - poseEstimator.getPoseEstimate().getX()) < Units.inchesToMeters(0.5))
-    && (Math.abs(closestScoringPose.getY() - poseEstimator.getPoseEstimate().getY()) < Units.inchesToMeters(0.5));
+    return (Math.abs(closestScoringPose.getX() - poseEstimator.getPoseEstimate().getX()) < Units.inchesToMeters(1))
+    && (Math.abs(closestScoringPose.getY() - poseEstimator.getPoseEstimate().getY()) < Units.inchesToMeters(1));
+    //return holonomicDriveController.atReference();
   }
 }

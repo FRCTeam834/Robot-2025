@@ -54,9 +54,9 @@ public class PoseEstimator extends SubsystemBase {
       new Pose2d()
     );
 
-    SmartDashboard.putData("ll4field", frontField);
-    SmartDashboard.putData("ll3gfield", backField);
-    SmartDashboard.putData("KellersField", combined_field);
+    SmartDashboard.putData("frontfield", frontField);
+    SmartDashboard.putData("backfield", backField);
+    SmartDashboard.putData("combinedfield", combined_field);
     SmartDashboard.putData(this);
   }
 
@@ -93,13 +93,22 @@ public class PoseEstimator extends SubsystemBase {
 
     poseEstimator.updateWithTime(Timer.getFPGATimestamp(), driveTrain.getYaw(), driveTrain.getModulePositions());
 
+    combined_field.setRobotPose(poseEstimator.getEstimatedPosition());
+
     if(!VisionConstants.useVisionPoseEstimator) return;
 
-    poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
+    //poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
     
     if(Constants.VisionConstants.STRATEGY == Constants.LimelightStrategies.ALL_ESTIMATES) {
       for(LimelightHelpers.PoseEstimate estimate : cam_estimates) {
-        if(estimate != null) poseEstimator.addVisionMeasurement(estimate.pose, estimate.timestampSeconds);
+        if(estimate != null) poseEstimator.addVisionMeasurement(
+          estimate.pose, 
+          estimate.timestampSeconds,
+          VecBuilder.fill(
+            Math.pow(0.5, estimate.tagCount) * 2 * estimate.avgTagDist,
+            Math.pow(0.5, estimate.tagCount) * 2 * estimate.avgTagDist,
+            Double.POSITIVE_INFINITY
+        ));
       }
     }
 
@@ -140,9 +149,8 @@ public class PoseEstimator extends SubsystemBase {
       poseEstimator.addVisionMeasurement(bestEstimate.pose, bestEstimate.timestampSeconds);
     }
 
-    if (cam_estimates[1] != null) frontField.setRobotPose(cam_estimates[1].pose);
-    if (cam_estimates[0] != null) backField.setRobotPose(cam_estimates[0].pose);
-    combined_field.setRobotPose(poseEstimator.getEstimatedPosition());
+    if (cam_estimates[0] != null) frontField.setRobotPose(cam_estimates[0].pose);
+    if (cam_estimates[1] != null) backField.setRobotPose(cam_estimates[1].pose);
   }
 
   private double getLL4IMUYaw() {

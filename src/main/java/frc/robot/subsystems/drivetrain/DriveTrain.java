@@ -52,7 +52,7 @@ public class DriveTrain extends SubsystemBase {
     SwerveConstants.moduleTranslations[3]
   );
 
-  private SlewRateLimiter translationLimiter = new SlewRateLimiter(Units.feetToMeters(24));
+  private SlewRateLimiter translationLimiter = new SlewRateLimiter(1);
   private SlewRateLimiter omegaLimiter = new SlewRateLimiter(Math.toRadians(1080));
 
   private static TunableNumber kS_TunableNumber = new TunableNumber("SwerveModule/kS");
@@ -107,13 +107,11 @@ public class DriveTrain extends SubsystemBase {
   }
 
   public void drive(double xSpeed, double ySpeed, double rot) {
-    if(Math.abs(xSpeed) > 0.01 || Math.abs(ySpeed) > 0.01) {
-      double angle = Math.atan2(ySpeed, xSpeed);
-      double mag = translationLimiter.calculate(Math.hypot(xSpeed, ySpeed));
-      xSpeed = mag * Math.cos(angle);
-      ySpeed = mag * Math.sin(angle);
-    }
-    rot = omegaLimiter.calculate(rot);
+    // double angle = Math.atan2(ySpeed, xSpeed);
+    // double mag = translationLimiter.calculate(Math.hypot(xSpeed, ySpeed));
+    // xSpeed = mag * Math.cos(angle);
+    // ySpeed = mag * Math.sin(angle);
+    // rot = omegaLimiter.calculate(rot);
 
     ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getYaw());
 
@@ -127,11 +125,11 @@ public class DriveTrain extends SubsystemBase {
   }
 
   public void setDesiredSpeedsFromHolonomicController(ChassisSpeeds speeds) {
-    // double angle = Math.atan2(speeds.vyMetersPerSecond, speeds.vxMetersPerSecond);
-    // double mag = translationLimiter.calculate(Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond));
-    // speeds.vxMetersPerSecond = mag * Math.cos(angle);
-    // speeds.vyMetersPerSecond = mag * Math.sin(angle);
-    // speeds.omegaRadiansPerSecond = omegaLimiter.calculate(speeds.omegaRadiansPerSecond);
+    double angle = Math.atan2(speeds.vyMetersPerSecond, speeds.vxMetersPerSecond);
+    double mag = translationLimiter.calculate(Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond));
+    speeds.vxMetersPerSecond = mag * Math.cos(angle);
+    speeds.vyMetersPerSecond = mag * Math.sin(angle);
+    speeds.omegaRadiansPerSecond = omegaLimiter.calculate(speeds.omegaRadiansPerSecond);
 
     stopped = false;
     setpoint = speeds;
