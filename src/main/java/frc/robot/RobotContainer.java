@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import org.json.simple.parser.ParseException;
 
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
@@ -37,9 +38,13 @@ import frc.robot.commands.arm.IntakeCoral;
 import frc.robot.commands.arm.OuttakeCoral;
 import frc.robot.commands.arm.TestArmPID;
 import frc.robot.commands.arm.TuneArm;
+import frc.robot.commands.auton.AutonGotoL4;
+import frc.robot.commands.auton.AutonScoreL4;
 import frc.robot.commands.drivetrain.AutoDrive;
+import frc.robot.commands.drivetrain.AutoDriveToNearestScoring;
 import frc.robot.commands.drivetrain.DriveToPose;
 import frc.robot.commands.drivetrain.DriveWithSpeeds;
+import frc.robot.commands.drivetrain.OpenloopDrive;
 import frc.robot.commands.drivetrain.RotateToPathTarget;
 import frc.robot.commands.elevator.DumbElevator;
 import frc.robot.commands.elevator.TuneElevator;
@@ -95,7 +100,7 @@ public class RobotContainer {
   private final SendableChooser<Command> autoChooser;
 
   public RobotContainer() {
-    driveTrain.setDefaultCommand(new DriveWithSpeeds(
+    driveTrain.setDefaultCommand(new OpenloopDrive(
       driveTrain,
       OI::getRightJoystickX,
       OI::getRightJoystickY,
@@ -104,10 +109,15 @@ public class RobotContainer {
 
     driveTrain.configureAutoBuilder(estimator);
 
+    NamedCommands.registerCommand("AutonScoreL4", new AutonScoreL4(driveTrain, estimator, arm, elevator));
+    NamedCommands.registerCommand("AutonGotoL4", new AutonGotoL4(elevator, arm));
+
     autoChooser = new SendableChooser<>();
     autoChooser.setDefaultOption("Do Nothing", new InstantCommand());
     autoChooser.addOption("Top", new PathPlannerAuto("Top-60L-120R-120L"));
     autoChooser.addOption("Bottom", new PathPlannerAuto("Top-60L-120R-120L", true));
+    autoChooser.addOption("testAuton", new PathPlannerAuto("testAuton", true));
+    autoChooser.addOption("testodometry", new PathPlannerAuto("testodometry"));
 
     SmartDashboard.putData(autoChooser);
 
@@ -161,17 +171,13 @@ public class RobotContainer {
     bButton.onTrue(new OuttakeCoral(arm));
 
     rightJoystick1.whileTrue(new AutoDrive(driveTrain, estimator));
+    // rightJoystick1.whileTrue(new AutoDriveToNearestScoring(driveTrain, estimator));
 
     funnel.setDefaultCommand(new ManualFunnel(funnel, OI::getXboxLeftJoystickY));
 
     leftJoystick10.onTrue(new InstantCommand(() -> {
       driveTrain.zeroOdometry(new Rotation2d());
-      cams[1].seedLL4IMU();
-
-      FL.resetDriveEncoder();
-      FR.resetDriveEncoder();
-      BL.resetDriveEncoder();
-      BR.resetDriveEncoder();
+      //estimator.resetPose(new Pose2d());
 
       System.out.println("Zeroed the odometry");
     }));

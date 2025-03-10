@@ -52,7 +52,7 @@ public class DriveTrain extends SubsystemBase {
     SwerveConstants.moduleTranslations[3]
   );
 
-  private SlewRateLimiter translationLimiter = new SlewRateLimiter(Units.feetToMeters(24));
+  private SlewRateLimiter translationLimiter = new SlewRateLimiter(1);
   private SlewRateLimiter omegaLimiter = new SlewRateLimiter(Math.toRadians(1080));
 
   private static TunableNumber kS_TunableNumber = new TunableNumber("SwerveModule/kS");
@@ -66,6 +66,8 @@ public class DriveTrain extends SubsystemBase {
 
   private Rotation2d keepHeadingAngle = new Rotation2d();
   private PIDController keepHeadingController = new PIDController(2, 0, 0);
+
+  private ChassisSpeeds lastChassisSpeeds = new ChassisSpeeds();
 
   static {
     kS_TunableNumber.initDefault(0.2);
@@ -107,13 +109,11 @@ public class DriveTrain extends SubsystemBase {
   }
 
   public void drive(double xSpeed, double ySpeed, double rot) {
-    if(Math.abs(xSpeed) > 0.01 || Math.abs(ySpeed) > 0.01) {
-      double angle = Math.atan2(ySpeed, xSpeed);
-      double mag = translationLimiter.calculate(Math.hypot(xSpeed, ySpeed));
-      xSpeed = mag * Math.cos(angle);
-      ySpeed = mag * Math.sin(angle);
-    }
-    rot = omegaLimiter.calculate(rot);
+    // double angle = Math.atan2(ySpeed, xSpeed);
+    // double mag = translationLimiter.calculate(Math.hypot(xSpeed, ySpeed));
+    // xSpeed = mag * Math.cos(angle);
+    // ySpeed = mag * Math.sin(angle);
+    // rot = omegaLimiter.calculate(rot);
 
     ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getYaw());
 
@@ -121,9 +121,60 @@ public class DriveTrain extends SubsystemBase {
     setDesiredSpeeds(speeds);
   }
 
+  public void driveOpenLoop(double vx, double vy, double rot) {
+    stopped = false;
+
+    if(Math.abs(vx) > 0.01 && Math.abs(vy) > 0.01) {
+      double angle = Math.atan2(vy, vx);
+      double mag = translationLimiter.calculate(Math.hypot(vx, vy));
+      vx = mag * Math.cos(angle);
+      vy = mag * Math.sin(angle);
+      rot = omegaLimiter.calculate(rot);
+    } else if (Math.abs(lastChassisSpeeds.vyMetersPerSecond) > 0.01 && Math.abs(lastChassisSpeeds.vxMetersPerSecond) > 0.01) {
+      double angle = Math.atan2(lastChassisSpeeds.vyMetersPerSecond, lastChassisSpeeds.vxMetersPerSecond);
+      double mag = translationLimiter.calculate(0);
+      vx = mag * Math.cos(angle);
+      vy = mag * Math.sin(angle);
+      rot = omegaLimiter.calculate(rot);
+    }
+
+    System.out.println("angle: ");
+
+    ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(vx, vy, rot, getYaw());
+
+    SwerveModuleState[] desiredStates = kinematics.toSwerveModuleStates(speeds);
+    SwerveDriveKinematics.desaturateWheelSpeeds(
+      desiredStates,
+      lastChassisSpeeds,
+      SwerveConstants.MAX_MODULE_SPEED,
+      SwerveConstants.MAX_TRANSLATION_SPEED,
+      SwerveConstants.MAX_STEER_SPEED
+    );
+
+    flSwerveModule.setDesiredStateOpenLoop(desiredStates[0]);
+    frSwerveModule.setDesiredStateOpenLoop(desiredStates[1]);
+    blSwerveModule.setDesiredStateOpenLoop(desiredStates[2]);
+    brSwerveModule.setDesiredStateOpenLoop(desiredStates[3]);
+    lastChassisSpeeds = speeds;
+  }
+
   public void setDesiredSpeeds(ChassisSpeeds speeds) {
     stopped = false;
-    setpoint = speeds;
+    SwerveModuleState[] desiredStates = kinematics.toSwerveModuleStates(speeds);
+
+    SwerveDriveKinematics.desaturateWheelSpeeds(
+      desiredStates, 
+      lastChassisSpeeds, 
+      SwerveConstants.MAX_MODULE_SPEED,
+      SwerveConstants.MAX_TRANSLATION_SPEED,
+      SwerveConstants.MAX_STEER_SPEED
+    );
+
+    flSwerveModule.setDesiredState(desiredStates[0]);
+    frSwerveModule.setDesiredState(desiredStates[1]);
+    blSwerveModule.setDesiredState(desiredStates[2]);
+    brSwerveModule.setDesiredState(desiredStates[3]);
+    lastChassisSpeeds = speeds;
   }
 
   public void setDesiredSpeedsFromHolonomicController(ChassisSpeeds speeds) {
@@ -226,20 +277,6 @@ public class DriveTrain extends SubsystemBase {
       stop();
       return;
     }
-
-    SwerveModuleState[] desiredStates = kinematics.toSwerveModuleStates(setpoint);
-    SwerveDriveKinematics.desaturateWheelSpeeds(
-      desiredStates, 
-      setpoint, 
-      SwerveConstants.MAX_MODULE_SPEED,
-      SwerveConstants.MAX_TRANSLATION_SPEED,
-      SwerveConstants.MAX_STEER_SPEED
-    );
-
-    flSwerveModule.setDesiredState(desiredStates[0]);
-    frSwerveModule.setDesiredState(desiredStates[1]);
-    blSwerveModule.setDesiredState(desiredStates[2]);
-    brSwerveModule.setDesiredState(desiredStates[3]);
   }
 
   public void stop() { 

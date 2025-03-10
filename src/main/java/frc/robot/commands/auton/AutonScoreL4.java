@@ -25,7 +25,7 @@ public class AutonScoreL4 extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
       new SequentialCommandGroup(
-        new ArmElevatorGotoPosition(ArmConstants.L4_ANGLE, ElevatorConstants.L4_HEIGHT, arm, elevator),
+        //new ArmElevatorGotoPosition(ArmConstants.L4_ANGLE, ElevatorConstants.L4_HEIGHT, arm, elevator),
         new AutonOuttakeCoral(arm)
       ).onlyIf(arm::hasCoral)
     );

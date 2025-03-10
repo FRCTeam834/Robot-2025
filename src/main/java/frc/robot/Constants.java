@@ -24,8 +24,8 @@ public class Constants {
         //TODO: Figure out units and change constants
 
         //SwerveModule.java
-        public static final double MODULE_WHEEL_DIAMETER = Units.inchesToMeters(4); // meters
-        public static final double DRIVE_GEAR_RATIO = 8.14; 
+        public static final double MODULE_WHEEL_DIAMETER = Units.inchesToMeters(3.875); // meters
+        public static final double DRIVE_GEAR_RATIO = 6.75; 
         public static final double STEER_GEAR_RATIO = 12.8;
 
         public static final double drivingVelocityFeedForward = 1.4; // Allegedly 1/473 Kv but 2022 code uses 3.248 
@@ -190,7 +190,12 @@ public class Constants {
     };
 
     public static final Pose2d[] updatedScoringPoses = {
-        new Pose2d(3.909, 2.674, Rotation2d.fromDegrees(60))
+        new Pose2d(3.109, 4.192, Rotation2d.fromDegrees(0)),
+        new Pose2d(3.109, 3.850, Rotation2d.fromDegrees(0)),
+        new Pose2d(3.654, 2.914, Rotation2d.fromDegrees(60)),
+        new Pose2d(3.944, 2.754, Rotation2d.fromDegrees(60)),
+        new Pose2d(5.027, 2.747, Rotation2d.fromDegrees(120)),
+        new Pose2d(5.317, 2.914, Rotation2d.fromDegrees(120))
     };
 
     public static enum GamePiece {
