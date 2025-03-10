@@ -44,6 +44,7 @@ import frc.robot.commands.drivetrain.AutoDrive;
 import frc.robot.commands.drivetrain.AutoDriveToNearestScoring;
 import frc.robot.commands.drivetrain.DriveToPose;
 import frc.robot.commands.drivetrain.DriveWithSpeeds;
+import frc.robot.commands.drivetrain.OpenloopDrive;
 import frc.robot.commands.drivetrain.RotateToPathTarget;
 import frc.robot.commands.elevator.DumbElevator;
 import frc.robot.commands.elevator.TuneElevator;
@@ -99,7 +100,7 @@ public class RobotContainer {
   private final SendableChooser<Command> autoChooser;
 
   public RobotContainer() {
-    driveTrain.setDefaultCommand(new DriveWithSpeeds(
+    driveTrain.setDefaultCommand(new OpenloopDrive(
       driveTrain,
       OI::getRightJoystickX,
       OI::getRightJoystickY,

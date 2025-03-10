@@ -71,8 +71,7 @@ public class SwerveModule extends SubsystemBase {
     .smartCurrentLimit(40)
     .voltageCompensation(12)
     .inverted(reversedDrive);
-    //.closedLoopRampRate(0.5);
-
+    
     driveMotorConfig.encoder
     .positionConversionFactor((Math.PI * SwerveConstants.MODULE_WHEEL_DIAMETER) / SwerveConstants.DRIVE_GEAR_RATIO) // meters 
     .velocityConversionFactor((Math.PI * SwerveConstants.MODULE_WHEEL_DIAMETER) / (60.0 * SwerveConstants.DRIVE_GEAR_RATIO)); // meters per second
@@ -177,8 +176,7 @@ public class SwerveModule extends SubsystemBase {
     correctedDesiredState.optimize(Rotation2d.fromRadians(getCANCoderAngle()));
 
     if (Math.abs(correctedDesiredState.speedMetersPerSecond) < 0.01) {
-      stop();
-      return;
+      correctedDesiredState.speedMetersPerSecond = 0.0;
     }
 
     // correctedDesiredState.speedMetersPerSecond *= Math.cos(correctedDesiredState.speedMetersPerSecond - getTurnAngle());
@@ -189,6 +187,17 @@ public class SwerveModule extends SubsystemBase {
     turnController.setReference(correctedDesiredState.angle.getRadians(), ControlType.kPosition);
 
     this.setpoint = correctedDesiredState;
+  }
+
+  public void setDesiredStateOpenLoop(SwerveModuleState state) {
+    state.optimize(Rotation2d.fromRadians(getCANCoderAngle()));
+
+    if (Math.abs(state.speedMetersPerSecond) < 0.01) {
+      state.speedMetersPerSecond = 0.0;
+    }
+    
+    driveMotor.set(state.speedMetersPerSecond / SwerveConstants.MAX_MODULE_SPEED);
+    turnController.setReference(state.angle.getRadians(), ControlType.kPosition);
   }
 
   public void seedTurnEncoder() {
