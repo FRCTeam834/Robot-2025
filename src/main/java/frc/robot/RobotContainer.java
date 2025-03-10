@@ -42,7 +42,6 @@ import frc.robot.commands.auton.AutonGotoL4;
 import frc.robot.commands.auton.AutonScoreL4;
 import frc.robot.commands.drivetrain.AutoDrive;
 import frc.robot.commands.drivetrain.AutoDriveToNearestScoring;
-import frc.robot.commands.drivetrain.DriveToPose;
 import frc.robot.commands.drivetrain.DriveWithSpeeds;
 import frc.robot.commands.drivetrain.OpenloopDrive;
 import frc.robot.commands.drivetrain.RotateToPathTarget;

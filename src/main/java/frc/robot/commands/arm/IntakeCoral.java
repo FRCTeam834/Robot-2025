@@ -4,6 +4,8 @@
 
 package frc.robot.commands.arm;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.GamePiece;
@@ -16,6 +18,9 @@ public class IntakeCoral extends Command {
   private Timer timer = new Timer();
   private boolean ended = false;
 
+  private Rotation2d lastAngle;
+  private boolean hasCoral;
+
   public IntakeCoral(Arm arm) {
     this.arm = arm;
     addRequirements(arm);
@@ -26,6 +31,7 @@ public class IntakeCoral extends Command {
   @Override
   public void initialize() {
     ended = false;
+    hasCoral = false;
     arm.setIntakeVoltage(8); // 4 was good
     timer.stop();
     timer.reset();
@@ -34,12 +40,13 @@ public class IntakeCoral extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (arm.hasCoral() && timer.get() == 0) {
-      timer.start();
+    if (arm.hasCoral() && !hasCoral) {
       arm.setIntakeVoltage(1); // a lower voltage to move it past elevator stage
+      lastAngle = new Rotation2d(arm.getIntakeAngle());
+      hasCoral = true;
     }
 
-    if (timer.get() > 0.75) {
+    if (hasCoral && Math.abs(new Rotation2d(arm.getIntakeAngle()).minus(lastAngle).getDegrees()) > 180) {
       ended = true;
     }
   }

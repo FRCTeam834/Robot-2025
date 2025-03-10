@@ -7,6 +7,7 @@ package frc.robot.subsystems.arm;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -38,6 +39,7 @@ public class Arm extends SubsystemBase {
   
   //Arm absolute encoder
   private final AbsoluteEncoder pivotAbsoluteEncoder;
+  private final RelativeEncoder intakeEncoder;
 
   private LaserCan laserCAN;
 
@@ -96,6 +98,7 @@ public class Arm extends SubsystemBase {
     
     //Initialize arm absolute encoder
     pivotAbsoluteEncoder = pivotMotor.getAbsoluteEncoder();
+    intakeEncoder = intakeMotor.getEncoder();
     
     //Configure motors and encoders
     pivotMotorConfig
@@ -105,8 +108,8 @@ public class Arm extends SubsystemBase {
     .inverted(true);
 
     pivotMotorConfig.absoluteEncoder
-    .positionConversionFactor(2 * Math.PI)
-    .velocityConversionFactor(2 * Math.PI / 60)
+    .positionConversionFactor(2.0 * Math.PI)
+    .velocityConversionFactor(2.0 * Math.PI / 60.0)
     .inverted(true);
 
     intakeMotorConfig
@@ -115,9 +118,14 @@ public class Arm extends SubsystemBase {
     .voltageCompensation(12)
     .inverted(false);
 
+    intakeMotorConfig.encoder
+    .positionConversionFactor(2.0 * Math.PI)
+    .velocityConversionFactor(2.0 * Math.PI / 60.0);
+
     //Apply configurations
     pivotMotor.configure(pivotMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     intakeMotor.configure(intakeMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    intakeEncoder.setPosition(0);
 
     SmartDashboard.putData(this);
   }
@@ -163,6 +171,10 @@ public class Arm extends SubsystemBase {
 
   public double getIntakeOutputCurrent () {
     return intakeMotor.getAppliedOutput();
+  }
+
+  public double getIntakeAngle() {
+    return intakeEncoder.getPosition();
   }
 
   public void setPivotVoltage(double volts) {

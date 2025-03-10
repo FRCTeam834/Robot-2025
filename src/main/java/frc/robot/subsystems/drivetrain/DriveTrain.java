@@ -124,28 +124,28 @@ public class DriveTrain extends SubsystemBase {
   public void driveOpenLoop(double vx, double vy, double rot) {
     stopped = false;
 
-    if(Math.abs(vx) > 0.01 && Math.abs(vy) > 0.01) {
+    if(Math.hypot(vx, vy) > 0.01) {
       double angle = Math.atan2(vy, vx);
       double mag = translationLimiter.calculate(Math.hypot(vx, vy));
       vx = mag * Math.cos(angle);
       vy = mag * Math.sin(angle);
-      rot = omegaLimiter.calculate(rot);
-    } else if (Math.abs(lastChassisSpeeds.vyMetersPerSecond) > 0.01 && Math.abs(lastChassisSpeeds.vxMetersPerSecond) > 0.01) {
+    } else if (Math.hypot(lastChassisSpeeds.vxMetersPerSecond, lastChassisSpeeds.vyMetersPerSecond) > 0.01) {
       double angle = Math.atan2(lastChassisSpeeds.vyMetersPerSecond, lastChassisSpeeds.vxMetersPerSecond);
       double mag = translationLimiter.calculate(0);
       vx = mag * Math.cos(angle);
       vy = mag * Math.sin(angle);
-      rot = omegaLimiter.calculate(rot);
+    } else {
+      vx = 0;
+      vy = 0;
     }
 
-    System.out.println("angle: ");
-
+    rot = omegaLimiter.calculate(rot);
     ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(vx, vy, rot, getYaw());
 
     SwerveModuleState[] desiredStates = kinematics.toSwerveModuleStates(speeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
       desiredStates,
-      lastChassisSpeeds,
+      speeds,
       SwerveConstants.MAX_MODULE_SPEED,
       SwerveConstants.MAX_TRANSLATION_SPEED,
       SwerveConstants.MAX_STEER_SPEED
@@ -164,7 +164,7 @@ public class DriveTrain extends SubsystemBase {
 
     SwerveDriveKinematics.desaturateWheelSpeeds(
       desiredStates, 
-      lastChassisSpeeds, 
+      speeds, 
       SwerveConstants.MAX_MODULE_SPEED,
       SwerveConstants.MAX_TRANSLATION_SPEED,
       SwerveConstants.MAX_STEER_SPEED
@@ -175,17 +175,6 @@ public class DriveTrain extends SubsystemBase {
     blSwerveModule.setDesiredState(desiredStates[2]);
     brSwerveModule.setDesiredState(desiredStates[3]);
     lastChassisSpeeds = speeds;
-  }
-
-  public void setDesiredSpeedsFromHolonomicController(ChassisSpeeds speeds) {
-    // double angle = Math.atan2(speeds.vyMetersPerSecond, speeds.vxMetersPerSecond);
-    // double mag = translationLimiter.calculate(Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond));
-    // speeds.vxMetersPerSecond = mag * Math.cos(angle);
-    // speeds.vyMetersPerSecond = mag * Math.sin(angle);
-    // speeds.omegaRadiansPerSecond = omegaLimiter.calculate(speeds.omegaRadiansPerSecond);
-
-    stopped = false;
-    setpoint = speeds;
   }
 
   public void setChassisSlewRate(double translationLimit, double omegaLimit) {

@@ -117,7 +117,7 @@ public class AutoDrive extends Command {
     speeds.vxMetersPerSecond = MathUtil.clamp(speeds.vxMetersPerSecond, -1, 1);
     speeds.vyMetersPerSecond = MathUtil.clamp(speeds.vyMetersPerSecond, -1, 1);
 
-    driveTrain.setDesiredSpeedsFromHolonomicController(speeds);
+    driveTrain.setDesiredSpeeds(speeds);
   }
 
   // Called once the command ends or is interrupted.
