@@ -18,7 +18,7 @@ public class IntakeCoral extends Command {
   private Timer timer = new Timer();
   private boolean ended = false;
 
-  private Rotation2d lastAngle;
+  private double lastAngle;
   private boolean hasCoral;
 
   public IntakeCoral(Arm arm) {
@@ -42,11 +42,13 @@ public class IntakeCoral extends Command {
   public void execute() {
     if (arm.hasCoral() && !hasCoral) {
       arm.setIntakeVoltage(1); // a lower voltage to move it past elevator stage
-      lastAngle = new Rotation2d(arm.getIntakeAngle());
+      lastAngle = arm.getIntakeAngle();
       hasCoral = true;
     }
 
-    if (hasCoral && Math.abs(new Rotation2d(arm.getIntakeAngle()).minus(lastAngle).getDegrees()) > 180) {
+    if (hasCoral) System.out.println(arm.getIntakeAngle() - lastAngle);
+
+    if (hasCoral && Math.abs(arm.getIntakeAngle() - lastAngle) > 50) {
       ended = true;
     }
   }

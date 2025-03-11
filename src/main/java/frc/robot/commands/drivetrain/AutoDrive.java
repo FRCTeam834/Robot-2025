@@ -38,34 +38,31 @@ public class AutoDrive extends Command {
   private final DriveTrain driveTrain;
   private final PoseEstimator poseEstimator;
 
+  PIDController xController = new PIDController(1, 0, 0);
+  PIDController yController = new PIDController(1, 0, 0);
+  PIDController thetaController = new PIDController(2, 0, 0);
+
   private final HolonomicDriveController holonomicDriveController = new HolonomicDriveController(
-    new PIDController(1.5, 0, 0), new PIDController(1.5, 0, 0), 
-    new ProfiledPIDController(1.5, 0, 0,
+    xController, yController,
+    new ProfiledPIDController(0, 0, 0,
      new TrapezoidProfile.Constraints(Units.degreesToRadians(180), Units.degreesToRadians(180)))
   );
 
   private Pose2d closestScoringPose;
-
-  private Trajectory desiredTrajectory;
-  private TrajectoryConfig trajectoryConfig;
-  private Timer driveTimer = new Timer();
-
-  private Field2d testField = new Field2d();
+  private double desiredLinearVelocity;
 
   public AutoDrive(DriveTrain driveTrain, PoseEstimator poseEstimator) {
     this.driveTrain = driveTrain;
     this.poseEstimator = poseEstimator;
 
+    thetaController.enableContinuousInput(0, 2 * Math.PI);
     holonomicDriveController.setTolerance(new Pose2d(Units.inchesToMeters(2), Units.inchesToMeters(2), Rotation2d.fromDegrees(2)));
-    SmartDashboard.putData("Autodrivetestfield", testField);
     addRequirements(driveTrain);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    driveTimer.stop();
-    driveTimer.reset();
 
     Pose2d robotPose = poseEstimator.getPoseEstimate();
 
@@ -81,42 +78,33 @@ public class AutoDrive extends Command {
       }
     }
 
-    trajectoryConfig = new TrajectoryConfig(0.25, 0.25);
-    trajectoryConfig.setStartVelocity(driveTrain.getRobotVeloMagnitude());  
-    //trajectoryConfig.setKinematics(driveTrain.getKinematics());
-    desiredTrajectory = TrajectoryGenerator.generateTrajectory(
-      List.of(robotPose, closestScoringPose),
-      trajectoryConfig
-    );
+    System.out.println(closestScoringPose.toString());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    driveTimer.start();
+    Pose2d robotPose = poseEstimator.getPoseEstimate();
+    double translationError = robotPose.getTranslation().getDistance(closestScoringPose.getTranslation());
 
-    // ChassisSpeeds speeds = holonomicDriveController.calculate(
-    //   poseEstimator.getPoseEstimate(), 
-    //   desiredTrajectory.sample(driveTimer.get()),
-    //   closestScoringPose.getRotation()
-    // );
-
-    double distx = Math.abs(closestScoringPose.getX() - poseEstimator.getPoseEstimate().getX());
-    double disty = Math.abs(closestScoringPose.getY() - poseEstimator.getPoseEstimate().getY());
-    System.out.println(Units.metersToInches(Math.hypot(distx, disty)));
+    if(translationError > 1) {
+      desiredLinearVelocity = 0.5;
+      xController.setP(1);
+      yController.setP(1);
+    } else {
+      yController.setP(1.5);
+      xController.setP(1.5);
+      desiredLinearVelocity = 0;
+    }
 
     ChassisSpeeds speeds = holonomicDriveController.calculate(
       new Pose2d(poseEstimator.getPoseEstimate().getTranslation(), driveTrain.getYaw()),
       new Pose2d(closestScoringPose.getTranslation(), new Rotation2d()),
-      0, //desiredTrajectory.sample(driveTimer.get()).velocityMetersPerSecond,
+      desiredLinearVelocity, 
       closestScoringPose.getRotation()
     );
 
-    testField.setRobotPose(desiredTrajectory.sample(driveTimer.get()).poseMeters);
-
-    speeds.vxMetersPerSecond = MathUtil.clamp(speeds.vxMetersPerSecond, -1, 1);
-    speeds.vyMetersPerSecond = MathUtil.clamp(speeds.vyMetersPerSecond, -1, 1);
-
+    speeds.omegaRadiansPerSecond = thetaController.calculate(driveTrain.getYaw().getRadians(), closestScoringPose.getRotation().getRadians());
     driveTrain.setDesiredSpeeds(speeds);
   }
 
@@ -124,8 +112,6 @@ public class AutoDrive extends Command {
   @Override
   public void end(boolean interrupted) {
     System.out.println("Ended");
-    driveTimer.stop();
-    driveTimer.reset();
     driveTrain.stop();
   }
 

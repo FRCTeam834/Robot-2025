@@ -61,9 +61,9 @@ public class Limelight extends SubsystemBase {
     if(Math.abs(gyro.getAngularVelo()) > VisionConstants.maxDegreesPerSecond) rejectUpdate = true;
     if(estimate.tagCount == 0) rejectUpdate = true;
 
-    // for(LimelightHelpers.RawFiducial fiducial : estimate.rawFiducials) {
-    //   if (fiducial.ambiguity > 0.3) rejectUpdate = true;
-    // }
+    for(LimelightHelpers.RawFiducial fiducial : estimate.rawFiducials) {
+      if (fiducial.distToRobot > 3) rejectUpdate = true;
+    }
 
     if (rejectUpdate) return null;
     return estimate;

@@ -68,6 +68,7 @@ public class DriveTrain extends SubsystemBase {
   private PIDController keepHeadingController = new PIDController(2, 0, 0);
 
   private ChassisSpeeds lastChassisSpeeds = new ChassisSpeeds();
+  private double lastTranslationAngle = 0;
 
   static {
     kS_TunableNumber.initDefault(0.2);
@@ -129,14 +130,11 @@ public class DriveTrain extends SubsystemBase {
       double mag = translationLimiter.calculate(Math.hypot(vx, vy));
       vx = mag * Math.cos(angle);
       vy = mag * Math.sin(angle);
-    } else if (Math.hypot(lastChassisSpeeds.vxMetersPerSecond, lastChassisSpeeds.vyMetersPerSecond) > 0.01) {
-      double angle = Math.atan2(lastChassisSpeeds.vyMetersPerSecond, lastChassisSpeeds.vxMetersPerSecond);
+      lastTranslationAngle = angle;
+    } else if (translationLimiter.lastValue() > 0.1) {
       double mag = translationLimiter.calculate(0);
-      vx = mag * Math.cos(angle);
-      vy = mag * Math.sin(angle);
-    } else {
-      vx = 0;
-      vy = 0;
+      vx = mag * Math.cos(lastTranslationAngle);
+      vy = mag * Math.sin(lastTranslationAngle);
     }
 
     rot = omegaLimiter.calculate(rot);
@@ -155,7 +153,6 @@ public class DriveTrain extends SubsystemBase {
     frSwerveModule.setDesiredStateOpenLoop(desiredStates[1]);
     blSwerveModule.setDesiredStateOpenLoop(desiredStates[2]);
     brSwerveModule.setDesiredStateOpenLoop(desiredStates[3]);
-    lastChassisSpeeds = speeds;
   }
 
   public void setDesiredSpeeds(ChassisSpeeds speeds) {
