@@ -5,6 +5,7 @@
 package frc.robot.commands.auton;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.commands.ArmElevatorGotoPosition;
@@ -18,6 +19,6 @@ public class AutonGotoL4 extends SequentialCommandGroup {
   /** Creates a new AutonGotoL4. */
 
   public AutonGotoL4(Elevator elevator, Arm arm) {
-    addCommands(new ArmElevatorGotoPosition(ArmConstants.L4_ANGLE, ElevatorConstants.L4_HEIGHT, arm, elevator).onlyIf(arm::hasCoral));
+    addCommands(new ArmElevatorGotoPosition(ArmConstants.L4_AUTON_ANGLE, ElevatorConstants.L4_AUTON_HEIGHT, arm, elevator, RobotContainer.driveTrain).onlyIf(arm::hasCoral));
   }
 }

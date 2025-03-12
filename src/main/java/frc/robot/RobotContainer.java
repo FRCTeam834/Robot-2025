@@ -36,9 +36,14 @@ import frc.robot.commands.arm.DumbArm;
 import frc.robot.commands.arm.IntakeAlgae;
 import frc.robot.commands.arm.IntakeCoral;
 import frc.robot.commands.arm.OuttakeCoral;
+import frc.robot.commands.arm.ReverseIntake;
 import frc.robot.commands.arm.TestArmPID;
 import frc.robot.commands.arm.TuneArm;
 import frc.robot.commands.auton.AutonGotoL4;
+import frc.robot.commands.auton.AutonIntake;
+import frc.robot.commands.auton.AutonIntakeDos;
+import frc.robot.commands.auton.AutonIntakeUno;
+import frc.robot.commands.auton.AutonIntakeUnoArm;
 import frc.robot.commands.auton.AutonScoreL4;
 import frc.robot.commands.drivetrain.AutoDrive;
 import frc.robot.commands.drivetrain.AutoDriveToNearestScoring;
@@ -68,6 +73,8 @@ public class RobotContainer {
   JoystickButton leftJoystick7 = new JoystickButton(OI.leftJoystick, 7);
   JoystickButton leftJoystick6 = new JoystickButton(OI.leftJoystick, 6);
   JoystickButton rightJoystick1 = new JoystickButton(OI.rightJoystick, 1);
+
+  JoystickButton rightJoystick3 = new JoystickButton(OI.leftJoystick, 3);
 
   JoystickButton aButton = new JoystickButton(OI.xbox, 1);
   JoystickButton bButton = new JoystickButton(OI.xbox, 2);
@@ -110,6 +117,10 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("AutonScoreL4", new AutonScoreL4(driveTrain, estimator, arm, elevator));
     NamedCommands.registerCommand("AutonGotoL4", new AutonGotoL4(elevator, arm));
+    NamedCommands.registerCommand("AutonIntake", new AutonIntake(arm, elevator));
+    NamedCommands.registerCommand("AutonIntakeUno", new AutonIntakeUno(arm, elevator));
+    NamedCommands.registerCommand("AutonIntakeDos", new AutonIntakeDos(arm));
+
 
     autoChooser = new SendableChooser<>();
     autoChooser.setDefaultOption("Do Nothing", new InstantCommand());
@@ -153,30 +164,32 @@ public class RobotContainer {
 
   private void configureBindings() {
     // stow
-    OI.getKeypad0().onTrue(new ArmElevatorGotoPosition(ArmConstants.STOW_ANGLE, ElevatorConstants.STOW_HEIGHT, arm, elevator));
+    OI.getKeypad0().onTrue(new ArmElevatorGotoPosition(ArmConstants.STOW_ANGLE, ElevatorConstants.STOW_HEIGHT, arm, elevator, driveTrain));
 
     // coral
-    OI.getKeypad1().onTrue(new ArmElevatorGotoPosition(ArmConstants.L1_ANGLE, ElevatorConstants.L1_HEIGHT, arm, elevator));
-    OI.getKeypad4().onTrue(new ArmElevatorGotoPosition(ArmConstants.L2_ANGLE, ElevatorConstants.L2_HEIGHT, arm, elevator));
-    OI.getKeypad7().onTrue(new ArmElevatorGotoPosition(ArmConstants.L3_ANGLE, ElevatorConstants.L3_HEIGHT, arm, elevator));
-    OI.getKeypadNum().onTrue(new ArmElevatorGotoPosition(ArmConstants.L4_ANGLE, ElevatorConstants.L4_HEIGHT, arm, elevator));
+    OI.getKeypad1().onTrue(new ArmElevatorGotoPosition(ArmConstants.L1_ANGLE, ElevatorConstants.L1_HEIGHT, arm, elevator, driveTrain));
+    OI.getKeypad4().onTrue(new ArmElevatorGotoPosition(ArmConstants.L2_ANGLE, ElevatorConstants.L2_HEIGHT, arm, elevator, driveTrain));
+    OI.getKeypad7().onTrue(new ArmElevatorGotoPosition(ArmConstants.L3_ANGLE, ElevatorConstants.L3_HEIGHT, arm, elevator, driveTrain));
+    OI.getKeypadNum().onTrue(new ArmElevatorGotoPosition(ArmConstants.L4_ANGLE, ElevatorConstants.L4_HEIGHT, arm, elevator, driveTrain));
 
     // algae
-    OI.getKeypad2().onTrue(new ArmElevatorGotoPosition(ArmConstants.ALGAE_L1_ANGLE, ElevatorConstants.ALGAE_L1_HEIGHT, arm, elevator));
-    OI.getKeypad5().onTrue(new ArmElevatorGotoPosition(ArmConstants.ALGAE_L2_ANGLE, ElevatorConstants.ALGAE_L2_HEIGHT, arm, elevator));
+    OI.getKeypad2().onTrue(new ArmElevatorGotoPosition(ArmConstants.ALGAE_L1_ANGLE, ElevatorConstants.ALGAE_L1_HEIGHT, arm, elevator, driveTrain));
+    OI.getKeypad5().onTrue(new ArmElevatorGotoPosition(ArmConstants.ALGAE_L2_ANGLE, ElevatorConstants.ALGAE_L2_HEIGHT, arm, elevator, driveTrain));
 
     aButton.onTrue(new CoralIntakeSequence(arm, elevator));
     xButton.onTrue(new IntakeAlgae(arm));
     bButton.onTrue(new OuttakeCoral(arm));
+    yButton.whileTrue(new ReverseIntake(arm));
 
     rightJoystick1.whileTrue(new AutoDrive(driveTrain, estimator));
+    rightJoystick3.onTrue(new ArmElevatorGotoPosition(ArmConstants.CORAL_INTAKE_ANGLE, ElevatorConstants.STOW_HEIGHT, arm, elevator, driveTrain));
     // rightJoystick1.whileTrue(new AutoDriveToNearestScoring(driveTrain, estimator));
 
     funnel.setDefaultCommand(new ManualFunnel(funnel, OI::getXboxLeftJoystickY));
 
     leftJoystick10.onTrue(new InstantCommand(() -> {
       driveTrain.zeroOdometry(new Rotation2d());
-      //estimator.resetPose(new Pose2d());
+      //estimator.resetRotation(new Rotation2d());
 
       System.out.println("Zeroed the odometry");
     }));

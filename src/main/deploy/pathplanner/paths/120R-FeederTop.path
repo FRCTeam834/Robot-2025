@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.9288068181818185,
-        "y": 5.316321022727273
+        "x": 3.958919701986755,
+        "y": 5.2816846026490065
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.2806534090909087,
-        "y": 6.522883522727272
+        "x": 3.310766292895845,
+        "y": 6.488247102649006
       },
       "isLocked": false,
       "linkedName": "120R"
     },
     {
       "anchor": {
-        "x": 2.1211092715231787,
-        "y": 7.489962748344371
+        "x": 1.6707367549668874,
+        "y": 7.301096854304635
       },
       "prevControl": {
-        "x": 3.566989953341361,
-        "y": 7.190815021071643
+        "x": 3.116617436785069,
+        "y": 7.001949127031907
       },
       "nextControl": null,
       "isLocked": false,
@@ -36,12 +36,17 @@
       "name": "AutonIntake",
       "waypointRelativePos": 0.1,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "AutonIntake"
+        }
+      }
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 2.0,
+    "maxVelocity": 1.25,
+    "maxAcceleration": 1.25,
     "maxAngularVelocity": 180.0,
     "maxAngularAcceleration": 360.0,
     "nominalVoltage": 12.0,
@@ -49,7 +54,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": -55.0
   },
   "reversed": false,
   "folder": null,

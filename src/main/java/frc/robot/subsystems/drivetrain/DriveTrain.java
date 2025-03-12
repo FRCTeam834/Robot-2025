@@ -16,6 +16,7 @@ import com.pathplanner.lib.path.Waypoint;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.estimator.PoseEstimator3d;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -52,7 +53,7 @@ public class DriveTrain extends SubsystemBase {
     SwerveConstants.moduleTranslations[3]
   );
 
-  private SlewRateLimiter translationLimiter = new SlewRateLimiter(1);
+  private SlewRateLimiter translationLimiter = new SlewRateLimiter(999);
   private SlewRateLimiter omegaLimiter = new SlewRateLimiter(Math.toRadians(1080));
 
   private static TunableNumber kS_TunableNumber = new TunableNumber("SwerveModule/kS");
@@ -161,7 +162,7 @@ public class DriveTrain extends SubsystemBase {
 
     SwerveDriveKinematics.desaturateWheelSpeeds(
       desiredStates, 
-      speeds, 
+      lastChassisSpeeds, 
       SwerveConstants.MAX_MODULE_SPEED,
       SwerveConstants.MAX_TRANSLATION_SPEED,
       SwerveConstants.MAX_STEER_SPEED
@@ -174,15 +175,10 @@ public class DriveTrain extends SubsystemBase {
     lastChassisSpeeds = speeds;
   }
 
-  public void setChassisSlewRate(double translationLimit, double omegaLimit) {
+  public void setChassisSlewRate(double translationLimit) {
     double lastTranslationValue = translationLimiter.lastValue();
-    double lastOmegaLimiterValue = omegaLimiter.lastValue();
-
     translationLimiter = new SlewRateLimiter(translationLimit);
-    omegaLimiter = new SlewRateLimiter(omegaLimit);
-
     translationLimiter.reset(lastTranslationValue);
-    omegaLimiter.reset(lastOmegaLimiterValue);
   }
 
   public SwerveModulePosition[] getModulePositions() {

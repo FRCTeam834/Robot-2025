@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.1211092715231787,
-        "y": 7.489962748344371
+        "x": 1.6707367549668874,
+        "y": 7.301096854304635
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.0584388169777244,
-        "y": 7.390246839253462
+        "x": 2.608066300421433,
+        "y": 7.201380945213726
       },
       "isLocked": false,
       "linkedName": "FeederTop"
     },
     {
       "anchor": {
-        "x": 3.6695454545454544,
-        "y": 5.146803977272728
+        "x": 3.675620860927152,
+        "y": 5.107346854304635
       },
       "prevControl": {
-        "x": 3.2510022083538,
-        "y": 5.894860907924233
+        "x": 3.257077614735498,
+        "y": 5.85540378495614
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,15 +33,31 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "AutonGotoL4",
-      "waypointRelativePos": 0.6,
+      "name": "AutonIntakeDos",
+      "waypointRelativePos": 0,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "AutonIntakeDos"
+        }
+      }
+    },
+    {
+      "name": "AutonGotoL4",
+      "waypointRelativePos": 0.24876325088340032,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "AutonGotoL4"
+        }
+      }
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 2.0,
+    "maxVelocity": 1.25,
+    "maxAcceleration": 1.25,
     "maxAngularVelocity": 180.0,
     "maxAngularAcceleration": 360.0,
     "nominalVoltage": 12.0,
@@ -55,7 +71,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": -55.0
   },
   "useDefaultConstraints": true
 }

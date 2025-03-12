@@ -84,10 +84,14 @@ public class PoseEstimator extends SubsystemBase {
     poseEstimator.resetPosition(driveTrain.getYaw(), driveTrain.getModulePositions(), pose);
   }
 
+  public void resetRotation(Rotation2d rot) {
+    poseEstimator.resetRotation(rot);
+  }
+
   @Override
   public void periodic() {
-    cameras[0].setRobotOrientation(driveTrain.getYaw()); 
-    cameras[1].setRobotOrientation(driveTrain.getYaw());
+    cameras[0].setRobotOrientation(poseEstimator.getEstimatedPosition().getRotation()); 
+    cameras[1].setRobotOrientation(poseEstimator.getEstimatedPosition().getRotation());
     LimelightHelpers.PoseEstimate[] cam_estimates = {cameras[0].getPoseEstimate2d(), cameras[1].getPoseEstimate2d()};
     cam_estimates[1] = null;
 

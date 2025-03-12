@@ -35,7 +35,7 @@ public class Funnel extends SubsystemBase {
     .idleMode(IdleMode.kBrake)
     .smartCurrentLimit(40)
     .voltageCompensation(12)
-    .inverted(false);
+    .inverted(true);
 
     motorConfig.encoder
     .positionConversionFactor(2 * Math.PI)

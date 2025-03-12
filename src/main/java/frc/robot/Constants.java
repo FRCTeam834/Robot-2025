@@ -39,7 +39,7 @@ public class Constants {
         public static final double DRIVE_LENGTH = Units.inchesToMeters(27.5); //m // should be 60cm
         public static final double DRIVE_WIDTH = Units.inchesToMeters(19.375); //m
         public static final double MAX_MODULE_SPEED = 4; // 3 // m/s
-        public static final double MAX_TRANSLATION_SPEED = 2; // 4 // m/s
+        public static final double MAX_TRANSLATION_SPEED = 3; // 4 // m/s
         public static final double MAX_STEER_SPEED = Units.degreesToRadians(270);
 
         public static final Translation2d[] moduleTranslations = {
@@ -81,7 +81,8 @@ public class Constants {
         public static final double L2_ANGLE = -0.4; // this is a random default value
         public static final double L3_ANGLE = -0.4; // this is a random default value
         public static final double L4_ANGLE = -0.25; // -0.25 // this is a random default value
-        public static final double ALGAE_L1_ANGLE = -0.3;
+        public static final double L4_AUTON_ANGLE = -0.28;
+        public static final double ALGAE_L1_ANGLE = -0.27;
         public static final double ALGAE_L2_ANGLE = -0.33;
     }
 
@@ -97,6 +98,7 @@ public class Constants {
         public static final double L2_HEIGHT = 0.5; // this is a random default value
         public static final double L3_HEIGHT = 0.9; // this is a random default value
         public static final double L4_HEIGHT = 1.44; // this is a random default value
+        public static final double L4_AUTON_HEIGHT = 1.41;
         public static final double ALGAE_L1_HEIGHT = 0.5;
         public static final double ALGAE_L2_HEIGHT = 0.87;
         public static final double MAXMIMUM_HEIGHT = 1.44;
@@ -166,12 +168,12 @@ public class Constants {
         new Pose2d(5.291, 5.082, Rotation2d.fromDegrees(-120)),
         new Pose2d(4.995, 5.248, Rotation2d.fromDegrees(-120)),
         new Pose2d(3.978, 5.241, Rotation2d.fromDegrees(-60)),
-        new Pose2d(3.689, 5.072, Rotation2d.fromDegrees(-60)),
-        new Pose2d(3.180, 4.192, Rotation2d.fromDegrees(0)),
-        new Pose2d(3.180, 3.860, Rotation2d.fromDegrees(0)),
-        new Pose2d(3.688, 2.978, Rotation2d.fromDegrees(60)),
+        new Pose2d(3.690, 5.100, Rotation2d.fromDegrees(-60)),
+        new Pose2d(3.180, 4.167, Rotation2d.fromDegrees(0)), // 0 LEFT
+        new Pose2d(3.180, 3.860, Rotation2d.fromDegrees(0)), // 0 RIGHT
+        new Pose2d(3.668, 2.928, Rotation2d.fromDegrees(60)), // 60 LEFT
         new Pose2d(3.979, 2.815, Rotation2d.fromDegrees(60)),
-        new Pose2d(4.994, 2.814, Rotation2d.fromDegrees(120)),
+        new Pose2d(5.012, 2.790, Rotation2d.fromDegrees(120)),
         new Pose2d(5.278, 2.979, Rotation2d.fromDegrees(120)),
         new Pose2d(5.790, 3.855, Rotation2d.fromDegrees(180)), 
         new Pose2d(5.790, 4.190, Rotation2d.fromDegrees(180)),

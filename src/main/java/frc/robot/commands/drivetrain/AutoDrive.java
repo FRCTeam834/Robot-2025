@@ -40,7 +40,7 @@ public class AutoDrive extends Command {
 
   PIDController xController = new PIDController(1, 0, 0);
   PIDController yController = new PIDController(1, 0, 0);
-  PIDController thetaController = new PIDController(2, 0, 0);
+  PIDController thetaController = new PIDController(2.5, 0, 0);
 
   private final HolonomicDriveController holonomicDriveController = new HolonomicDriveController(
     xController, yController,
@@ -67,7 +67,7 @@ public class AutoDrive extends Command {
     Pose2d robotPose = poseEstimator.getPoseEstimate();
 
     double bestCost = Double.MAX_VALUE;
-    for(Pose2d scoringPose : Constants.updatedScoringPoses) {
+    for(Pose2d scoringPose : Constants.scoringPoses) {
       double distanceError = robotPose.getTranslation().getDistance(scoringPose.getTranslation());
       double angleError = Math.abs(robotPose.getRotation().minus(scoringPose.getRotation()).getRadians());
 
@@ -89,21 +89,24 @@ public class AutoDrive extends Command {
 
     if(translationError > 1) {
       desiredLinearVelocity = 0.5;
-      xController.setP(1);
-      yController.setP(1);
+      xController.setP(2);
+      yController.setP(2);
     } else {
-      yController.setP(1.5);
-      xController.setP(1.5);
       desiredLinearVelocity = 0;
+      yController.setP(2);
+      xController.setP(2);
     }
+
 
     ChassisSpeeds speeds = holonomicDriveController.calculate(
       new Pose2d(poseEstimator.getPoseEstimate().getTranslation(), driveTrain.getYaw()),
-      new Pose2d(closestScoringPose.getTranslation(), new Rotation2d()),
+      closestScoringPose,
       desiredLinearVelocity, 
       closestScoringPose.getRotation()
     );
 
+    speeds.vxMetersPerSecond = MathUtil.clamp(speeds.vxMetersPerSecond, -1, 1);
+    speeds.vyMetersPerSecond = MathUtil.clamp(speeds.vyMetersPerSecond, -1, 1);
     speeds.omegaRadiansPerSecond = thetaController.calculate(driveTrain.getYaw().getRadians(), closestScoringPose.getRotation().getRadians());
     driveTrain.setDesiredSpeeds(speeds);
   }
@@ -118,8 +121,8 @@ public class AutoDrive extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (Math.abs(closestScoringPose.getX() - poseEstimator.getPoseEstimate().getX()) < Units.inchesToMeters(1))
-    && (Math.abs(closestScoringPose.getY() - poseEstimator.getPoseEstimate().getY()) < Units.inchesToMeters(1));
+    return (Math.abs(closestScoringPose.getX() - poseEstimator.getPoseEstimate().getX()) < Units.inchesToMeters(0.5))
+    && (Math.abs(closestScoringPose.getY() - poseEstimator.getPoseEstimate().getY()) < Units.inchesToMeters(0.5));
     //return holonomicDriveController.atReference();
   }
 }

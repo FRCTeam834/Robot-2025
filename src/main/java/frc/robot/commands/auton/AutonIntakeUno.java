@@ -18,16 +18,16 @@ import frc.robot.subsystems.elevator.Elevator;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class AutonIntake extends ParallelCommandGroup {
+public class AutonIntakeUno extends ParallelCommandGroup {
   /** Creates a new AutonIntake. */
-  public AutonIntake(Arm arm, Elevator elevator) {
+  public AutonIntakeUno(Arm arm, Elevator elevator) {
     /**
      * NOTE: I'm not sure if pathplanenr waits for commands to finish before executing the next path
      * If so, change parallel group(AutonIntake, followPath) to deadline in the pathplanenr GUI
      */
     addCommands(
       new ArmElevatorGotoPosition(ArmConstants.CORAL_INTAKE_ANGLE, ElevatorConstants.INTAKE_HEIGHT, arm, elevator, RobotContainer.driveTrain),
-      new IntakeCoral(arm)
+      new AutonIntakeUnoArm(arm)
     );
   }
 }

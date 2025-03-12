@@ -27,7 +27,7 @@ public class Climber extends SubsystemBase {
     .idleMode(IdleMode.kBrake)
     .smartCurrentLimit(50)
     .voltageCompensation(12)
-    .inverted(false);
+    .inverted(true);
 
     climberMotor.configure(climberMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
