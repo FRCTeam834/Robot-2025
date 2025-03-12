@@ -159,10 +159,10 @@ public class Arm extends SubsystemBase {
 
   //Update the arm angle setpoint
   public void setDesiredPivotAngle (double angle) {
-    armStopped = false;
     pivotAngleSetpoint = MathUtil.clamp(angle, ArmConstants.MAXIMUM_ANGLE, 0.2);
     trapezoidPID.reset(getCurrentPivotAngle());
     trapezoidPID.setGoal(new TrapezoidProfile.State(pivotAngleSetpoint, 0.0));
+    armStopped = false;
   }
 
   public void setIntakeVoltage (double volts) {

@@ -132,7 +132,7 @@ public class DriveTrain extends SubsystemBase {
       vx = mag * Math.cos(angle);
       vy = mag * Math.sin(angle);
       lastTranslationAngle = angle;
-    } else if (translationLimiter.lastValue() > 0.1) {
+    } else if (translationLimiter.lastValue() > 0.01) {
       double mag = translationLimiter.calculate(0);
       vx = mag * Math.cos(lastTranslationAngle);
       vy = mag * Math.sin(lastTranslationAngle);
@@ -310,7 +310,7 @@ public class DriveTrain extends SubsystemBase {
       this::getRobotRelativeSpeeds, 
       this::setDesiredSpeeds, 
       new PPHolonomicDriveController(
-        new PIDConstants(1.5, 0, 0),
+        new PIDConstants(1.0, 0, 0),
         new PIDConstants(2.5, 0, 0)
       ), 
       Constants.PATHPLANNER_CONFIG,

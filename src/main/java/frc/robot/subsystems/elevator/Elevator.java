@@ -164,9 +164,10 @@ public class Elevator extends SubsystemBase {
   }
 
   public void setDesiredHeight(double height) {
-    elevatorStopped = false;
     setpointHeight = MathUtil.clamp(height, 0, ElevatorConstants.MAXMIMUM_HEIGHT);
+    trapezoidPID.reset(getElevatorHeight());
     trapezoidPID.setGoal(new TrapezoidProfile.State(setpointHeight, 0.0));
+    elevatorStopped = false;
   }
 
   public boolean isAtSetpoint() {
