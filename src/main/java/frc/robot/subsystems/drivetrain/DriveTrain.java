@@ -310,7 +310,7 @@ public class DriveTrain extends SubsystemBase {
       this::getRobotRelativeSpeeds, 
       this::setDesiredSpeeds, 
       new PPHolonomicDriveController(
-        new PIDConstants(1.0, 0, 0),
+        new PIDConstants(1.5, 0, 0),
         new PIDConstants(2.5, 0, 0)
       ), 
       Constants.PATHPLANNER_CONFIG,
