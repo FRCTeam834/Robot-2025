@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.675620860927152,
-        "y": 5.107346854304635
+        "x": 3.661092715231788,
+        "y": 5.136403145695364
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.8380072245635164,
-        "y": 6.483426399759179
+        "x": 2.8234790788681523,
+        "y": 6.512482691149908
       },
       "isLocked": false,
       "linkedName": "120L"
     },
     {
       "anchor": {
-        "x": 1.6707367549668874,
-        "y": 7.301096854304635
+        "x": 1.6489445364238413,
+        "y": 7.293832781456953
       },
       "prevControl": {
-        "x": 2.312272795521793,
-        "y": 6.596238732991698
+        "x": 2.290480576978747,
+        "y": 6.588974660144015
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,8 +45,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 1.25,
-    "maxAcceleration": 1.25,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 180.0,
     "maxAngularAcceleration": 360.0,
     "nominalVoltage": 12.0,

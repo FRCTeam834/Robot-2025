@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.9904180463576155,
-        "y": 5.267156456953642
+        "x": 5.012210264900662,
+        "y": 5.2816846026490065
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.2379566399426905,
-        "y": 5.695905877877134
+        "x": 5.259748858485737,
+        "y": 5.710434023572499
       },
       "isLocked": false,
       "linkedName": "60L"
@@ -32,12 +32,12 @@
     },
     {
       "anchor": {
-        "x": 1.6707367549668874,
-        "y": 7.301096854304635
+        "x": 1.6489445364238413,
+        "y": 7.293832781456953
       },
       "prevControl": {
-        "x": 2.6379810731476483,
-        "y": 6.573170717935494
+        "x": 2.6161888546046024,
+        "y": 6.565906645087812
       },
       "nextControl": null,
       "isLocked": false,
@@ -66,8 +66,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 1.25,
-    "maxAcceleration": 1.25,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 180.0,
     "maxAngularAcceleration": 360.0,
     "nominalVoltage": 12.0,

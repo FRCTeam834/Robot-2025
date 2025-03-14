@@ -61,7 +61,7 @@ public class Arm extends SubsystemBase {
   
   //Arm PID controller
   private ProfiledPIDController trapezoidPID = new ProfiledPIDController(0, 0, 0, 
-    new TrapezoidProfile.Constraints(Units.degreesToRadians(45), Units.degreesToRadians(45))
+    new TrapezoidProfile.Constraints(Units.degreesToRadians(60), Units.degreesToRadians(60))
     //new TrapezoidProfile.Constraints(Units.degreesToRadians(70), Units.degreesToRadians(70))
   );
 
@@ -79,7 +79,7 @@ public class Arm extends SubsystemBase {
   //Arm PID and feedforward constants
   static {
     //TODO: Initialize default constants
-    pivotkP.initDefault(1);
+    pivotkP.initDefault(1.5);
     pivotkI.initDefault(0);
     pivotkD.initDefault(0);
 

@@ -39,6 +39,7 @@ import frc.robot.commands.arm.OuttakeCoral;
 import frc.robot.commands.arm.ReverseIntake;
 import frc.robot.commands.arm.TestArmPID;
 import frc.robot.commands.arm.TuneArm;
+import frc.robot.commands.auton.AutonGotoL2;
 import frc.robot.commands.auton.AutonGotoL4;
 import frc.robot.commands.auton.AutonIntake;
 import frc.robot.commands.auton.AutonIntakeDos;
@@ -47,6 +48,7 @@ import frc.robot.commands.auton.AutonIntakeUnoArm;
 import frc.robot.commands.auton.AutonScoreL4;
 import frc.robot.commands.drivetrain.AutoDrive;
 import frc.robot.commands.drivetrain.AutoDriveToNearestScoring;
+import frc.robot.commands.drivetrain.BetterAutoDrive;
 import frc.robot.commands.drivetrain.DriveWithSpeeds;
 import frc.robot.commands.drivetrain.OpenloopDrive;
 import frc.robot.commands.drivetrain.RotateToPathTarget;
@@ -106,7 +108,7 @@ public class RobotContainer {
   private final SendableChooser<Command> autoChooser;
 
   public RobotContainer() {
-    driveTrain.setDefaultCommand(new OpenloopDrive(
+    driveTrain.setDefaultCommand(new DriveWithSpeeds(
       driveTrain,
       OI::getRightJoystickX,
       OI::getRightJoystickY,
@@ -117,17 +119,22 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("AutonScoreL4", new AutonScoreL4(driveTrain, estimator, arm, elevator));
     NamedCommands.registerCommand("AutonGotoL4", new AutonGotoL4(elevator, arm));
+    NamedCommands.registerCommand("AutonGotoL2", new AutonGotoL2(elevator, arm));
     NamedCommands.registerCommand("AutonIntake", new AutonIntake(arm, elevator));
     NamedCommands.registerCommand("AutonIntakeUno", new AutonIntakeUno(arm, elevator));
     NamedCommands.registerCommand("AutonIntakeDos", new AutonIntakeDos(arm));
+    NamedCommands.registerCommand("BetterAutoDrive", new BetterAutoDrive(driveTrain, estimator));
 
 
     autoChooser = new SendableChooser<>();
     autoChooser.setDefaultOption("Do Nothing", new InstantCommand());
     autoChooser.addOption("Top", new PathPlannerAuto("Top-60L-120R-120L"));
     autoChooser.addOption("Bottom", new PathPlannerAuto("Top-60L-120R-120L", true));
+    autoChooser.addOption("Top-60L-120R-120L-AutoDrive", new PathPlannerAuto("Top-60L-120R-120L-AutoDrive"));
     autoChooser.addOption("testAuton", new PathPlannerAuto("testAuton", true));
     autoChooser.addOption("testodometry", new PathPlannerAuto("testodometry"));
+    autoChooser.addOption("twopiece", new PathPlannerAuto("twopiece"));
+    autoChooser.addOption("twopiecebottom", new PathPlannerAuto("twopiece", true));
 
     SmartDashboard.putData(autoChooser);
 
@@ -181,7 +188,7 @@ public class RobotContainer {
     bButton.onTrue(new OuttakeCoral(arm));
     yButton.whileTrue(new ReverseIntake(arm));
 
-    rightJoystick1.whileTrue(new AutoDrive(driveTrain, estimator));
+    rightJoystick1.whileTrue(new BetterAutoDrive(driveTrain, estimator));
     rightJoystick3.onTrue(new ArmElevatorGotoPosition(ArmConstants.CORAL_INTAKE_ANGLE, ElevatorConstants.STOW_HEIGHT, arm, elevator, driveTrain));
     // rightJoystick1.whileTrue(new AutoDriveToNearestScoring(driveTrain, estimator));
 

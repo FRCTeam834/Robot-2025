@@ -82,6 +82,7 @@ public class PoseEstimator extends SubsystemBase {
 
   public void resetPose(Pose2d pose) {
     poseEstimator.resetPosition(driveTrain.getYaw(), driveTrain.getModulePositions(), pose);
+    //driveTrain.zeroOdometry(pose.getRotation());
   }
 
   public void resetRotation(Rotation2d rot) {

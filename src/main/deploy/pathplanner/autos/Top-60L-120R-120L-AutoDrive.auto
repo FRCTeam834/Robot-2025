@@ -1,0 +1,136 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Side-60L"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "BetterAutoDrive"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 1.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutonScoreL4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "60L-FeederTop"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutonIntakeUno"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "FeederTop-120R"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "BetterAutoDrive"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 1.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutonScoreL4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "120R-FeederTop"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutonIntakeUno"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "FeederTop-120L"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "BetterAutoDrive"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 1.0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutonScoreL4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "120L-FeederTop"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

@@ -26,7 +26,7 @@ public class AutonOuttakeCoral extends Command {
   @Override
   public void initialize() {
     finished = false;
-    arm.setIntakeVoltage(8);
+    arm.setIntakeVoltage(12);
     timer.reset();
     timer.stop();
   }

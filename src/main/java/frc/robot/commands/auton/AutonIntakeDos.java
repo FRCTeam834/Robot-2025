@@ -37,7 +37,7 @@ public class AutonIntakeDos extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (Math.abs(arm.getIntakeAngle() - lastAngle) > 40) {
+    if (Math.abs(arm.getIntakeAngle() - lastAngle) > 20) {
       ended = true;
     }
   }

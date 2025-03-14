@@ -4,24 +4,24 @@
     {
       "anchor": {
         "x": 3.958919701986755,
-        "y": 5.2816846026490065
+        "y": 5.274420529801323
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.310766292895845,
-        "y": 6.488247102649006
+        "x": 3.247040562913907,
+        "y": 6.42940811258278
       },
       "isLocked": false,
       "linkedName": "120R"
     },
     {
       "anchor": {
-        "x": 1.6707367549668874,
-        "y": 7.301096854304635
+        "x": 1.6489445364238413,
+        "y": 7.293832781456953
       },
       "prevControl": {
-        "x": 3.116617436785069,
-        "y": 7.001949127031907
+        "x": 2.280918874172186,
+        "y": 6.487520695364237
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,8 +45,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 1.25,
-    "maxAcceleration": 1.25,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 180.0,
     "maxAngularAcceleration": 360.0,
     "nominalVoltage": 12.0,

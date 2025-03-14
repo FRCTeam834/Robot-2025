@@ -4,17 +4,21 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.*;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import com.pathplanner.lib.config.RobotConfig;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.Filesystem;
 
 /** Add your docs here. */
@@ -36,9 +40,11 @@ public class Constants {
         public static final double CAN_CODER_OFFSET_BL = -0.538330; // 0.3125;
 
         // DriveTrain.java
+
+        // With bumpers Width: 0.813 Length: 1.003
         public static final double DRIVE_LENGTH = Units.inchesToMeters(27.5); //m // should be 60cm
         public static final double DRIVE_WIDTH = Units.inchesToMeters(19.375); //m
-        public static final double MAX_MODULE_SPEED = 4; // 3 // m/s
+        public static final double MAX_MODULE_SPEED = 4.5; // 3 // m/s
         public static final double MAX_TRANSLATION_SPEED = 3; // 4 // m/s
         public static final double MAX_STEER_SPEED = Units.degreesToRadians(270);
 
@@ -79,11 +85,11 @@ public class Constants {
         public static final double STOW_ANGLE = -0.2; // this is a random default value. this should be greater than NOCOLLISION_MIN_ARM_ANGLE
         public static final double L1_ANGLE = -0.1; // this is a random default value
         public static final double L2_ANGLE = -0.4; // this is a random default value
-        public static final double L3_ANGLE = -0.4; // this is a random default value
-        public static final double L4_ANGLE = -0.25; // -0.25 // this is a random default value
-        public static final double L4_AUTON_ANGLE = -0.28;
+        public static final double L3_ANGLE = -0.29; // this is a random default value
+        public static final double L4_ANGLE = -0.29; // -0.25 // this is a random default value
+        public static final double L4_AUTON_ANGLE = -0.32; // -0.28
         public static final double ALGAE_L1_ANGLE = -0.27;
-        public static final double ALGAE_L2_ANGLE = -0.33;
+        public static final double ALGAE_L2_ANGLE = -0.3;
     }
 
     public static class ElevatorConstants {
@@ -92,15 +98,15 @@ public class Constants {
 
         public static final double HEIGHT_TOLERANCE = 0.0; // this is a random default value
 
-        public static final double STOW_HEIGHT = 0.0; // this is a random default value
-        public static final double INTAKE_HEIGHT = 0.0; // this is a random default value
-        public static final double L1_HEIGHT = 0.05; // this is a random default value
-        public static final double L2_HEIGHT = 0.5; // this is a random default value
-        public static final double L3_HEIGHT = 0.9; // this is a random default value
-        public static final double L4_HEIGHT = 1.44; // this is a random default value
-        public static final double L4_AUTON_HEIGHT = 1.41;
+        public static final double STOW_HEIGHT = 0.0; 
+        public static final double INTAKE_HEIGHT = 0.0; 
+        public static final double L1_HEIGHT = 0.05;
+        public static final double L2_HEIGHT = 0.45;
+        public static final double L3_HEIGHT = 0.75; 
+        public static final double L4_HEIGHT = 1.44; 
+        public static final double L4_AUTON_HEIGHT = 1.44;
         public static final double ALGAE_L1_HEIGHT = 0.5;
-        public static final double ALGAE_L2_HEIGHT = 0.87;
+        public static final double ALGAE_L2_HEIGHT = 0.84;
         public static final double MAXMIMUM_HEIGHT = 1.44;
     }
 
@@ -199,6 +205,26 @@ public class Constants {
         new Pose2d(5.027, 2.747, Rotation2d.fromDegrees(120)),
         new Pose2d(5.317, 2.914, Rotation2d.fromDegrees(120))
     };
+
+    public static class FieldConstants {
+        public static final AprilTagFieldLayout APRIL_TAGS = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
+
+        public static final Translation2d REEF_CENTER_BLUE = APRIL_TAGS.getTagPose(18).get().toPose2d().getTranslation()
+        .plus(APRIL_TAGS.getTagPose(21).get().toPose2d().getTranslation()).div(2);
+        
+        // Pose at midpoint between tags 10 and 7 (which are opposite on red reef)
+        public static final Translation2d REEF_CENTER_RED = APRIL_TAGS.getTagPose(10).get().toPose2d().getTranslation()
+        .plus(APRIL_TAGS.getTagPose(7).get().toPose2d().getTranslation()).div(2);
+
+        public static final Distance REEF_APOTHEM = Meters.of(
+                APRIL_TAGS.getTagPose(18).get().toPose2d().getTranslation().getDistance(REEF_CENTER_BLUE))
+                .plus(Meters.of(0.55));
+                
+        // translation to move from centered on a side to scoring position for the left branch
+        public static final Translation2d CENTERED_TO_LEFT_BRANCH = new Translation2d(Meters.of(0),
+                Inches.of(12.94 / 2));
+    }
+
 
     public static enum GamePiece {
         NONE,

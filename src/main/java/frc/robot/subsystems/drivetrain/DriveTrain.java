@@ -73,8 +73,8 @@ public class DriveTrain extends SubsystemBase {
 
   static {
     kS_TunableNumber.initDefault(0.2);
-    kV_TunableNumber.initDefault(3);
-    kP_Drive.initDefault(0);
+    kV_TunableNumber.initDefault(2.7);
+    kP_Drive.initDefault(0.17);
     kP_Turn.initDefault(0.17);
   }
 
@@ -225,7 +225,7 @@ public class DriveTrain extends SubsystemBase {
   }
 
   public void zeroOdometry(Rotation2d angle) {
-    gyro.resetYaw(0.0);
+    gyro.resetYaw(angle.getDegrees());
     flSwerveModule.seedTurnEncoder();
     frSwerveModule.seedTurnEncoder();
     blSwerveModule.seedTurnEncoder();
@@ -310,8 +310,8 @@ public class DriveTrain extends SubsystemBase {
       this::getRobotRelativeSpeeds, 
       this::setDesiredSpeeds, 
       new PPHolonomicDriveController(
-        new PIDConstants(1.5, 0, 0),
-        new PIDConstants(2.5, 0, 0)
+        new PIDConstants(5, 0, 0),
+        new PIDConstants(5, 0, 0)
       ), 
       Constants.PATHPLANNER_CONFIG,
         () -> {

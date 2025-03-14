@@ -100,7 +100,7 @@ public class SwerveModule extends SubsystemBase {
 
     turnMotorConfig.closedLoop
     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-    .pid(0.25, 0, 0.0)
+    .pid(0.25, 0, 0)
     .outputRange(-1, 1)
     .positionWrappingEnabled(true)
     .positionWrappingInputRange(-Math.PI, Math.PI);

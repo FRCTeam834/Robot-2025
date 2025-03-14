@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.6707367549668874,
-        "y": 7.301096854304635
+        "x": 1.6489445364238413,
+        "y": 7.293832781456953
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3462955298013246,
-        "y": 6.56742549668874
+        "x": 2.3245033112582787,
+        "y": 6.560161423841057
       },
       "isLocked": false,
       "linkedName": "FeederTop"
@@ -17,11 +17,11 @@
     {
       "anchor": {
         "x": 3.958919701986755,
-        "y": 5.2816846026490065
+        "y": 5.274420529801323
       },
       "prevControl": {
         "x": 3.4514911950611964,
-        "y": 6.009775831581909
+        "y": 6.002511758734226
       },
       "nextControl": null,
       "isLocked": false,
@@ -38,13 +38,13 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "AutonGotoL4",
+      "name": "AutonGotoL2",
       "waypointRelativePos": 0.561130742049473,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "AutonGotoL4"
+          "name": "AutonGotoL2"
         }
       }
     }

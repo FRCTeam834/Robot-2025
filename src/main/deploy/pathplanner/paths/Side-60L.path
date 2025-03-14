@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.024917218543046,
-        "y": 6.3349751655589905
+        "x": 5.782201986754966,
+        "y": 6.3059188741721846
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 4.997682119205298,
-        "y": 5.267156456953642
+        "x": 5.012210264900662,
+        "y": 5.274420529801323
       },
       "prevControl": {
-        "x": 5.637118640881694,
-        "y": 6.0923881509593505
+        "x": 5.615128311258278,
+        "y": 6.233278145695364
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,20 +33,20 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "AutonGotoL4",
-      "waypointRelativePos": 0.1964664310954127,
+      "name": "AutonGotoL2",
+      "waypointRelativePos": 0.04805653710248127,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "AutonGotoL4"
+          "name": "AutonGotoL2"
         }
       }
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 1.25,
-    "maxAcceleration": 1.25,
+    "maxVelocity": 1.5,
+    "maxAcceleration": 1.5,
     "maxAngularVelocity": 180.0,
     "maxAngularAcceleration": 360.0,
     "nominalVoltage": 12.0,
@@ -62,5 +62,5 @@
     "velocity": 0,
     "rotation": 180.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }
