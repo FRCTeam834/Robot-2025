@@ -26,12 +26,10 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledInit() {
-    if(Constants.VisionConstants.useLL4Gyro) {
-      //RobotContainer.limelight.setIMUMode(1);
-      RobotContainer.elevator.stop();
-      RobotContainer.arm.stop();
-      RobotContainer.driveTrain.stop();
-    }
+    //RobotContainer.limelight.setIMUMode(1);
+    RobotContainer.elevator.stop();
+    RobotContainer.arm.stop();
+    RobotContainer.driveTrain.stop();
   } 
 
   @Override

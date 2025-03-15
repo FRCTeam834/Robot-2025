@@ -65,9 +65,6 @@ public class DriveTrain extends SubsystemBase {
   private boolean stopped = false;
   private ChassisSpeeds setpoint = new ChassisSpeeds();
 
-  private Rotation2d keepHeadingAngle = new Rotation2d();
-  private PIDController keepHeadingController = new PIDController(2, 0, 0);
-
   private ChassisSpeeds lastChassisSpeeds = new ChassisSpeeds();
   private double lastTranslationAngle = 0;
 
@@ -90,7 +87,6 @@ public class DriveTrain extends SubsystemBase {
     this.brSwerveModule = brSwerveModule;
     this.gyro = gyro;
 
-    keepHeadingAngle = getYaw();
     SmartDashboard.putData(this);
   }
 
@@ -110,14 +106,14 @@ public class DriveTrain extends SubsystemBase {
     return getYaw().getDegrees();
   }
 
-  public void drive(double xSpeed, double ySpeed, double rot) {
+  public void drive(double vx, double vy, double rot) {
     // double angle = Math.atan2(ySpeed, xSpeed);
     // double mag = translationLimiter.calculate(Math.hypot(xSpeed, ySpeed));
     // xSpeed = mag * Math.cos(angle);
     // ySpeed = mag * Math.sin(angle);
     // rot = omegaLimiter.calculate(rot);
 
-    ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getYaw());
+    ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(vx, vy, rot, RobotContainer.estimator.getPoseEstimate().getRotation());
 
     //speeds = keepHeadingOutput(speeds);
     setDesiredSpeeds(speeds);
@@ -139,7 +135,7 @@ public class DriveTrain extends SubsystemBase {
     }
 
     rot = omegaLimiter.calculate(rot);
-    ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(vx, vy, rot, getYaw());
+    ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(vx, vy, rot, RobotContainer.estimator.getPoseEstimate().getRotation());
 
     SwerveModuleState[] desiredStates = kinematics.toSwerveModuleStates(speeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
@@ -269,19 +265,6 @@ public class DriveTrain extends SubsystemBase {
     brSwerveModule.stop();
   }
 
-  private ChassisSpeeds keepHeadingOutput(ChassisSpeeds speeds) {
-    double error = keepHeadingAngle.minus(Rotation2d.fromDegrees(gyro.getYaw())).getDegrees();
-
-    if (Math.abs(speeds.omegaRadiansPerSecond) > 0.01) {
-      keepHeadingAngle = Rotation2d.fromDegrees(gyro.getYaw());
-    } 
-    else if (Math.abs(speeds.vxMetersPerSecond) + Math.abs(speeds.vyMetersPerSecond) > 0.01) {
-      speeds.omegaRadiansPerSecond = keepHeadingController.calculate(error); //uses pid 
-    }
-
-    return speeds;
-  }
-
   public Command makePath(PoseEstimator poseEstimator) {
     List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
       new Pose2d(poseEstimator.getPoseEstimate().getTranslation(), new Rotation2d()),
@@ -328,6 +311,9 @@ public class DriveTrain extends SubsystemBase {
   @Override
   public void initSendable(SendableBuilder builder) {
     builder.setSmartDashboardType("Swerve");
+
+    if(!Constants.tuningMode) return;
+    
     builder.addDoubleProperty("GyroYaw", this::getYawDegrees, null);
   }
 }

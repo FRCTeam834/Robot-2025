@@ -35,6 +35,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.SwerveConstants;
 public class SwerveModule extends SubsystemBase {
   /** Creates a new Swerve. */  
@@ -238,6 +239,9 @@ public class SwerveModule extends SubsystemBase {
   @Override
   public void initSendable(SendableBuilder builder) {
     builder.setSmartDashboardType("SwerveModule");
+
+    if (!Constants.tuningMode) return;
+
     builder.addDoubleProperty("AbsoluteEncoderAngle", this::getCANCoderAngle, null);
     builder.addDoubleProperty("Setpoint Speed", this::getSetpointSpeed, null);
     builder.addDoubleProperty("Setpoint Angle", this::getSetpointAngle, null);

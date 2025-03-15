@@ -232,18 +232,18 @@ public class Constants {
         ALGAE
     }
 
-    
-
     public static enum LimelightStrategies {
         ALL_ESTIMATES,
         BEST_ESTIMATE,
         AVERAGE_ESTIMATE
     }
 
-    public static final RobotMode robotMode = RobotMode.DEVELOPMENT;
+    public static final boolean tuningMode = false;
+    public static final RobotMode robotMode = RobotMode.COMPETITION;
+
     public static enum RobotMode {
         COMPETITION,
-        DEVELOPMENT
+        DEVELOPMENT,
     }
 
     public static RobotConfig PATHPLANNER_CONFIG;

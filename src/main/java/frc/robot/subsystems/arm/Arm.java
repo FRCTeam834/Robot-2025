@@ -23,6 +23,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.GamePiece;
 import frc.robot.utility.TunableNumber;
@@ -209,6 +210,9 @@ public class Arm extends SubsystemBase {
 
   public void initSendable (SendableBuilder builder) {
     builder.setSmartDashboardType("Arm");
+
+    if(!Constants.tuningMode) return;
+    
     builder.addDoubleProperty("CurrentAngle", this::getCurrentPivotAngle, null);
     builder.addDoubleProperty("SetpointAngle", () -> {return this.pivotAngleSetpoint;}, null);
     builder.addDoubleProperty("laserCAN_distance", this::getLaserCANMeasurement, null);

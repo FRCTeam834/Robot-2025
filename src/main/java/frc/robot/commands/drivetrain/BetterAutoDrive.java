@@ -4,6 +4,7 @@
 
 package frc.robot.commands.drivetrain;
 
+import java.awt.Color;
 import java.util.List;
 import static edu.wpi.first.units.Units.Meters;
 
@@ -31,14 +32,16 @@ import frc.robot.Constants;
 import frc.robot.OI;
 import frc.robot.subsystems.drivetrain.DriveTrain;
 import frc.robot.utility.PoseEstimator;
+import frc.robot.utility.LEDs;
+import frc.robot.utility.LEDs.ledColor;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class BetterAutoDrive extends Command {
 
   private final DriveTrain driveTrain;
   private final PoseEstimator poseEstimator;
+  private final LEDs leds;
 
-  private boolean flipToRed = false;
   private Pose2d[] scoringPosesBlue = new Pose2d[12];
   private Pose2d[] scoringPosesRed = new Pose2d[12];
 
@@ -55,9 +58,10 @@ public class BetterAutoDrive extends Command {
   private Pose2d closestScoringPose;
   private double desiredLinearVelocity;
 
-  public BetterAutoDrive(DriveTrain driveTrain, PoseEstimator poseEstimator) {
+  public BetterAutoDrive(DriveTrain driveTrain, PoseEstimator poseEstimator, LEDs leds) {
     this.driveTrain = driveTrain;
     this.poseEstimator = poseEstimator;
+    this.leds = leds;
 
     for(int side = 0; side < 6; side++) {
       scoringPosesBlue[side] = getReefPose(side, -1, false);
@@ -80,6 +84,8 @@ public class BetterAutoDrive extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    leds.setLEDColor(ledColor.RED);
+
     Pose2d[] usedPoses = scoringPosesBlue;
     if(DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red) {
       usedPoses = scoringPosesRed;
@@ -116,7 +122,6 @@ public class BetterAutoDrive extends Command {
       xController.setP(2);
     }
 
-
     ChassisSpeeds speeds = holonomicDriveController.calculate(
       poseEstimator.getPoseEstimate(),
       closestScoringPose,
@@ -126,7 +131,7 @@ public class BetterAutoDrive extends Command {
 
     speeds.vxMetersPerSecond = MathUtil.clamp(speeds.vxMetersPerSecond, -1, 1);
     speeds.vyMetersPerSecond = MathUtil.clamp(speeds.vyMetersPerSecond, -1, 1);
-    speeds.omegaRadiansPerSecond = thetaController.calculate(driveTrain.getYaw().getRadians(), closestScoringPose.getRotation().getRadians());
+    speeds.omegaRadiansPerSecond = thetaController.calculate(poseEstimator.getPoseEstimate().getRotation().getRadians(), closestScoringPose.getRotation().getRadians());
     driveTrain.setDesiredSpeeds(speeds);
   }
 
@@ -134,6 +139,7 @@ public class BetterAutoDrive extends Command {
   @Override
   public void end(boolean interrupted) {
     System.out.println("Ended");
+    leds.setColorForTime(ledColor.GREEN, 1.5);
     driveTrain.stop();
   }
 
@@ -142,7 +148,6 @@ public class BetterAutoDrive extends Command {
   public boolean isFinished() {
     return (Math.abs(closestScoringPose.getX() - poseEstimator.getPoseEstimate().getX()) < Units.inchesToMeters(0.5))
     && (Math.abs(closestScoringPose.getY() - poseEstimator.getPoseEstimate().getY()) < Units.inchesToMeters(0.5));
-    //return holonomicDriveController.atReference();
   }
 
   /**

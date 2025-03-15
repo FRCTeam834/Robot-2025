@@ -28,6 +28,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.utility.TunableNumber;
 
@@ -177,6 +178,9 @@ public class Elevator extends SubsystemBase {
   @Override
   public void initSendable (SendableBuilder builder) {
     builder.setSmartDashboardType("Elevator");
+
+    if(!Constants.tuningMode) return;
+
     builder.addDoubleProperty("Elevator Height", this::getElevatorHeight, null);
     builder.addDoubleProperty("Elevator Setpoint", () -> {return setpointHeight;}, null);
 

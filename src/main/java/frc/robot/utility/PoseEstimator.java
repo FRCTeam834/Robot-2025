@@ -40,8 +40,6 @@ public class PoseEstimator extends SubsystemBase {
 
   private final SwerveDrivePoseEstimator poseEstimator;
 
-  private Field2d frontField = new Field2d();
-  private Field2d backField = new Field2d();
   private Field2d combined_field = new Field2d();
 
   public PoseEstimator(DriveTrain driveTrain, Limelight[] cameras) {
@@ -54,9 +52,7 @@ public class PoseEstimator extends SubsystemBase {
       new Pose2d()
     );
 
-    SmartDashboard.putData("frontfield", frontField);
-    SmartDashboard.putData("backfield", backField);
-    SmartDashboard.putData("combinedfield", combined_field);
+    if(Constants.tuningMode) SmartDashboard.putData("combinedfield", combined_field);
     SmartDashboard.putData(this);
   }
 
@@ -82,7 +78,6 @@ public class PoseEstimator extends SubsystemBase {
 
   public void resetPose(Pose2d pose) {
     poseEstimator.resetPosition(driveTrain.getYaw(), driveTrain.getModulePositions(), pose);
-    //driveTrain.zeroOdometry(pose.getRotation());
   }
 
   public void resetRotation(Rotation2d rot) {
@@ -91,18 +86,16 @@ public class PoseEstimator extends SubsystemBase {
 
   @Override
   public void periodic() {
+    poseEstimator.updateWithTime(Timer.getFPGATimestamp(), driveTrain.getYaw(), driveTrain.getModulePositions());
+
     cameras[0].setRobotOrientation(poseEstimator.getEstimatedPosition().getRotation()); 
     cameras[1].setRobotOrientation(poseEstimator.getEstimatedPosition().getRotation());
     LimelightHelpers.PoseEstimate[] cam_estimates = {cameras[0].getPoseEstimate2d(), cameras[1].getPoseEstimate2d()};
     cam_estimates[1] = null;
 
-    poseEstimator.updateWithTime(Timer.getFPGATimestamp(), driveTrain.getYaw(), driveTrain.getModulePositions());
-
     combined_field.setRobotPose(poseEstimator.getEstimatedPosition());
 
     if(!VisionConstants.useVisionPoseEstimator) return;
-
-    //poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
     
     if(Constants.VisionConstants.STRATEGY == Constants.LimelightStrategies.ALL_ESTIMATES) {
       for(LimelightHelpers.PoseEstimate estimate : cam_estimates) {
@@ -153,9 +146,6 @@ public class PoseEstimator extends SubsystemBase {
 
       poseEstimator.addVisionMeasurement(bestEstimate.pose, bestEstimate.timestampSeconds);
     }
-
-    if (cam_estimates[0] != null) frontField.setRobotPose(cam_estimates[0].pose);
-    if (cam_estimates[1] != null) backField.setRobotPose(cam_estimates[1].pose);
   }
 
   private double getLL4IMUYaw() {
@@ -165,6 +155,10 @@ public class PoseEstimator extends SubsystemBase {
   @Override
   public void initSendable (SendableBuilder builder) {
     builder.setSmartDashboardType("PoseEstimator");
+
+    if(!Constants.tuningMode) return;
+
+    builder.addDoubleProperty("poseEstimator Yaw", () -> { return poseEstimator.getEstimatedPosition().getRotation().getDegrees(); }, null);
     builder.addDoubleProperty("LL4 IMU Yaw", this::getLL4IMUYaw, null);
   }
 }

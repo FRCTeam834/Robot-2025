@@ -66,6 +66,7 @@ import frc.robot.utility.PoseEstimator;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.commands.climb.ManualClimb;
 import frc.robot.commands.climb.ManualFunnel;
+import frc.robot.utility.LEDs;
 
 public class RobotContainer {
 
@@ -104,6 +105,7 @@ public class RobotContainer {
   public static Arm arm = new Arm();
   public static Climber climber = new Climber();
   public static Funnel funnel = new Funnel();
+  public static LEDs leds = new LEDs();
 
   private final SendableChooser<Command> autoChooser;
 
@@ -123,7 +125,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("AutonIntake", new AutonIntake(arm, elevator));
     NamedCommands.registerCommand("AutonIntakeUno", new AutonIntakeUno(arm, elevator));
     NamedCommands.registerCommand("AutonIntakeDos", new AutonIntakeDos(arm));
-    NamedCommands.registerCommand("BetterAutoDrive", new BetterAutoDrive(driveTrain, estimator));
+    NamedCommands.registerCommand("BetterAutoDrive", new BetterAutoDrive(driveTrain, estimator, leds));
 
 
     autoChooser = new SendableChooser<>();
@@ -165,6 +167,14 @@ public class RobotContainer {
 
     //aButton.onTrue(new IntakeCoral(arm));
     //bButton.onTrue(new OuttakeCoral(arm));
+
+    // leftJoystick3.onTrue(new InstantCommand(() -> {
+    //   FL.zeroCANCoder();
+    //   FR.zeroCANCoder();
+    //   BL.zeroCANCoder();
+    //   BR.zeroCANCoder();
+    //   System.out.println("Updated CANCoder zero");
+    // }));
   }
 
   private void configureBindings() {
@@ -186,25 +196,16 @@ public class RobotContainer {
     bButton.onTrue(new OuttakeCoral(arm));
     yButton.whileTrue(new ReverseIntake(arm));
 
-    rightJoystick1.whileTrue(new BetterAutoDrive(driveTrain, estimator));
+    rightJoystick1.whileTrue(new BetterAutoDrive(driveTrain, estimator, leds));
     rightJoystick3.onTrue(new ArmElevatorGotoPosition(ArmConstants.CORAL_INTAKE_ANGLE, ElevatorConstants.STOW_HEIGHT, arm, elevator, driveTrain));
     // rightJoystick1.whileTrue(new AutoDriveToNearestScoring(driveTrain, estimator));
 
     funnel.setDefaultCommand(new ManualFunnel(funnel, OI::getXboxLeftJoystickY));
 
     leftJoystick10.onTrue(new InstantCommand(() -> {
-      driveTrain.zeroOdometry(new Rotation2d());
-      //estimator.resetRotation(new Rotation2d());
+      estimator.resetRotation(new Rotation2d());
 
       System.out.println("Zeroed the odometry");
-    }));
-
-    leftJoystick3.onTrue(new InstantCommand(() -> {
-      FL.zeroCANCoder();
-      FR.zeroCANCoder();
-      BL.zeroCANCoder();
-      BR.zeroCANCoder();
-      System.out.println("Updated CANCoder zero");
     }));
 
     
