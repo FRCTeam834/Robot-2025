@@ -73,8 +73,8 @@ public class DriveTrain extends SubsystemBase {
 
   static {
     kS_TunableNumber.initDefault(0.2);
-    kV_TunableNumber.initDefault(2.7);
-    kP_Drive.initDefault(0.17);
+    kV_TunableNumber.initDefault(2.8);
+    kP_Drive.initDefault(0.15);
     kP_Turn.initDefault(0.17);
   }
 

@@ -108,7 +108,7 @@ public class RobotContainer {
   private final SendableChooser<Command> autoChooser;
 
   public RobotContainer() {
-    driveTrain.setDefaultCommand(new DriveWithSpeeds(
+    driveTrain.setDefaultCommand(new OpenloopDrive(
       driveTrain,
       OI::getRightJoystickX,
       OI::getRightJoystickY,
@@ -128,13 +128,11 @@ public class RobotContainer {
 
     autoChooser = new SendableChooser<>();
     autoChooser.setDefaultOption("Do Nothing", new InstantCommand());
-    autoChooser.addOption("Top", new PathPlannerAuto("Top-60L-120R-120L"));
-    autoChooser.addOption("Bottom", new PathPlannerAuto("Top-60L-120R-120L", true));
+    autoChooser.addOption("LEFT_Top-60L-120R-120L", new PathPlannerAuto("Top-60L-120R-120L"));
+    autoChooser.addOption("RIGHT_Top-60L-120R-120L", new PathPlannerAuto("Top-60L-120R-120L", true));
     autoChooser.addOption("Top-60L-120R-120L-AutoDrive", new PathPlannerAuto("Top-60L-120R-120L-AutoDrive"));
-    autoChooser.addOption("testAuton", new PathPlannerAuto("testAuton", true));
-    autoChooser.addOption("testodometry", new PathPlannerAuto("testodometry"));
-    autoChooser.addOption("twopiece", new PathPlannerAuto("twopiece"));
-    autoChooser.addOption("twopiecebottom", new PathPlannerAuto("twopiece", true));
+    autoChooser.addOption("twopieceleft", new PathPlannerAuto("twopiece"));
+    autoChooser.addOption("twopieceright", new PathPlannerAuto("twopiece", true));
 
     SmartDashboard.putData(autoChooser);
 
@@ -145,7 +143,7 @@ public class RobotContainer {
     configureBindings();
     //elevator.setDefaultCommand(new DumbElevator(elevator, OI::getXboxLeftJoystickY));
     //arm.setDefaultCommand(new DumbArm(arm, OI::getXboxRightJoystickY));
-    configureTestingBindings();
+    //configureTestingBindings();
 
   }
 
@@ -196,7 +194,7 @@ public class RobotContainer {
 
     leftJoystick10.onTrue(new InstantCommand(() -> {
       driveTrain.zeroOdometry(new Rotation2d());
-      //estimator.resetRotation(new Rotation2d());
+      estimator.resetRotation(new Rotation2d());
 
       System.out.println("Zeroed the odometry");
     }));

@@ -17,9 +17,6 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -42,7 +39,8 @@ public class BetterAutoDrive extends Command {
   private final PoseEstimator poseEstimator;
 
   private boolean flipToRed = false;
-  private Pose2d[] scoringPoses = new Pose2d[12];
+  private Pose2d[] scoringPosesBlue = new Pose2d[12];
+  private Pose2d[] scoringPosesRed = new Pose2d[12];
 
   PIDController xController = new PIDController(1, 0, 0);
   PIDController yController = new PIDController(1, 0, 0);
@@ -62,10 +60,16 @@ public class BetterAutoDrive extends Command {
     this.poseEstimator = poseEstimator;
 
     for(int side = 0; side < 6; side++) {
-      scoringPoses[side] = getReefPose(side, -1, flipToRed);
+      scoringPosesBlue[side] = getReefPose(side, -1, false);
     }
     for(int side = 0; side < 6; side++) {
-      scoringPoses[side+6] = getReefPose(side, 1, flipToRed);
+      scoringPosesBlue[side+6] = getReefPose(side, 1, false);
+    }
+    for(int side = 0; side < 6; side++) {
+      scoringPosesRed[side] = getReefPose(side, -1, true);
+    }
+    for(int side = 0; side < 6; side++) {
+      scoringPosesRed[side+6] = getReefPose(side, 1, true);
     }
 
     thetaController.enableContinuousInput(0, 2 * Math.PI);
@@ -76,11 +80,15 @@ public class BetterAutoDrive extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    flipToRed = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red;
+    Pose2d[] usedPoses = scoringPosesBlue;
+    if(DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red) {
+      usedPoses = scoringPosesRed;
+    }
+
     Pose2d robotPose = poseEstimator.getPoseEstimate();
 
     double bestCost = Double.MAX_VALUE;
-    for(Pose2d scoringPose : scoringPoses) {
+    for(Pose2d scoringPose : usedPoses) {
       double distanceError = robotPose.getTranslation().getDistance(scoringPose.getTranslation());
       double angleError = Math.abs(robotPose.getRotation().minus(scoringPose.getRotation()).getRadians());
 
@@ -90,8 +98,6 @@ public class BetterAutoDrive extends Command {
         closestScoringPose = scoringPose; 
       }
     }
-
-    System.out.println(closestScoringPose.toString());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -175,17 +181,5 @@ public class BetterAutoDrive extends Command {
     Translation2d poseTranslation = pose.getTranslation();
     poseTranslation = poseTranslation.rotateAround(center, Rotation2d.k180deg);
     return new Pose2d(poseTranslation, pose.getRotation().rotateBy(Rotation2d.k180deg));
-  }
-
-  public Pose2d[] getBranchPoses() {
-    Pose2d[] poses = new Pose2d[12];
-    for(int side = 0; side < 6; side++) {
-      poses[side] = getReefPose(side, -1, flipToRed);
-    }
-    for(int side = 0; side < 6; side++) {
-      poses[side+6] = getReefPose(side, 1, flipToRed);
-    }
-
-    return poses;
   }
 }
