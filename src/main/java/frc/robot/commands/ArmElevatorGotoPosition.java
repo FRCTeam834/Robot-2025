@@ -154,10 +154,18 @@ public class ArmElevatorGotoPosition extends SequentialCommandGroup {
         new InstantCommand(() -> {
           System.out.println("CASE: Move arm first then move arm back (elevator starts high)");
           elevator.setDesiredHeight(elevator.getElevatorHeight());
-          arm.setDesiredPivotAngle(ArmElevatorSuperconstants.NOCOLLISION_MIN_ARM_ANGLE - 0.05);
+          if (arm.hasCoral()) {
+            arm.setDesiredPivotAngle(ArmElevatorSuperconstants.NOCOLLISION_MIN_ARM_ANGLE - 0.05);
+          } else {
+            arm.setDesiredPivotAngle(-0.2 - 0.05);
+          }
         }),
         new WaitUntilCommand(() -> {
-          return arm.getCurrentPivotAngle() < ArmElevatorSuperconstants.NOCOLLISION_MIN_ARM_ANGLE;
+          if (arm.hasCoral()) {
+            return arm.getCurrentPivotAngle() < ArmElevatorSuperconstants.NOCOLLISION_MIN_ARM_ANGLE;
+          } else {
+            return arm.getCurrentPivotAngle() < -0.3;
+          }
         }),
         new InstantCommand(() -> {
           elevator.setDesiredHeight(desiredElevatorHeight);

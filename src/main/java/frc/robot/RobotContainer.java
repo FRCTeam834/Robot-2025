@@ -194,7 +194,7 @@ public class RobotContainer {
 
     leftJoystick10.onTrue(new InstantCommand(() -> {
       driveTrain.zeroOdometry(new Rotation2d());
-      estimator.resetRotation(new Rotation2d());
+      //estimator.resetRotation(new Rotation2d());
 
       System.out.println("Zeroed the odometry");
     }));
