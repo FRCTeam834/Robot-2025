@@ -207,7 +207,7 @@ public class Constants {
     };
 
     public static class FieldConstants {
-        public static final AprilTagFieldLayout APRIL_TAGS = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
+        public static final AprilTagFieldLayout APRIL_TAGS = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
         public static final Translation2d REEF_CENTER_BLUE = APRIL_TAGS.getTagPose(18).get().toPose2d().getTranslation()
         .plus(APRIL_TAGS.getTagPose(21).get().toPose2d().getTranslation()).div(2);
