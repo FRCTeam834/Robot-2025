@@ -27,8 +27,8 @@ public class AutonOuttakeCoral extends Command {
   public void initialize() {
     finished = false;
     arm.setIntakeVoltage(12);
-    timer.reset();
     timer.stop();
+    timer.reset();
   }
 
   // Called every time the scheduler runs while the command is scheduled.

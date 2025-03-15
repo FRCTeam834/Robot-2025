@@ -157,14 +157,15 @@ public class ArmElevatorGotoPosition extends SequentialCommandGroup {
           if (arm.hasCoral()) {
             arm.setDesiredPivotAngle(ArmElevatorSuperconstants.NOCOLLISION_MIN_ARM_ANGLE - 0.05);
           } else {
-            arm.setDesiredPivotAngle(-0.2 - 0.05);
+            arm.setDesiredPivotAngle(-0.2 - 0.02);
           }
         }),
         new WaitUntilCommand(() -> {
+          System.out.println(arm.getCurrentPivotAngle());
           if (arm.hasCoral()) {
             return arm.getCurrentPivotAngle() < ArmElevatorSuperconstants.NOCOLLISION_MIN_ARM_ANGLE;
           } else {
-            return arm.getCurrentPivotAngle() < -0.3;
+            return arm.getCurrentPivotAngle() < -0.18;
           }
         }),
         new InstantCommand(() -> {
@@ -198,6 +199,8 @@ public class ArmElevatorGotoPosition extends SequentialCommandGroup {
 
     return new InstantCommand(() -> {
       System.out.println("Some case was not handled...\nCurrent: " + arm.getCurrentPivotAngle() + ", " + elevator.getElevatorHeight() + "\nDesired: " + desiredArmAngle + ", " + desiredElevatorHeight);
+      arm.setDesiredPivotAngle(desiredArmAngle);
+      elevator.setDesiredHeight(desiredElevatorHeight);
     });
     
     // this should cover all cases?

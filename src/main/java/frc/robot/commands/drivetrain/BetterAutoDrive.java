@@ -53,7 +53,7 @@ public class BetterAutoDrive extends Command {
     xController, yController,
     new ProfiledPIDController(0, 0, 0,
      new TrapezoidProfile.Constraints(Units.degreesToRadians(180), Units.degreesToRadians(180)))
-  );
+  );    
 
   private Pose2d closestScoringPose;
   private double desiredLinearVelocity;
@@ -91,7 +91,7 @@ public class BetterAutoDrive extends Command {
       usedPoses = scoringPosesRed;
     }
 
-    Pose2d robotPose = poseEstimator.getPoseEstimate();
+    Pose2d robotPose = poseEstimator.getPoseEstimateNoOffset();
 
     double bestCost = Double.MAX_VALUE;
     for(Pose2d scoringPose : usedPoses) {
@@ -109,7 +109,7 @@ public class BetterAutoDrive extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    Pose2d robotPose = poseEstimator.getPoseEstimate();
+    Pose2d robotPose = poseEstimator.getPoseEstimateNoOffset();
     double translationError = robotPose.getTranslation().getDistance(closestScoringPose.getTranslation());
 
     if(translationError > 1) {
@@ -123,7 +123,7 @@ public class BetterAutoDrive extends Command {
     }
 
     ChassisSpeeds speeds = holonomicDriveController.calculate(
-      poseEstimator.getPoseEstimate(),
+      poseEstimator.getPoseEstimateNoOffset(),
       closestScoringPose,
       desiredLinearVelocity, 
       closestScoringPose.getRotation()
@@ -131,7 +131,7 @@ public class BetterAutoDrive extends Command {
 
     speeds.vxMetersPerSecond = MathUtil.clamp(speeds.vxMetersPerSecond, -1, 1);
     speeds.vyMetersPerSecond = MathUtil.clamp(speeds.vyMetersPerSecond, -1, 1);
-    speeds.omegaRadiansPerSecond = thetaController.calculate(poseEstimator.getPoseEstimate().getRotation().getRadians(), closestScoringPose.getRotation().getRadians());
+    speeds.omegaRadiansPerSecond = thetaController.calculate(poseEstimator.getPoseEstimateNoOffset().getRotation().getRadians(), closestScoringPose.getRotation().getRadians());
     driveTrain.setDesiredSpeeds(speeds);
   }
 
@@ -139,15 +139,15 @@ public class BetterAutoDrive extends Command {
   @Override
   public void end(boolean interrupted) {
     System.out.println("Ended");
-    leds.setColorForTime(ledColor.GREEN, 1.5);
+    leds.setColorForTime(ledColor.GREEN, 1.25);
     driveTrain.stop();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (Math.abs(closestScoringPose.getX() - poseEstimator.getPoseEstimate().getX()) < Units.inchesToMeters(0.5))
-    && (Math.abs(closestScoringPose.getY() - poseEstimator.getPoseEstimate().getY()) < Units.inchesToMeters(0.5));
+    return (Math.abs(closestScoringPose.getX() - poseEstimator.getPoseEstimateNoOffset().getX()) < Units.inchesToMeters(0.5))
+    && (Math.abs(closestScoringPose.getY() - poseEstimator.getPoseEstimateNoOffset().getY()) < Units.inchesToMeters(0.5));
   }
 
   /**

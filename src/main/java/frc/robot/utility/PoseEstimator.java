@@ -42,6 +42,8 @@ public class PoseEstimator extends SubsystemBase {
 
   private Field2d combined_field = new Field2d();
 
+  private double estimatorGyroOffset = 0;
+
   public PoseEstimator(DriveTrain driveTrain, Limelight[] cameras) {
     this.cameras = cameras;
     this.driveTrain = driveTrain;
@@ -52,11 +54,17 @@ public class PoseEstimator extends SubsystemBase {
       new Pose2d()
     );
 
-    if(Constants.tuningMode) SmartDashboard.putData("combinedfield", combined_field);
+    SmartDashboard.putData("combinedfield", combined_field);
     SmartDashboard.putData(this);
   }
 
   public Pose2d getPoseEstimate() {
+    Pose2d estimate = poseEstimator.getEstimatedPosition();
+    Pose2d newEstimate = new Pose2d(estimate.getTranslation(), estimate.getRotation().plus(Rotation2d.fromDegrees(estimatorGyroOffset)));
+    return newEstimate;
+  }
+
+  public Pose2d getPoseEstimateNoOffset() {
     return poseEstimator.getEstimatedPosition();
   }
 
@@ -84,16 +92,21 @@ public class PoseEstimator extends SubsystemBase {
     poseEstimator.resetRotation(rot);
   }
 
+  /**
+   * @param offset - degrees
+   */
+  public void setEstimatorGyroOffset(double offset) {
+    estimatorGyroOffset = offset;
+  }
+
   @Override
   public void periodic() {
     poseEstimator.updateWithTime(Timer.getFPGATimestamp(), driveTrain.getYaw(), driveTrain.getModulePositions());
 
-    cameras[0].setRobotOrientation(poseEstimator.getEstimatedPosition().getRotation()); 
-    cameras[1].setRobotOrientation(poseEstimator.getEstimatedPosition().getRotation());
+    cameras[0].setRobotOrientation(getPoseEstimateNoOffset().getRotation()); 
+    cameras[1].setRobotOrientation(getPoseEstimateNoOffset().getRotation());
     LimelightHelpers.PoseEstimate[] cam_estimates = {cameras[0].getPoseEstimate2d(), cameras[1].getPoseEstimate2d()};
     cam_estimates[1] = null;
-
-    combined_field.setRobotPose(poseEstimator.getEstimatedPosition());
 
     if(!VisionConstants.useVisionPoseEstimator) return;
     
@@ -146,6 +159,8 @@ public class PoseEstimator extends SubsystemBase {
 
       poseEstimator.addVisionMeasurement(bestEstimate.pose, bestEstimate.timestampSeconds);
     }
+
+    combined_field.setRobotPose(getPoseEstimate());
   }
 
   private double getLL4IMUYaw() {
@@ -158,7 +173,7 @@ public class PoseEstimator extends SubsystemBase {
 
     if(!Constants.tuningMode) return;
 
-    builder.addDoubleProperty("poseEstimator Yaw", () -> { return poseEstimator.getEstimatedPosition().getRotation().getDegrees(); }, null);
+    builder.addDoubleProperty("poseEstimator Yaw", () -> { return getPoseEstimate().getRotation().getDegrees(); }, null);
     builder.addDoubleProperty("LL4 IMU Yaw", this::getLL4IMUYaw, null);
   }
 }

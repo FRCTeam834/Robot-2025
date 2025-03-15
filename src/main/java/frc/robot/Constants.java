@@ -87,9 +87,10 @@ public class Constants {
         public static final double L2_ANGLE = -0.4; // this is a random default value
         public static final double L3_ANGLE = -0.29; // this is a random default value
         public static final double L4_ANGLE = -0.29; // -0.25 // this is a random default value
+        public static final double L4_WEIRD_ANGLE = -0.32;
         public static final double L4_AUTON_ANGLE = -0.32; // -0.28
         public static final double ALGAE_L1_ANGLE = -0.27;
-        public static final double ALGAE_L2_ANGLE = -0.3;
+        public static final double ALGAE_L2_ANGLE = -0.34;  
     }
 
     public static class ElevatorConstants {
@@ -238,7 +239,7 @@ public class Constants {
         AVERAGE_ESTIMATE
     }
 
-    public static final boolean tuningMode = false;
+    public static final boolean tuningMode = true;
     public static final RobotMode robotMode = RobotMode.COMPETITION;
 
     public static enum RobotMode {
