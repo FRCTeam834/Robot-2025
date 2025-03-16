@@ -15,18 +15,19 @@ import frc.robot.commands.arm.IntakeCoral;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.drivetrain.DriveTrain;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.utility.LEDs;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class CoralIntakeSequence extends SequentialCommandGroup {
   /** Creates a new IntakeSequence. */
-  public CoralIntakeSequence(Arm arm, Elevator elevator) {
+  public CoralIntakeSequence(Arm arm, Elevator elevator, LEDs leds) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
       new ParallelDeadlineGroup(
-        new IntakeCoral(arm),
+        new IntakeCoral(arm, leds),
         new ArmElevatorGotoPosition(ArmConstants.CORAL_INTAKE_ANGLE, ElevatorConstants.INTAKE_HEIGHT, arm, elevator, RobotContainer.driveTrain)
         // arm default command should be ArmDefaultStow
       ).onlyIf(() -> {

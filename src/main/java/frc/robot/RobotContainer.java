@@ -122,7 +122,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("AutonScoreL4", new AutonScoreL4(driveTrain, estimator, arm, elevator));
     NamedCommands.registerCommand("AutonGotoL4", new AutonGotoL4(elevator, arm));
     NamedCommands.registerCommand("AutonGotoL2", new AutonGotoL2(elevator, arm));
-    NamedCommands.registerCommand("AutonIntake", new AutonIntake(arm, elevator));
+    NamedCommands.registerCommand("AutonIntake", new AutonIntake(arm, elevator, leds));
     NamedCommands.registerCommand("AutonIntakeUno", new AutonIntakeUno(arm, elevator));
     NamedCommands.registerCommand("AutonIntakeDos", new AutonIntakeDos(arm));
     NamedCommands.registerCommand("BetterAutoDrive", new BetterAutoDrive(driveTrain, estimator, leds));
@@ -193,7 +193,7 @@ public class RobotContainer {
     OI.getKeypad2().onTrue(new ArmElevatorGotoPosition(ArmConstants.ALGAE_L1_ANGLE, ElevatorConstants.ALGAE_L1_HEIGHT, arm, elevator, driveTrain));
     OI.getKeypad5().onTrue(new ArmElevatorGotoPosition(ArmConstants.ALGAE_L2_ANGLE, ElevatorConstants.ALGAE_L2_HEIGHT, arm, elevator, driveTrain));
 
-    aButton.onTrue(new CoralIntakeSequence(arm, elevator));
+    aButton.onTrue(new CoralIntakeSequence(arm, elevator, leds));
     xButton.onTrue(new IntakeAlgae(arm));
     bButton.onTrue(new OuttakeCoral(arm));
     yButton.whileTrue(new ReverseIntake(arm));

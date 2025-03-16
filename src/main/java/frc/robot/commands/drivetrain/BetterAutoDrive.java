@@ -114,12 +114,12 @@ public class BetterAutoDrive extends Command {
 
     if(translationError > 1) {
       desiredLinearVelocity = 0.5;
-      xController.setP(2);
-      yController.setP(2);
+      xController.setP(1.7);
+      yController.setP(1.7);
     } else {
       desiredLinearVelocity = 0;
-      yController.setP(2);
-      xController.setP(2);
+      yController.setP(1.7);
+      xController.setP(1.7);
     }
 
     ChassisSpeeds speeds = holonomicDriveController.calculate(

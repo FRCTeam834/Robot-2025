@@ -14,20 +14,21 @@ import frc.robot.commands.ArmElevatorGotoPosition;
 import frc.robot.commands.arm.IntakeCoral;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.utility.LEDs;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class AutonIntake extends ParallelCommandGroup {
   /** Creates a new AutonIntake. */
-  public AutonIntake(Arm arm, Elevator elevator) {
+  public AutonIntake(Arm arm, Elevator elevator, LEDs leds) {
     /**
      * NOTE: I'm not sure if pathplanenr waits for commands to finish before executing the next path
      * If so, change parallel group(AutonIntake, followPath) to deadline in the pathplanenr GUI
      */
     addCommands(
       new ArmElevatorGotoPosition(ArmConstants.CORAL_INTAKE_ANGLE, ElevatorConstants.INTAKE_HEIGHT, arm, elevator, RobotContainer.driveTrain),
-      new IntakeCoral(arm)
+      new IntakeCoral(arm, leds)
     );
   }
 }
