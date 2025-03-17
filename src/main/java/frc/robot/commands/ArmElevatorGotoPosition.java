@@ -157,7 +157,7 @@ public class ArmElevatorGotoPosition extends SequentialCommandGroup {
           if (arm.hasCoral()) {
             arm.setDesiredPivotAngle(ArmElevatorSuperconstants.NOCOLLISION_MIN_ARM_ANGLE - 0.05);
           } else {
-            arm.setDesiredPivotAngle(-0.2 - 0.02);
+            arm.setDesiredPivotAngle(-0.25 - 0.02);
           }
         }),
         new WaitUntilCommand(() -> {
@@ -165,7 +165,7 @@ public class ArmElevatorGotoPosition extends SequentialCommandGroup {
           if (arm.hasCoral()) {
             return arm.getCurrentPivotAngle() < ArmElevatorSuperconstants.NOCOLLISION_MIN_ARM_ANGLE;
           } else {
-            return arm.getCurrentPivotAngle() < -0.18;
+            return arm.getCurrentPivotAngle() < -0.25;
           }
         }),
         new InstantCommand(() -> {

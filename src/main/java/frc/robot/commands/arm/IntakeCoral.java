@@ -37,14 +37,14 @@ public class IntakeCoral extends Command {
   public void initialize() {
     ended = false;
     hasCoral = false;
-    arm.setIntakeVoltage(8); // 4 was good
+    arm.setIntakeVoltage(4); // 4 was good
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     if (arm.hasCoral() && !hasCoral) {
-      leds.setColorForTime(ledColor.STROBEWHITE, 1.25);
+      leds.setColorForTime(ledColor.STROBEGOLD, 1.25);
       arm.setIntakeVoltage(1); // a lower voltage to move it past elevator stage
       lastAngle = arm.getIntakeAngle();
       hasCoral = true;

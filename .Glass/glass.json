@@ -5,15 +5,6 @@
     },
     "transitory": {
       "SmartDashboard": {
-        "DriveTrain": {
-          "open": true
-        },
-        "Elevator": {
-          "open": true
-        },
-        "SwerveModule 4": {
-          "open": true
-        },
         "Tunable": {
           "Arm": {
             "open": true
@@ -527,6 +518,33 @@
                 1.0
               ],
               "id": "NT:/SmartDashboard/SwerveModule 4/Speed"
+            }
+          ]
+        }
+      ],
+      "window": {
+        "visible": false
+      }
+    },
+    "Plot <7>": {
+      "plots": [
+        {
+          "backgroundColor": [
+            0.0,
+            0.0,
+            0.0,
+            0.8500000238418579
+          ],
+          "height": 1045,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/AUTOALIGN ROTATION ERROR"
             }
           ]
         }

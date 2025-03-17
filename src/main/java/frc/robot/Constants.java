@@ -219,7 +219,7 @@ public class Constants {
 
         public static final Distance REEF_APOTHEM = Meters.of(
                 APRIL_TAGS.getTagPose(18).get().toPose2d().getTranslation().getDistance(REEF_CENTER_BLUE))
-                .plus(Meters.of(0.35));
+                .plus(Meters.of(0.35)); //0.35
                 
         // translation to move from centered on a side to scoring position for the left branch
         public static final Translation2d CENTERED_TO_LEFT_BRANCH = new Translation2d(Meters.of(0),

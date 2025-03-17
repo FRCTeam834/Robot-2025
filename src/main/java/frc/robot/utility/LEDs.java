@@ -25,6 +25,7 @@ public class LEDs extends SubsystemBase {
     RED(0.61),
     STROBEBLUE(-0.09),
     STROBEWHITE(-0.05),
+    STROBEGOLD(-0.07),
     WHITE(0.93),
     STROBERED(-0.11);
 

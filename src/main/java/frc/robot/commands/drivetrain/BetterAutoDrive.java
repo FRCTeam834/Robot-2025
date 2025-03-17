@@ -113,13 +113,13 @@ public class BetterAutoDrive extends Command {
     double translationError = robotPose.getTranslation().getDistance(closestScoringPose.getTranslation());
 
     if(translationError > 1) {
-      desiredLinearVelocity = 0.5;
-      xController.setP(1.7);
-      yController.setP(1.7);
+      desiredLinearVelocity = 0.1;
+      xController.setP(2);
+      yController.setP(2);
     } else {
-      desiredLinearVelocity = 0;
-      yController.setP(1.7);
-      xController.setP(1.7);
+      desiredLinearVelocity = 0.0; // Try 0.1 for this
+      yController.setP(2);
+      xController.setP(2);
     }
 
     ChassisSpeeds speeds = holonomicDriveController.calculate(
@@ -129,10 +129,12 @@ public class BetterAutoDrive extends Command {
       closestScoringPose.getRotation()
     );
 
-    speeds.vxMetersPerSecond = MathUtil.clamp(speeds.vxMetersPerSecond, -1, 1);
-    speeds.vyMetersPerSecond = MathUtil.clamp(speeds.vyMetersPerSecond, -1, 1);
+    speeds.vxMetersPerSecond = MathUtil.clamp(speeds.vxMetersPerSecond, -0.8, 0.8);
+    speeds.vyMetersPerSecond = MathUtil.clamp(speeds.vyMetersPerSecond, -0.8, 0.8);
     speeds.omegaRadiansPerSecond = thetaController.calculate(poseEstimator.getPoseEstimateNoOffset().getRotation().getRadians(), closestScoringPose.getRotation().getRadians());
     driveTrain.setDesiredSpeeds(speeds);
+    //SmartDashboard.putNumber("AUTOALIGN ROTATION ERROR", Math.abs(poseEstimator.getPoseEstimateNoOffset().getRotation().getRadians() - closestScoringPose.getRotation().getRadians()));
+    //SmartDashboard.putNumber("TRANSLATION ERROR", translationError);
   }
 
   // Called once the command ends or is interrupted.
