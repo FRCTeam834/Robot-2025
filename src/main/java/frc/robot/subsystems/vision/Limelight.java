@@ -4,34 +4,27 @@
 
 package frc.robot.subsystems.vision;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.drivetrain.DriveTrain;
 import frc.robot.subsystems.drivetrain.Gyro;
 
 public class Limelight extends SubsystemBase {
   /** Creates a new Limelight. */
-  private final DriveTrain driveTrain;
   private final Gyro gyro;
   private final String cameraName;
-  private final boolean isLL4;
 
-  public Limelight(String cameraName, boolean isLL4, DriveTrain driveTrain, Gyro gyro) {
+  public Limelight(String cameraName, Gyro gyro) {
     this.cameraName = cameraName;
-    this.driveTrain = driveTrain;
     this.gyro = gyro;
-    this.isLL4 = isLL4;
-
-    if (isLL4) {
-      // setIMUMode(1);
-      // setRobotOrientation(driveTrain.getYaw());
-      // setIMUMode(2);
-      setIMUMode(0);
-    }
 
     SmartDashboard.putData(this);
   }
@@ -40,16 +33,22 @@ public class Limelight extends SubsystemBase {
     LimelightHelpers.SetRobotOrientation(cameraName, yaw.getDegrees(), 0, 0, 0, 0, 0);
   } 
 
+  public void setPOIxOffset(double x) {
+    LimelightHelpers.setFiducial3DOffset(cameraName, x, 0, 0);
+  }
+
   public void setIMUMode(int mode) {
     LimelightHelpers.SetIMUMode(cameraName, mode);
   }
 
-  public void seedLL4IMU() {
-    if(!isLL4) return;
-    //setIMUMode(1);
-    //setRobotOrientation(driveTrain.getYaw());
-    //System.out.println("SEEDED LL4");
-    //setIMUMode(2);
+  public Translation2d getBotTranslationTargetSpace() {
+    Pose3d botPose = LimelightHelpers.getBotPose3d_TargetSpace(cameraName);
+    Translation2d convertedTranslation = new Translation2d(botPose.getX(), botPose.getZ());
+    return convertedTranslation;
+  }
+
+  public double getCurrentTagID() {
+    return LimelightHelpers.getFiducialID(cameraName);
   }
 
   public LimelightHelpers.PoseEstimate getPoseEstimate2d() {

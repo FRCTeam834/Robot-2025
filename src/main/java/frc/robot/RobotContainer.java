@@ -46,8 +46,6 @@ import frc.robot.commands.auton.AutonIntakeDos;
 import frc.robot.commands.auton.AutonIntakeUno;
 import frc.robot.commands.auton.AutonIntakeUnoArm;
 import frc.robot.commands.auton.AutonScoreL4;
-import frc.robot.commands.drivetrain.AutoDrive;
-import frc.robot.commands.drivetrain.AutoDriveToNearestScoring;
 import frc.robot.commands.drivetrain.BetterAutoDrive;
 import frc.robot.commands.drivetrain.DriveWithSpeeds;
 import frc.robot.commands.drivetrain.OpenloopDrive;
@@ -76,6 +74,7 @@ public class RobotContainer {
   JoystickButton leftJoystick7 = new JoystickButton(OI.leftJoystick, 7);
   JoystickButton leftJoystick6 = new JoystickButton(OI.leftJoystick, 6);
   JoystickButton rightJoystick1 = new JoystickButton(OI.rightJoystick, 1);
+  JoystickButton leftJoystick1 = new JoystickButton(OI.leftJoystick, 1);
 
   JoystickButton rightJoystick3 = new JoystickButton(OI.leftJoystick, 3);
 
@@ -97,8 +96,8 @@ public class RobotContainer {
 
 
   private static Limelight[] cams = {
-    new Limelight(Constants.VisionConstants.CAM_FRONT_NAME, true, driveTrain, gyro), 
-    new Limelight(Constants.VisionConstants.CAM_BACK_NAME, true, driveTrain, gyro)
+    new Limelight(Constants.VisionConstants.CAM_LEFT_NAME, gyro), 
+    new Limelight(Constants.VisionConstants.CAM_RIGHT_NAME, gyro)
   };
   public static PoseEstimator estimator = new PoseEstimator(driveTrain, cams);
   public static Elevator elevator = new Elevator();
@@ -125,7 +124,6 @@ public class RobotContainer {
     NamedCommands.registerCommand("AutonIntake", new AutonIntake(arm, elevator, leds));
     NamedCommands.registerCommand("AutonIntakeUno", new AutonIntakeUno(arm, elevator));
     NamedCommands.registerCommand("AutonIntakeDos", new AutonIntakeDos(arm));
-    NamedCommands.registerCommand("BetterAutoDrive", new BetterAutoDrive(driveTrain, estimator, leds));
 
 
     autoChooser = new SendableChooser<>();
@@ -198,7 +196,9 @@ public class RobotContainer {
     bButton.onTrue(new OuttakeCoral(arm));
     yButton.whileTrue(new ReverseIntake(arm));
 
-    rightJoystick1.whileTrue(new BetterAutoDrive(driveTrain, estimator, leds));
+    rightJoystick1.whileTrue(new BetterAutoDrive(-1, driveTrain, estimator, leds));
+    leftJoystick1.whileTrue(new BetterAutoDrive(1, driveTrain, estimator, leds));
+
     rightJoystick3.onTrue(new ArmElevatorGotoPosition(ArmConstants.CORAL_INTAKE_ANGLE, ElevatorConstants.STOW_HEIGHT, arm, elevator, driveTrain));
     // rightJoystick1.whileTrue(new AutoDriveToNearestScoring(driveTrain, estimator));
 

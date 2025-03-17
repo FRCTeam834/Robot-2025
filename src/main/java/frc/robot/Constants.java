@@ -66,8 +66,11 @@ public class Constants {
         public static final boolean useMegatag2 = true;
         public static final double maxDegreesPerSecond = 180;
 
-        public static final String CAM_FRONT_NAME = "limelight-front"; 
-        public static final String CAM_BACK_NAME = "limelight-back"; 
+        public static final String CAM_LEFT_NAME = "limelight-left"; 
+        public static final String CAM_RIGHT_NAME = "limelight-right"; 
+
+        public static final double POI_XOFFSET = Units.inchesToMeters(6.47);
+
         
         public static final LimelightStrategies STRATEGY = LimelightStrategies.ALL_ESTIMATES;
     }
@@ -125,87 +128,6 @@ public class Constants {
     public static class FunnelConstants {
         public static final int funnelMotorID = 14;
     }
-
-    public static enum SCORING_POSES_BLUE {
-        TWENTY_LEFT (new Pose2d(5.291, 5.082, Rotation2d.fromDegrees(-120))),
-        TWENTY_RIGHT (new Pose2d(4.995, 5.248, Rotation2d.fromDegrees(-120))),
-        NINETEEN_LEFT (new Pose2d(3.978, 5.241, Rotation2d.fromDegrees(-60))),
-        NINETEEN_RIGHT (new Pose2d(3.689, 5.072, Rotation2d.fromDegrees(-60))),
-        EIGHTEEN_LEFT (new Pose2d(3.180, 4.192, Rotation2d.fromDegrees(0))),
-        EIGHTEEN_RIGHT (new Pose2d(3.180, 3.860, Rotation2d.fromDegrees(0))),
-        SEVENTEEN_LEFT (new Pose2d(3.688, 2.978, Rotation2d.fromDegrees(60))),
-        SEVENTEEN_RIGHT (new Pose2d(3.979, 2.815, Rotation2d.fromDegrees(60))),
-        TWENTYTWO_LEFT (new Pose2d(4.994, 2.814, Rotation2d.fromDegrees(120))),
-        TWENTYTWO_RIGHT (new Pose2d(5.278, 2.979, Rotation2d.fromDegrees(120))),
-        TWENTYONE_LEFT (new Pose2d(5.790, 3.855, Rotation2d.fromDegrees(180))), 
-        TWENTYONE_RIGHT (new Pose2d(5.790, 4.190, Rotation2d.fromDegrees(180)));
-        
-
-        private final Pose2d pose;
-        SCORING_POSES_BLUE(Pose2d pose) { 
-            this.pose = pose;
-        }
-
-        public Pose2d getPose() { return pose; }
-    }
-
-    public static enum SCORING_POSES_RED {
-        EIGHT_LEFT (new Pose2d(5.291 + 8.57, 5.082, Rotation2d.fromDegrees(-120))),
-        EIGHT_RIGHT (new Pose2d(4.995 + 8.57, 5.248, Rotation2d.fromDegrees(-120))),
-        NINE_LEFT (new Pose2d(3.978 + 8.57, 5.241, Rotation2d.fromDegrees(-60))),
-        NINE_RIGHT (new Pose2d(3.689 + 8.57, 5.072, Rotation2d.fromDegrees(-60))),
-        TEN_LEFT (new Pose2d(3.180 + 8.57, 4.192, Rotation2d.fromDegrees(0))),
-        TEN_RIGHT (new Pose2d(3.180 + 8.57, 3.860, Rotation2d.fromDegrees(0))),
-        ELEVEN_LEFT (new Pose2d(3.688 + 8.57, 2.978, Rotation2d.fromDegrees(60))),
-        ELEVEN_RIGHT (new Pose2d(3.979 + 8.57, 2.815, Rotation2d.fromDegrees(60))),
-        SIX_LEFT (new Pose2d(4.994 + 8.57, 2.814, Rotation2d.fromDegrees(120))),
-        SIX_RIGHT (new Pose2d(5.278 + 8.57, 2.979, Rotation2d.fromDegrees(120))),
-        SEVEN_LEFT (new Pose2d(5.790 + 8.57, 3.855, Rotation2d.fromDegrees(180))), 
-        SEVEN_RIGHT (new Pose2d(5.790 + 8.57, 4.190, Rotation2d.fromDegrees(180)));
-
-        private final Pose2d pose;
-        SCORING_POSES_RED(Pose2d pose) { 
-            this.pose = pose;
-        }
-
-        public Pose2d getPose() { return pose; }
-    }
-
-    public static final Pose2d[] scoringPoses = {
-        new Pose2d(5.291, 5.082, Rotation2d.fromDegrees(-120)),
-        new Pose2d(4.995, 5.248, Rotation2d.fromDegrees(-120)),
-        new Pose2d(3.978, 5.241, Rotation2d.fromDegrees(-60)),
-        new Pose2d(3.690, 5.100, Rotation2d.fromDegrees(-60)),
-        new Pose2d(3.180, 4.167, Rotation2d.fromDegrees(0)), // 0 LEFT
-        new Pose2d(3.180, 3.860, Rotation2d.fromDegrees(0)), // 0 RIGHT
-        new Pose2d(3.668, 2.928, Rotation2d.fromDegrees(60)), // 60 LEFT
-        new Pose2d(3.979, 2.815, Rotation2d.fromDegrees(60)),
-        new Pose2d(5.012, 2.790, Rotation2d.fromDegrees(120)),
-        new Pose2d(5.278, 2.979, Rotation2d.fromDegrees(120)),
-        new Pose2d(5.790, 3.855, Rotation2d.fromDegrees(180)), 
-        new Pose2d(5.790, 4.190, Rotation2d.fromDegrees(180)),
-        new Pose2d(5.291 + 8.57, 5.082, Rotation2d.fromDegrees(-120)),
-        new Pose2d(4.995 + 8.57, 5.248, Rotation2d.fromDegrees(-120)),
-        new Pose2d(3.978 + 8.57, 5.241, Rotation2d.fromDegrees(-60)),
-        new Pose2d(3.689 + 8.57, 5.072, Rotation2d.fromDegrees(-60)),
-        new Pose2d(3.180 + 8.57, 4.192, Rotation2d.fromDegrees(0)),
-        new Pose2d(3.180 + 8.57, 3.860, Rotation2d.fromDegrees(0)),
-        new Pose2d(3.688 + 8.57, 2.978, Rotation2d.fromDegrees(60)),
-        new Pose2d(3.979 + 8.57, 2.815, Rotation2d.fromDegrees(60)),
-        new Pose2d(4.994 + 8.57, 2.814, Rotation2d.fromDegrees(120)),
-        new Pose2d(5.278 + 8.57, 2.979, Rotation2d.fromDegrees(120)),
-        new Pose2d(5.790 + 8.57, 3.855, Rotation2d.fromDegrees(180)), 
-        new Pose2d(5.790 + 8.57, 4.190, Rotation2d.fromDegrees(180))
-    };
-
-    public static final Pose2d[] updatedScoringPoses = {
-        new Pose2d(3.109, 4.192, Rotation2d.fromDegrees(0)),
-        new Pose2d(3.109, 3.850, Rotation2d.fromDegrees(0)),
-        new Pose2d(3.654, 2.914, Rotation2d.fromDegrees(60)),
-        new Pose2d(3.944, 2.754, Rotation2d.fromDegrees(60)),
-        new Pose2d(5.027, 2.747, Rotation2d.fromDegrees(120)),
-        new Pose2d(5.317, 2.914, Rotation2d.fromDegrees(120))
-    };
 
     public static class FieldConstants {
         public static final AprilTagFieldLayout APRIL_TAGS = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);

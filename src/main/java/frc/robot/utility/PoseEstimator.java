@@ -163,10 +163,6 @@ public class PoseEstimator extends SubsystemBase {
     combined_field.setRobotPose(getPoseEstimate());
   }
 
-  private double getLL4IMUYaw() {
-    return LimelightHelpers.getIMUData(Constants.VisionConstants.CAM_FRONT_NAME).Yaw;
-  }
-
   @Override
   public void initSendable (SendableBuilder builder) {
     builder.setSmartDashboardType("PoseEstimator");
@@ -174,6 +170,5 @@ public class PoseEstimator extends SubsystemBase {
     if(!Constants.tuningMode) return;
 
     builder.addDoubleProperty("poseEstimator Yaw", () -> { return getPoseEstimate().getRotation().getDegrees(); }, null);
-    builder.addDoubleProperty("LL4 IMU Yaw", this::getLL4IMUYaw, null);
   }
 }
