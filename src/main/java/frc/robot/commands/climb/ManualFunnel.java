@@ -28,7 +28,7 @@ public class ManualFunnel extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    funnel.setVoltage(input.getAsDouble() * 1.0);
+    funnel.setVoltage(input.getAsDouble() * 3.0);
   }
 
   // Called once the command ends or is interrupted.

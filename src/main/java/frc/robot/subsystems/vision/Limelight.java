@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.vision;
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -33,15 +35,11 @@ public class Limelight extends SubsystemBase {
     LimelightHelpers.SetRobotOrientation(cameraName, yaw.getDegrees(), 0, 0, 0, 0, 0);
   } 
 
-  public void setPOIxOffset(double x) {
-    LimelightHelpers.setFiducial3DOffset(cameraName, x, 0, 0);
-  }
-
   public void setIMUMode(int mode) {
     LimelightHelpers.SetIMUMode(cameraName, mode);
   }
 
-  public Translation2d getBotTranslationTargetSpace() {
+  public Translation2d getBotTranslation2d_TargetSpace() {
     Pose3d botPose = LimelightHelpers.getBotPose3d_TargetSpace(cameraName);
     Translation2d convertedTranslation = new Translation2d(botPose.getX(), botPose.getZ());
     return convertedTranslation;
@@ -49,6 +47,10 @@ public class Limelight extends SubsystemBase {
 
   public double getCurrentTagID() {
     return LimelightHelpers.getFiducialID(cameraName);
+  }
+
+  public BooleanSupplier hasTarget() {
+    return () -> LimelightHelpers.getTargetCount(cameraName) != 0;
   }
 
   public LimelightHelpers.PoseEstimate getPoseEstimate2d() {

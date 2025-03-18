@@ -69,7 +69,7 @@ public class Constants {
         public static final String CAM_LEFT_NAME = "limelight-left"; 
         public static final String CAM_RIGHT_NAME = "limelight-right"; 
 
-        public static final double POI_XOFFSET = Units.inchesToMeters(6.47);
+        public static final double BRANCH_XOFFSET = Units.inchesToMeters(6.47);
 
         
         public static final LimelightStrategies STRATEGY = LimelightStrategies.ALL_ESTIMATES;

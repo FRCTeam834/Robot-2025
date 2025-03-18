@@ -46,6 +46,7 @@ import frc.robot.commands.auton.AutonIntakeDos;
 import frc.robot.commands.auton.AutonIntakeUno;
 import frc.robot.commands.auton.AutonIntakeUnoArm;
 import frc.robot.commands.auton.AutonScoreL4;
+import frc.robot.commands.drivetrain.AutoDriveWithNewVision;
 import frc.robot.commands.drivetrain.BetterAutoDrive;
 import frc.robot.commands.drivetrain.DriveWithSpeeds;
 import frc.robot.commands.drivetrain.OpenloopDrive;
@@ -196,8 +197,8 @@ public class RobotContainer {
     bButton.onTrue(new OuttakeCoral(arm));
     yButton.whileTrue(new ReverseIntake(arm));
 
-    rightJoystick1.whileTrue(new BetterAutoDrive(-1, driveTrain, estimator, leds));
-    leftJoystick1.whileTrue(new BetterAutoDrive(1, driveTrain, estimator, leds));
+    leftJoystick1.whileTrue(new AutoDriveWithNewVision(-1, driveTrain, cams[0], estimator, leds).onlyIf(cams[0].hasTarget()));
+    rightJoystick1.whileTrue(new AutoDriveWithNewVision(1, driveTrain, cams[1], estimator, leds).onlyIf(cams[1].hasTarget()));
 
     rightJoystick3.onTrue(new ArmElevatorGotoPosition(ArmConstants.CORAL_INTAKE_ANGLE, ElevatorConstants.STOW_HEIGHT, arm, elevator, driveTrain));
     // rightJoystick1.whileTrue(new AutoDriveToNearestScoring(driveTrain, estimator));
