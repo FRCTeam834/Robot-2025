@@ -186,7 +186,7 @@ public class RobotContainer {
     OI.getKeypad4().onTrue(new ArmElevatorGotoPosition(ArmConstants.L2_ANGLE, ElevatorConstants.L2_HEIGHT, arm, elevator, driveTrain));
     OI.getKeypad7().onTrue(new ArmElevatorGotoPosition(ArmConstants.L3_ANGLE, ElevatorConstants.L3_HEIGHT, arm, elevator, driveTrain));
     OI.getKeypadNum().onTrue(new ArmElevatorGotoPosition(ArmConstants.L4_ANGLE, ElevatorConstants.L4_HEIGHT, arm, elevator, driveTrain));
-    OI.getKeypadSlash().onTrue(new ArmElevatorGotoPosition(ArmConstants.L4_WEIRD_ANGLE, ElevatorConstants.L4_HEIGHT, arm, elevator, driveTrain));
+    OI.getKeypadSlash().onTrue(new ArmElevatorGotoPosition(ArmConstants.L4_CUP_ANGLE, ElevatorConstants.L4_HEIGHT, arm, elevator, driveTrain));
 
     // algae
     OI.getKeypad2().onTrue(new ArmElevatorGotoPosition(ArmConstants.ALGAE_L1_ANGLE, ElevatorConstants.ALGAE_L1_HEIGHT, arm, elevator, driveTrain));

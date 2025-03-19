@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -28,7 +29,8 @@ public class Limelight extends SubsystemBase {
     this.cameraName = cameraName;
     this.gyro = gyro;
 
-    SmartDashboard.putData(this);
+    setTagsFilter(FieldConstants.REEF_TAGS);
+    SmartDashboard.putData(cameraName + " subsystem", this);
   }
 
   public void setRobotOrientation(Rotation2d yaw) {
@@ -47,6 +49,14 @@ public class Limelight extends SubsystemBase {
 
   public double getCurrentTagID() {
     return LimelightHelpers.getFiducialID(cameraName);
+  }
+
+  public void setTagsFilter(int[] tags) {
+    LimelightHelpers.SetFiducialIDFiltersOverride(cameraName, tags);
+  }
+
+  public void resetTagsFilter() {
+    LimelightHelpers.SetFiducialIDFiltersOverride(cameraName, FieldConstants.REEF_TAGS);
   }
 
   public BooleanSupplier hasTarget() {
@@ -71,7 +81,8 @@ public class Limelight extends SubsystemBase {
   }
 
   @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
+  public void initSendable (SendableBuilder builder) {
+    builder.setSmartDashboardType("Limelight");
+    builder.addDoubleProperty("CurrentFiducial", this::getCurrentTagID, null);
   }
 }

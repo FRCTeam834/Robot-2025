@@ -5,9 +5,11 @@
 package frc.robot.commands.drivetrain;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.List;
 import static edu.wpi.first.units.Units.Meters;
 
+import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
@@ -34,6 +36,7 @@ import frc.robot.subsystems.drivetrain.DriveTrain;
 import frc.robot.utility.PoseEstimator;
 import frc.robot.utility.LEDs;
 import frc.robot.utility.LEDs.ledColor;
+import frc.robot.subsystems.vision.Limelight;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class BetterAutoDrive extends Command {
@@ -41,6 +44,7 @@ public class BetterAutoDrive extends Command {
   private final DriveTrain driveTrain;
   private final PoseEstimator poseEstimator;
   private final LEDs leds;
+  private final Limelight limelight;
   private final int relativePos;
 
   private Pose2d[] scoringPosesBlue = new Pose2d[12];
@@ -57,12 +61,14 @@ public class BetterAutoDrive extends Command {
   );    
 
   private Pose2d closestScoringPose;
+  private int closestTagID;
   private double desiredLinearVelocity;
 
-  public BetterAutoDrive(int relativePos, DriveTrain driveTrain, PoseEstimator poseEstimator, LEDs leds) {
+  public BetterAutoDrive(int relativePos, DriveTrain driveTrain, PoseEstimator poseEstimator, Limelight limelight, LEDs leds) {
     this.driveTrain = driveTrain;
     this.poseEstimator = poseEstimator;
     this.leds = leds;
+    this.limelight = limelight;
     this.relativePos = relativePos;
 
     for(int side = 0; side < 6; side++) {
@@ -89,6 +95,19 @@ public class BetterAutoDrive extends Command {
 
     Pose2d robotPose = poseEstimator.getPoseEstimateNoOffset();
 
+    double bestTagCost = Double.MAX_VALUE;
+    for(AprilTag tag : FieldConstants.APRILTAG_LIST) {
+      Pose2d tagPose = tag.pose.toPose2d();
+      double distanceError = robotPose.getTranslation().getDistance(tagPose.getTranslation());
+      double angleError = Math.abs(robotPose.getRotation().minus(tagPose.getRotation().plus(Rotation2d.k180deg)).getRadians());
+
+      double cost = (distanceError * 3 + angleError * 2);
+      if (cost < bestTagCost) {
+        bestTagCost = cost;
+        closestTagID = tag.ID;
+      }
+    }
+
     double bestCost = Double.MAX_VALUE;
     for(Pose2d scoringPose : usedPoses) {
       double distanceError = robotPose.getTranslation().getDistance(scoringPose.getTranslation());
@@ -100,6 +119,8 @@ public class BetterAutoDrive extends Command {
         closestScoringPose = scoringPose; 
       }
     }
+
+    limelight.setTagsFilter(new int[]{closestTagID});
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -139,6 +160,7 @@ public class BetterAutoDrive extends Command {
     System.out.println("Ended");
     leds.setColorForTime(ledColor.GREEN, 1.25);
     driveTrain.stop();
+    limelight.resetTagsFilter();
   }
 
   // Returns true when the command should end.

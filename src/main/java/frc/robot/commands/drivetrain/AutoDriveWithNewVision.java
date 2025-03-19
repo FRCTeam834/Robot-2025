@@ -71,7 +71,7 @@ public class AutoDriveWithNewVision extends Command {
   @Override
   public void initialize() {
     leds.setLEDColor(ledColor.RED);
-    scoringAngle = FieldConstants.APRIL_TAGS.getTagPose((int)limelight.getCurrentTagID()).get().getRotation().toRotation2d();
+    scoringAngle = FieldConstants.APRIL_TAGS.getTagPose((int)limelight.getCurrentTagID()).get().getRotation().toRotation2d().plus(Rotation2d.k180deg);
     System.out.println(scoringAngle.toString());
   }
 

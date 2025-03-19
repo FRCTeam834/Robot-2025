@@ -6,10 +6,13 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.List;
 import java.io.IOException;
 import java.nio.file.Path;
+
 import com.pathplanner.lib.config.RobotConfig;
 
+import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -45,7 +48,7 @@ public class Constants {
         public static final double DRIVE_LENGTH = Units.inchesToMeters(27.5); //m // should be 60cm
         public static final double DRIVE_WIDTH = Units.inchesToMeters(19.375); //m
         public static final double MAX_MODULE_SPEED = 4.5; // 3 // m/s
-        public static final double MAX_TRANSLATION_SPEED = 3; // 4 // m/s
+        public static final double MAX_TRANSLATION_SPEED = 4; // 4 // m/s
         public static final double MAX_STEER_SPEED = Units.degreesToRadians(270);
 
         public static final Translation2d[] moduleTranslations = {
@@ -90,7 +93,7 @@ public class Constants {
         public static final double L2_ANGLE = -0.4; // this is a random default value
         public static final double L3_ANGLE = -0.29; // this is a random default value
         public static final double L4_ANGLE = -0.29; // -0.25 // this is a random default value
-        public static final double L4_WEIRD_ANGLE = -0.32;
+        public static final double L4_CUP_ANGLE = -0.32;
         public static final double L4_AUTON_ANGLE = -0.32; // -0.28
         public static final double ALGAE_L1_ANGLE = -0.27;
         public static final double ALGAE_L2_ANGLE = -0.34;  
@@ -131,6 +134,8 @@ public class Constants {
 
     public static class FieldConstants {
         public static final AprilTagFieldLayout APRIL_TAGS = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
+        public static final List<AprilTag> APRILTAG_LIST = APRIL_TAGS.getTags();
+        public static final int[] REEF_TAGS = {19, 18, 17, 22, 21, 20, 10, 11, 6, 7, 8, 9};
 
         public static final Translation2d REEF_CENTER_BLUE = APRIL_TAGS.getTagPose(18).get().toPose2d().getTranslation()
         .plus(APRIL_TAGS.getTagPose(21).get().toPose2d().getTranslation()).div(2);
