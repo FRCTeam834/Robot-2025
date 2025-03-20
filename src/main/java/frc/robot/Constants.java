@@ -136,9 +136,9 @@ public class Constants {
         public static final AprilTagFieldLayout APRIL_TAGS = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
         public static final List<AprilTag> APRILTAG_LIST = APRIL_TAGS.getTags();
 
-        // index 0->6 are blue side starting from left and increasing clockwise
-        // index 6->11 are red side starting from left and increasing clockwise
         public static final int[] REEF_TAGS = {18, 19, 20, 21, 22, 17, 10, 9, 8, 7, 6, 11};
+        public static final int[] REEF_TAGS_BLUE = {18, 19, 20, 21, 22, 17};
+        public static final int[] REEF_TAGS_RED = {10, 9, 8, 7, 6, 11};
 
         public static final Translation2d REEF_CENTER_BLUE = APRIL_TAGS.getTagPose(18).get().toPose2d().getTranslation()
         .plus(APRIL_TAGS.getTagPose(21).get().toPose2d().getTranslation()).div(2);

@@ -37,7 +37,7 @@ public class IntakeCoral extends Command {
   public void initialize() {
     ended = false;
     hasCoral = false;
-    arm.setIntakeVoltage(0.5); // 4 was good
+    arm.setIntakeVoltage(4); // 4 was good
   }
 
   // Called every time the scheduler runs while the command is scheduled.

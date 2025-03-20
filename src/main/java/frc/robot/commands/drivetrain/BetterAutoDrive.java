@@ -56,6 +56,8 @@ public class BetterAutoDrive extends Command {
   PIDController yController = new PIDController(1, 0, 0);
   PIDController thetaController = new PIDController(2.5, 0, 0);
 
+  private boolean isRed;
+
   private final HolonomicDriveController holonomicDriveController = new HolonomicDriveController(
     xController, yController,
     new ProfiledPIDController(0, 0, 0,
@@ -90,19 +92,21 @@ public class BetterAutoDrive extends Command {
     Pose2d[] usedPoses = scoringPosesBlue;
     if(DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red) {
       usedPoses = scoringPosesRed;
+      isRed = true;
     }
 
     Pose2d robotPose = poseEstimator.getPoseEstimateNoOffset();
 
     double bestCost = Double.MAX_VALUE;
-    for(Pose2d scoringPose : usedPoses) {
-      double distanceError = robotPose.getTranslation().getDistance(scoringPose.getTranslation());
-      double angleError = Math.abs(robotPose.getRotation().minus(scoringPose.getRotation()).getRadians());
+    for(int i = 0; i < usedPoses.length; i++) {
+      double distanceError = robotPose.getTranslation().getDistance(usedPoses[i].getTranslation());
+      double angleError = Math.abs(robotPose.getRotation().minus(usedPoses[i].getRotation()).getRadians());
 
       double cost = (distanceError * 3 + angleError * 2);
       if (cost < bestCost) {
         bestCost = cost;
-        closestScoringPose = scoringPose; 
+        closestScoringPose = usedPoses[i]; 
+        closestTagID = isRed ? FieldConstants.REEF_TAGS_RED[i] : FieldConstants.REEF_TAGS_BLUE[i];
       }
     }
 
@@ -183,9 +187,6 @@ public class BetterAutoDrive extends Command {
 
     if (flipToRed) {
       reefPose = flipPose(reefPose);
-      closestTagID = FieldConstants.REEF_TAGS[side+6];
-    } else {
-      closestTagID = FieldConstants.REEF_TAGS[side];
     }
 
     return reefPose;
