@@ -30,13 +30,7 @@ public class CoralIntakeSequence extends SequentialCommandGroup {
         new IntakeCoral(arm, leds),
         new ArmElevatorGotoPosition(ArmConstants.CORAL_INTAKE_ANGLE, ElevatorConstants.INTAKE_HEIGHT, arm, elevator, RobotContainer.driveTrain)
         // arm default command should be ArmDefaultStow
-      ).onlyIf(() -> {
-        //if (arm.hasCoral()) {
-        //  System.out.println("Already have coral");
-        //  return false;
-        //}
-        return true;
-      })
+      ).andThen(new ArmElevatorGotoPosition(ArmConstants.L1_ANGLE, ElevatorConstants.INTAKE_HEIGHT, arm, elevator, RobotContainer.driveTrain))
     );
   }
 }

@@ -96,7 +96,7 @@ public class RobotContainer {
   );
 
 
-  private static Limelight[] cams = {
+  public static Limelight[] cams = {
     new Limelight(Constants.VisionConstants.CAM_LEFT_NAME, gyro), 
     new Limelight(Constants.VisionConstants.CAM_RIGHT_NAME, gyro)
   };
@@ -194,14 +194,15 @@ public class RobotContainer {
 
     aButton.onTrue(new CoralIntakeSequence(arm, elevator, leds));
     xButton.onTrue(new IntakeAlgae(arm));
-    bButton.onTrue(new OuttakeCoral(arm));
+    bButton.onTrue(new OuttakeCoral(arm, elevator));
     yButton.whileTrue(new ReverseIntake(arm));
 
-    leftJoystick1.whileTrue(new AutoDriveWithNewVision(-1, driveTrain, cams[0], estimator, leds).onlyIf(cams[0].hasTarget()));
-    rightJoystick1.whileTrue(new AutoDriveWithNewVision(1, driveTrain, cams[1], estimator, leds).onlyIf(cams[1].hasTarget()));
+    // leftJoystick1.whileTrue(new AutoDriveWithNewVision(-1, driveTrain, cams[0], estimator, leds).onlyIf(cams[0].hasTarget()));
+    // rightJoystick1.whileTrue(new AutoDriveWithNewVision(1, driveTrain, cams[1], estimator, leds).onlyIf(cams[1].hasTarget()));
+    rightJoystick1.whileTrue(new BetterAutoDrive(-1, driveTrain, estimator, leds));
+    leftJoystick1.whileTrue(new BetterAutoDrive(1, driveTrain, estimator, leds));
 
     rightJoystick3.onTrue(new ArmElevatorGotoPosition(ArmConstants.CORAL_INTAKE_ANGLE, ElevatorConstants.STOW_HEIGHT, arm, elevator, driveTrain));
-    // rightJoystick1.whileTrue(new AutoDriveToNearestScoring(driveTrain, estimator));
 
     funnel.setDefaultCommand(new ManualFunnel(funnel, OI::getXboxLeftJoystickY));
 

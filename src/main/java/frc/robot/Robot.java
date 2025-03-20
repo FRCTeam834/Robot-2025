@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import au.grapplerobotics.CanBridge;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -70,7 +71,6 @@ public class Robot extends TimedRobot {
 
     if(DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red) {
       RobotContainer.estimator.setEstimatorGyroOffset(180);
-      System.out.println("Running this thingy");
     } else {
       RobotContainer.estimator.setEstimatorGyroOffset(0);
     }

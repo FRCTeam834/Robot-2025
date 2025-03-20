@@ -37,6 +37,7 @@ import frc.robot.utility.PoseEstimator;
 import frc.robot.utility.LEDs;
 import frc.robot.utility.LEDs.ledColor;
 import frc.robot.subsystems.vision.Limelight;
+import frc.robot.RobotContainer;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class BetterAutoDrive extends Command {
@@ -44,11 +45,12 @@ public class BetterAutoDrive extends Command {
   private final DriveTrain driveTrain;
   private final PoseEstimator poseEstimator;
   private final LEDs leds;
-  private final Limelight limelight;
-  private final int relativePos;
 
-  private Pose2d[] scoringPosesBlue = new Pose2d[12];
-  private Pose2d[] scoringPosesRed = new Pose2d[12];
+  private final Limelight cam_left = RobotContainer.cams[0];
+  private final Limelight cam_right = RobotContainer.cams[1];
+
+  private Pose2d[] scoringPosesBlue = new Pose2d[6];
+  private Pose2d[] scoringPosesRed = new Pose2d[6];
 
   PIDController xController = new PIDController(1, 0, 0);
   PIDController yController = new PIDController(1, 0, 0);
@@ -64,22 +66,19 @@ public class BetterAutoDrive extends Command {
   private int closestTagID;
   private double desiredLinearVelocity;
 
-  public BetterAutoDrive(int relativePos, DriveTrain driveTrain, PoseEstimator poseEstimator, Limelight limelight, LEDs leds) {
+  public BetterAutoDrive(int relativePos, DriveTrain driveTrain, PoseEstimator poseEstimator, LEDs leds) {
     this.driveTrain = driveTrain;
     this.poseEstimator = poseEstimator;
     this.leds = leds;
-    this.limelight = limelight;
-    this.relativePos = relativePos;
 
     for(int side = 0; side < 6; side++) {
       scoringPosesBlue[side] = getReefPose(side, relativePos, false);
     }
     for(int side = 0; side < 6; side++) {
-      scoringPosesRed[side+6] = getReefPose(side, relativePos, true);
+      scoringPosesRed[side] = getReefPose(side, relativePos, true);
     }
 
     thetaController.enableContinuousInput(0, 2 * Math.PI);
-    holonomicDriveController.setTolerance(new Pose2d(Units.inchesToMeters(2), Units.inchesToMeters(2), Rotation2d.fromDegrees(2)));
     addRequirements(driveTrain);
   }
 
@@ -95,19 +94,6 @@ public class BetterAutoDrive extends Command {
 
     Pose2d robotPose = poseEstimator.getPoseEstimateNoOffset();
 
-    double bestTagCost = Double.MAX_VALUE;
-    for(AprilTag tag : FieldConstants.APRILTAG_LIST) {
-      Pose2d tagPose = tag.pose.toPose2d();
-      double distanceError = robotPose.getTranslation().getDistance(tagPose.getTranslation());
-      double angleError = Math.abs(robotPose.getRotation().minus(tagPose.getRotation().plus(Rotation2d.k180deg)).getRadians());
-
-      double cost = (distanceError * 3 + angleError * 2);
-      if (cost < bestTagCost) {
-        bestTagCost = cost;
-        closestTagID = tag.ID;
-      }
-    }
-
     double bestCost = Double.MAX_VALUE;
     for(Pose2d scoringPose : usedPoses) {
       double distanceError = robotPose.getTranslation().getDistance(scoringPose.getTranslation());
@@ -120,7 +106,9 @@ public class BetterAutoDrive extends Command {
       }
     }
 
-    limelight.setTagsFilter(new int[]{closestTagID});
+    System.out.println("Closest tag id: " + closestTagID);
+    cam_left.setTagsFilter(new int[]{closestTagID});
+    cam_right.setTagsFilter(new int[]{closestTagID});
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -134,7 +122,7 @@ public class BetterAutoDrive extends Command {
       xController.setP(2);
       yController.setP(2);
     } else {
-      desiredLinearVelocity = 0.0; // Try 0.1 for this
+      desiredLinearVelocity = 0.0;
       yController.setP(2);
       xController.setP(2);
     }
@@ -157,10 +145,11 @@ public class BetterAutoDrive extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    System.out.println("Ended");
     leds.setColorForTime(ledColor.GREEN, 1.25);
     driveTrain.stop();
-    limelight.resetTagsFilter();
+    
+    cam_left.resetTagsFilter();
+    cam_right.resetTagsFilter();
   }
 
   // Returns true when the command should end.
@@ -175,11 +164,10 @@ public class BetterAutoDrive extends Command {
    *
    * @param side The side of the reef (0 for left, increases clockwise).
    * @param relativePos The relative position on the reef (-1 for right branch, 0 for center, 1 for left branch).
+   * @param flipToRed Red side reef
    * @return The calculated Pose2d for scoring.
    */
   private Pose2d getReefPose(int side, int relativePos, boolean flipToRed) {
-    // determine whether to use red or blue reef position
-
     // initially do all calculations from blue, then flip later
     Translation2d reefCenter = FieldConstants.REEF_CENTER_BLUE;
 
@@ -191,12 +179,14 @@ public class BetterAutoDrive extends Command {
     translation = translation.rotateAround(reefCenter, Rotation2d.fromDegrees(-60 * side));
 
     // make pose from translation and correct rotation
-    Pose2d reefPose = new Pose2d(translation,
-            Rotation2d.fromDegrees(-60 * side));
+    Pose2d reefPose = new Pose2d(translation, Rotation2d.fromDegrees(-60 * side));
 
     if (flipToRed) {
-        reefPose = flipPose(reefPose);
-    } 
+      reefPose = flipPose(reefPose);
+      closestTagID = FieldConstants.REEF_TAGS[side+6];
+    } else {
+      closestTagID = FieldConstants.REEF_TAGS[side];
+    }
 
     return reefPose;
   }

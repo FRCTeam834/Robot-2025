@@ -4,6 +4,7 @@
 
 package frc.robot.commands.arm;
 
+import edu.wpi.first.util.cleanup.CleanupPool;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.GamePiece;
@@ -19,12 +20,14 @@ public class OuttakeCoral extends Command {
   private Elevator elevator;
 
   private Timer timer = new Timer();
+  private Timer cupTimer = new Timer();
 
   private boolean finished = false;
   private boolean doCupping = false;
 
-  public OuttakeCoral(Arm arm) {
+  public OuttakeCoral(Arm arm, Elevator elevator) {
     this.arm = arm;
+    this.elevator = elevator;
     addRequirements(arm);
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -33,12 +36,21 @@ public class OuttakeCoral extends Command {
   @Override
   public void initialize() {
     finished = false;
+    doCupping = false;
+
+    cupTimer.stop();
+    cupTimer.reset();
 
     if(elevator.getElevatorHeight() > ElevatorConstants.L3_HEIGHT + 0.5) {
       arm.setDesiredPivotAngle(ArmConstants.L4_CUP_ANGLE);
+      arm.setIntakeVoltage(0);
+      cupTimer.start();
+      doCupping = true;
+    } else {
+      arm.setIntakeVoltage(8);
     }
 
-    arm.setIntakeVoltage(8);
+
     timer.stop();
     timer.reset();
   }
@@ -46,11 +58,20 @@ public class OuttakeCoral extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (!arm.hasCoral() && timer.get() == 0) {
+    if(doCupping && cupTimer.get() > 0.3) {
+      arm.setIntakeVoltage(8);
       timer.start();
     }
 
-    if (timer.get() > 2) {
+    if (!arm.hasCoral() && timer.get() == 0 && !doCupping) {
+      timer.start();
+    }
+
+    if (timer.get() > 0.5 && doCupping) {
+      arm.setDesiredPivotAngle(ArmConstants.L4_ANGLE);
+    }
+
+    if(timer.get() > 2) {
       finished = true;
     }
   }
@@ -59,7 +80,6 @@ public class OuttakeCoral extends Command {
   @Override
   public void end(boolean interrupted) {
     arm.setIntakeVoltage(0.0);
-    arm.setDesiredPivotAngle(ArmConstants.L4_ANGLE);
   }
 
   // Returns true when the command should end.
