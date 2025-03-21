@@ -145,22 +145,23 @@ public class Constants {
         public static final Map<Rotation2d, Integer> scoringSideLeft = new HashMap<>() {{
             // 1 = left | -1 = right
             put(Rotation2d.fromDegrees(0.0), 1);
-            put(Rotation2d.fromDegrees(60.0), 1);
-            put(Rotation2d.fromDegrees(120.0), -1);
-            put(Rotation2d.fromDegrees(180.0), -1);
-            put(Rotation2d.fromDegrees(240.0), -1);
-            put(Rotation2d.fromDegrees(300.0), 1);
+            put(Rotation2d.fromDegrees(-60.0), 1);
+            put(Rotation2d.fromDegrees(-120.0), -1);
+            put(Rotation2d.fromDegrees(-180.0), -1);
+            put(Rotation2d.fromDegrees(-240.0), -1);
+            put(Rotation2d.fromDegrees(-300.0), 1);
         }};
 
         public static final Map<Rotation2d, Integer> scoringSideRight = new HashMap<>() {{
             // 1 = left | -1 = right
             put(Rotation2d.fromDegrees(0.0), -1);
-            put(Rotation2d.fromDegrees(60.0), -1);
-            put(Rotation2d.fromDegrees(120.0), 1);
-            put(Rotation2d.fromDegrees(180.0), 1);
-            put(Rotation2d.fromDegrees(240.0), 1);
-            put(Rotation2d.fromDegrees(300.0), -1);
+            put(Rotation2d.fromDegrees(-60.0), -1);
+            put(Rotation2d.fromDegrees(-120.0), 1);
+            put(Rotation2d.fromDegrees(-180.0), 1);
+            put(Rotation2d.fromDegrees(-240.0), 1);
+            put(Rotation2d.fromDegrees(-300.0), -1);
         }};
+
 
         public static final Translation2d REEF_CENTER_BLUE = APRIL_TAGS.getTagPose(18).get().toPose2d().getTranslation()
         .plus(APRIL_TAGS.getTagPose(21).get().toPose2d().getTranslation()).div(2);
@@ -171,7 +172,7 @@ public class Constants {
 
         public static final Distance REEF_APOTHEM = Meters.of(
                 APRIL_TAGS.getTagPose(18).get().toPose2d().getTranslation().getDistance(REEF_CENTER_BLUE))
-                .plus(Meters.of(0.75)); //0.35
+                .plus(Meters.of(0.4)); //0.35
                 
         // translation to move from centered on a side to scoring position for the left branch
         public static final Translation2d CENTERED_TO_LEFT_BRANCH = new Translation2d(Meters.of(0),

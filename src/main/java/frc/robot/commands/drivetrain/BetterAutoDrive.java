@@ -77,14 +77,9 @@ public class BetterAutoDrive extends Command {
 
     for(int side = 0; side < 6; side++) {
       scoringPosesBlue[side] = getReefPose(side, -1, false);
-    }
-    for(int side = 0; side < 6; side++) {
       scoringPosesBlue[side+6] = getReefPose(side, 1, false);
-    }
-    for(int side = 0; side < 6; side++) {
+
       scoringPosesRed[side] = getReefPose(side, -1, true);
-    }
-    for(int side = 0; side < 6; side++) {
       scoringPosesRed[side+6] = getReefPose(side, 1, true);
     }
 
@@ -170,8 +165,8 @@ public class BetterAutoDrive extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (Math.abs(closestScoringPose.getX() - poseEstimator.getPoseEstimateNoOffset().getX()) < Units.inchesToMeters(0.25))
-    && (Math.abs(closestScoringPose.getY() - poseEstimator.getPoseEstimateNoOffset().getY()) < Units.inchesToMeters(0.25))
+    return (Math.abs(closestScoringPose.getX() - poseEstimator.getPoseEstimateNoOffset().getX()) < Units.inchesToMeters(0.5))
+    && (Math.abs(closestScoringPose.getY() - poseEstimator.getPoseEstimateNoOffset().getY()) < Units.inchesToMeters(0.5))
     && (Math.abs(poseEstimator.getPoseEstimateNoOffset().getRotation().getDegrees() - closestScoringPose.getRotation().getDegrees()) < 2);
   }
 
