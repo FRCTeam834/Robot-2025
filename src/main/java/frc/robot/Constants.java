@@ -6,7 +6,9 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -137,8 +139,28 @@ public class Constants {
         public static final List<AprilTag> APRILTAG_LIST = APRIL_TAGS.getTags();
 
         public static final int[] REEF_TAGS = {18, 19, 20, 21, 22, 17, 10, 9, 8, 7, 6, 11};
-        public static final int[] REEF_TAGS_BLUE = {18, 19, 20, 21, 22, 17};
-        public static final int[] REEF_TAGS_RED = {10, 9, 8, 7, 6, 11};
+        public static final int[] REEF_TAGS_BLUE = {18, 18, 19, 19, 20, 20, 21, 21, 22, 22, 17, 17};
+        public static final int[] REEF_TAGS_RED = {7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 6, 6};
+
+        public static final Map<Rotation2d, Integer> scoringSideLeft = new HashMap<>() {{
+            // 1 = left | -1 = right
+            put(Rotation2d.fromDegrees(0.0), 1);
+            put(Rotation2d.fromDegrees(60.0), 1);
+            put(Rotation2d.fromDegrees(120.0), -1);
+            put(Rotation2d.fromDegrees(180.0), -1);
+            put(Rotation2d.fromDegrees(240.0), -1);
+            put(Rotation2d.fromDegrees(300.0), 1);
+        }};
+
+        public static final Map<Rotation2d, Integer> scoringSideRight = new HashMap<>() {{
+            // 1 = left | -1 = right
+            put(Rotation2d.fromDegrees(0.0), -1);
+            put(Rotation2d.fromDegrees(60.0), -1);
+            put(Rotation2d.fromDegrees(120.0), 1);
+            put(Rotation2d.fromDegrees(180.0), 1);
+            put(Rotation2d.fromDegrees(240.0), 1);
+            put(Rotation2d.fromDegrees(300.0), -1);
+        }};
 
         public static final Translation2d REEF_CENTER_BLUE = APRIL_TAGS.getTagPose(18).get().toPose2d().getTranslation()
         .plus(APRIL_TAGS.getTagPose(21).get().toPose2d().getTranslation()).div(2);
@@ -149,7 +171,7 @@ public class Constants {
 
         public static final Distance REEF_APOTHEM = Meters.of(
                 APRIL_TAGS.getTagPose(18).get().toPose2d().getTranslation().getDistance(REEF_CENTER_BLUE))
-                .plus(Meters.of(0.35)); //0.35
+                .plus(Meters.of(0.75)); //0.35
                 
         // translation to move from centered on a side to scoring position for the left branch
         public static final Translation2d CENTERED_TO_LEFT_BRANCH = new Translation2d(Meters.of(0),

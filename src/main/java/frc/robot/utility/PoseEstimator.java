@@ -15,6 +15,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator3d;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Timer;
@@ -99,6 +100,12 @@ public class PoseEstimator extends SubsystemBase {
     estimatorGyroOffset = offset;
   }
 
+  public double getErrorBetweenCams(LimelightHelpers.PoseEstimate firstPose, LimelightHelpers.PoseEstimate secondPose) {
+    if (firstPose == null || secondPose == null) return -1;
+    double dist = firstPose.pose.getTranslation().getDistance(secondPose.pose.getTranslation());
+    return dist;
+  }
+
   @Override
   public void periodic() {
     poseEstimator.updateWithTime(Timer.getFPGATimestamp(), driveTrain.getYaw(), driveTrain.getModulePositions());
@@ -106,7 +113,6 @@ public class PoseEstimator extends SubsystemBase {
     cameras[0].setRobotOrientation(getPoseEstimateNoOffset().getRotation()); 
     cameras[1].setRobotOrientation(getPoseEstimateNoOffset().getRotation());
     LimelightHelpers.PoseEstimate[] cam_estimates = {cameras[0].getPoseEstimate2d(), cameras[1].getPoseEstimate2d()};
-    cam_estimates[1] = null;
 
     if(!VisionConstants.useVisionPoseEstimator) return;
     
@@ -170,5 +176,6 @@ public class PoseEstimator extends SubsystemBase {
     if(!Constants.tuningMode) return;
 
     builder.addDoubleProperty("poseEstimator Yaw", () -> { return getPoseEstimate().getRotation().getDegrees(); }, null);
+    builder.addDoubleProperty("error between cams", () -> { return getErrorBetweenCams(cameras[0].getPoseEstimate2d(), cameras[1].getPoseEstimate2d()); }, null);
   }
 }

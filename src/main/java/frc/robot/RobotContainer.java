@@ -66,6 +66,8 @@ import frc.robot.subsystems.climber.Climber;
 import frc.robot.commands.climb.ManualClimb;
 import frc.robot.commands.climb.ManualFunnel;
 import frc.robot.utility.LEDs;
+import frc.robot.Constants.*;
+import frc.robot.Constants.FieldConstants;
 
 public class RobotContainer {
 
@@ -197,10 +199,10 @@ public class RobotContainer {
     bButton.onTrue(new OuttakeCoral(arm, elevator));
     yButton.whileTrue(new ReverseIntake(arm));
 
-    // leftJoystick1.whileTrue(new AutoDriveWithNewVision(-1, driveTrain, cams[0], estimator, leds).onlyIf(cams[0].hasTarget()));
-    // rightJoystick1.whileTrue(new AutoDriveWithNewVision(1, driveTrain, cams[1], estimator, leds).onlyIf(cams[1].hasTarget()));
-    rightJoystick1.whileTrue(new BetterAutoDrive(-1, driveTrain, estimator, leds));
-    leftJoystick1.whileTrue(new BetterAutoDrive(1, driveTrain, estimator, leds));
+    leftJoystick1.whileTrue(new AutoDriveWithNewVision(-1, driveTrain, cams[0], estimator, leds).onlyIf(cams[0].hasTarget()));
+    rightJoystick1.whileTrue(new AutoDriveWithNewVision(1, driveTrain, cams[1], estimator, leds).onlyIf(cams[1].hasTarget()));
+    //rightJoystick1.whileTrue(new BetterAutoDrive("right", driveTrain, estimator, leds));
+    //leftJoystick1.whileTrue(new BetterAutoDrive("left", driveTrain, estimator, leds));
 
     rightJoystick3.onTrue(new ArmElevatorGotoPosition(ArmConstants.CORAL_INTAKE_ANGLE, ElevatorConstants.STOW_HEIGHT, arm, elevator, driveTrain));
 

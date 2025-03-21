@@ -29,8 +29,7 @@ public class CoralIntakeSequence extends SequentialCommandGroup {
       new ParallelDeadlineGroup(
         new IntakeCoral(arm, leds),
         new ArmElevatorGotoPosition(ArmConstants.CORAL_INTAKE_ANGLE, ElevatorConstants.INTAKE_HEIGHT, arm, elevator, RobotContainer.driveTrain)
-        // arm default command should be ArmDefaultStow
-      ).andThen(new ArmElevatorGotoPosition(ArmConstants.L1_ANGLE, ElevatorConstants.INTAKE_HEIGHT, arm, elevator, RobotContainer.driveTrain))
+      )
     );
   }
 }

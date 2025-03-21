@@ -1,0 +1,87 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.012210264900662,
+        "y": 5.2816846026490065
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.259748858485737,
+        "y": 5.710434023572499
+      },
+      "isLocked": false,
+      "linkedName": "60L"
+    },
+    {
+      "anchor": {
+        "x": 4.7870240066225165,
+        "y": 6.443936258278145
+      },
+      "prevControl": {
+        "x": 5.255688779349788,
+        "y": 5.935385121914509
+      },
+      "nextControl": {
+        "x": 4.265114753442099,
+        "y": 7.0102633202398765
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.6489445364238413,
+        "y": 7.293832781456953
+      },
+      "prevControl": {
+        "x": 2.6161888546046024,
+        "y": 6.565906645087812
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "FeederTop"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.6,
+      "rotationDegrees": -54.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "AutonIntake",
+      "waypointRelativePos": 0.1034870641169905,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "AutonIntake"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 180.0,
+    "maxAngularAcceleration": 360.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -55.0
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -119.99999999999999
+  },
+  "useDefaultConstraints": false
+}

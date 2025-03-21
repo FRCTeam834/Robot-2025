@@ -12,6 +12,7 @@ import frc.robot.Constants.GamePiece;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.utility.LEDs;
 import frc.robot.utility.LEDs.ledColor;
+import frc.robot.Constants.ArmConstants;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class IntakeCoral extends Command {
@@ -47,6 +48,7 @@ public class IntakeCoral extends Command {
       leds.setColorForTime(ledColor.STROBEGOLD, 1.25);
       arm.setIntakeVoltage(1); // a lower voltage to move it past elevator stage
       lastAngle = arm.getIntakeAngle();
+      arm.setDesiredPivotAngle(ArmConstants.L1_ANGLE);
       hasCoral = true;
     }
 

@@ -49,8 +49,8 @@ public class BetterAutoDrive extends Command {
   private final Limelight cam_left = RobotContainer.cams[0];
   private final Limelight cam_right = RobotContainer.cams[1];
 
-  private Pose2d[] scoringPosesBlue = new Pose2d[6];
-  private Pose2d[] scoringPosesRed = new Pose2d[6];
+  private Pose2d[] scoringPosesBlue = new Pose2d[12];
+  private Pose2d[] scoringPosesRed = new Pose2d[12];
 
   PIDController xController = new PIDController(1, 0, 0);
   PIDController yController = new PIDController(1, 0, 0);
@@ -67,17 +67,25 @@ public class BetterAutoDrive extends Command {
   private Pose2d closestScoringPose;
   private int closestTagID;
   private double desiredLinearVelocity;
-
-  public BetterAutoDrive(int relativePos, DriveTrain driveTrain, PoseEstimator poseEstimator, LEDs leds) {
+  private String scoringSide; // "left" | "right"
+  
+  public BetterAutoDrive(String scoringSide, DriveTrain driveTrain, PoseEstimator poseEstimator, LEDs leds) {
     this.driveTrain = driveTrain;
     this.poseEstimator = poseEstimator;
     this.leds = leds;
+    this.scoringSide = scoringSide;
 
     for(int side = 0; side < 6; side++) {
-      scoringPosesBlue[side] = getReefPose(side, relativePos, false);
+      scoringPosesBlue[side] = getReefPose(side, -1, false);
     }
     for(int side = 0; side < 6; side++) {
-      scoringPosesRed[side] = getReefPose(side, relativePos, true);
+      scoringPosesBlue[side+6] = getReefPose(side, 1, false);
+    }
+    for(int side = 0; side < 6; side++) {
+      scoringPosesRed[side] = getReefPose(side, -1, true);
+    }
+    for(int side = 0; side < 6; side++) {
+      scoringPosesRed[side+6] = getReefPose(side, 1, true);
     }
 
     thetaController.enableContinuousInput(0, 2 * Math.PI);
@@ -88,6 +96,7 @@ public class BetterAutoDrive extends Command {
   @Override
   public void initialize() {
     leds.setLEDColor(ledColor.RED);
+    isRed = false;
 
     Pose2d[] usedPoses = scoringPosesBlue;
     if(DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red) {
@@ -99,6 +108,8 @@ public class BetterAutoDrive extends Command {
 
     double bestCost = Double.MAX_VALUE;
     for(int i = 0; i < usedPoses.length; i++) {
+      if (usedPoses[i] == null) continue;
+
       double distanceError = robotPose.getTranslation().getDistance(usedPoses[i].getTranslation());
       double angleError = Math.abs(robotPose.getRotation().minus(usedPoses[i].getRotation()).getRadians());
 
@@ -121,14 +132,14 @@ public class BetterAutoDrive extends Command {
     Pose2d robotPose = poseEstimator.getPoseEstimateNoOffset();
     double translationError = robotPose.getTranslation().getDistance(closestScoringPose.getTranslation());
 
-    if(translationError > 1) {
+    if(translationError > 0.2) {
       desiredLinearVelocity = 0.1;
-      xController.setP(2);
-      yController.setP(2);
+      xController.setP(1);
+      yController.setP(1);
     } else {
       desiredLinearVelocity = 0.0;
-      yController.setP(2);
-      xController.setP(2);
+      yController.setP(1);
+      xController.setP(1);
     }
 
     ChassisSpeeds speeds = holonomicDriveController.calculate(
@@ -138,8 +149,8 @@ public class BetterAutoDrive extends Command {
       closestScoringPose.getRotation()
     );
 
-    speeds.vxMetersPerSecond = MathUtil.clamp(speeds.vxMetersPerSecond, -0.8, 0.8);
-    speeds.vyMetersPerSecond = MathUtil.clamp(speeds.vyMetersPerSecond, -0.8, 0.8);
+    speeds.vxMetersPerSecond = MathUtil.clamp(speeds.vxMetersPerSecond, -1, 1);
+    speeds.vyMetersPerSecond = MathUtil.clamp(speeds.vyMetersPerSecond, -1, 1);
     speeds.omegaRadiansPerSecond = thetaController.calculate(poseEstimator.getPoseEstimateNoOffset().getRotation().getRadians(), closestScoringPose.getRotation().getRadians());
     driveTrain.setDesiredSpeeds(speeds);
     //SmartDashboard.putNumber("AUTOALIGN ROTATION ERROR", Math.abs(poseEstimator.getPoseEstimateNoOffset().getRotation().getRadians() - closestScoringPose.getRotation().getRadians()));
@@ -159,8 +170,9 @@ public class BetterAutoDrive extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (Math.abs(closestScoringPose.getX() - poseEstimator.getPoseEstimateNoOffset().getX()) < Units.inchesToMeters(0.5))
-    && (Math.abs(closestScoringPose.getY() - poseEstimator.getPoseEstimateNoOffset().getY()) < Units.inchesToMeters(0.5));
+    return (Math.abs(closestScoringPose.getX() - poseEstimator.getPoseEstimateNoOffset().getX()) < Units.inchesToMeters(0.25))
+    && (Math.abs(closestScoringPose.getY() - poseEstimator.getPoseEstimateNoOffset().getY()) < Units.inchesToMeters(0.25))
+    && (Math.abs(poseEstimator.getPoseEstimateNoOffset().getRotation().getDegrees() - closestScoringPose.getRotation().getDegrees()) < 2);
   }
 
   /**
@@ -172,6 +184,24 @@ public class BetterAutoDrive extends Command {
    * @return The calculated Pose2d for scoring.
    */
   private Pose2d getReefPose(int side, int relativePos, boolean flipToRed) {
+    if (
+      scoringSide.equals("left") &&
+      FieldConstants.scoringSideLeft.containsKey(Rotation2d.fromDegrees(-60 * side))
+    ) {
+      if ((int)FieldConstants.scoringSideLeft.get(Rotation2d.fromDegrees(-60 * side)) != relativePos) {
+        return null;
+      }
+    }
+
+    if (
+      scoringSide.equals("right") &&
+      FieldConstants.scoringSideRight.containsKey(Rotation2d.fromDegrees(-60 * side))
+    ) {
+      if ((int)FieldConstants.scoringSideRight.get(Rotation2d.fromDegrees(-60 * side)) != relativePos) {
+        return null;
+      }
+    }
+
     // initially do all calculations from blue, then flip later
     Translation2d reefCenter = FieldConstants.REEF_CENTER_BLUE;
 
