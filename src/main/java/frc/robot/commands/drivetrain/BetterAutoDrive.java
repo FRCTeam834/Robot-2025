@@ -52,11 +52,12 @@ public class BetterAutoDrive extends Command {
   private Pose2d[] scoringPosesBlue = new Pose2d[12];
   private Pose2d[] scoringPosesRed = new Pose2d[12];
 
-  PIDController xController = new PIDController(1, 0, 0);
-  PIDController yController = new PIDController(1, 0, 0);
+  PIDController xController = new PIDController(1.25, 0, 0);
+  PIDController yController = new PIDController(1.25, 0, 0);
   PIDController thetaController = new PIDController(2.5, 0, 0);
 
   private boolean isRed;
+  private String stage;
 
   private final HolonomicDriveController holonomicDriveController = new HolonomicDriveController(
     xController, yController,
@@ -65,6 +66,7 @@ public class BetterAutoDrive extends Command {
   );    
 
   private Pose2d closestScoringPose;
+  private Pose2d lineupScoringPose;
   private int closestTagID;
   private double desiredLinearVelocity;
   private String scoringSide; // "left" | "right"
@@ -92,6 +94,9 @@ public class BetterAutoDrive extends Command {
   public void initialize() {
     leds.setLEDColor(ledColor.RED);
     isRed = false;
+    stage = "lineup";
+    closestScoringPose = null;
+    lineupScoringPose = null;
 
     Pose2d[] usedPoses = scoringPosesBlue;
     if(DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red) {
@@ -119,30 +124,51 @@ public class BetterAutoDrive extends Command {
     System.out.println("Closest tag id: " + closestTagID);
     cam_left.setTagsFilter(new int[]{closestTagID});
     cam_right.setTagsFilter(new int[]{closestTagID});
+
+    double dx = -Math.cos(lineupScoringPose.getRotation().getRadians()) * FieldConstants.LINEUP_DISTANCE;
+    double dy = -Math.sin(lineupScoringPose.getRotation().getRadians()) * FieldConstants.LINEUP_DISTANCE;
+    Translation2d lineupTranslation = new Translation2d(dx, dy);
+    lineupScoringPose = closestScoringPose.transformBy(new Transform2d(lineupTranslation, new Rotation2d()));
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     Pose2d robotPose = poseEstimator.getPoseEstimateNoOffset();
-    double translationError = robotPose.getTranslation().getDistance(closestScoringPose.getTranslation());
+    //double translationError = robotPose.getTranslation().getDistance(closestScoringPose.getTranslation());
 
-    if(translationError > 0.2) {
-      desiredLinearVelocity = 0.1;
-      xController.setP(1);
-      yController.setP(1);
-    } else {
-      desiredLinearVelocity = 0.0;
-      yController.setP(1);
-      xController.setP(1);
+    // if(translationError > 0.2) {
+    //   desiredLinearVelocity = 0.1;
+    //   xController.setP(1);
+    //   yController.setP(1);
+    // } else {
+    //   desiredLinearVelocity = 0.0;
+    //   yController.setP(1);
+    //   xController.setP(1);
+    // }
+    
+    ChassisSpeeds speeds = new ChassisSpeeds();
+    if(stage.equals("lineup")) {
+      if(poseEstimator.isAtPose(lineupScoringPose, Units.inchesToMeters(3), Units.degreesToRadians(5))) {
+        stage = "score";
+      } else {
+        speeds = holonomicDriveController.calculate(
+          poseEstimator.getPoseEstimateNoOffset(),
+          lineupScoringPose,
+          desiredLinearVelocity, 
+          closestScoringPose.getRotation()
+        );
+      }
     }
 
-    ChassisSpeeds speeds = holonomicDriveController.calculate(
-      poseEstimator.getPoseEstimateNoOffset(),
-      closestScoringPose,
-      desiredLinearVelocity, 
-      closestScoringPose.getRotation()
-    );
+    if(stage.equals("score")) {
+      speeds = holonomicDriveController.calculate(
+        poseEstimator.getPoseEstimateNoOffset(),
+        closestScoringPose,
+        desiredLinearVelocity, 
+        closestScoringPose.getRotation()
+      );
+    }
 
     speeds.vxMetersPerSecond = MathUtil.clamp(speeds.vxMetersPerSecond, -1, 1);
     speeds.vyMetersPerSecond = MathUtil.clamp(speeds.vyMetersPerSecond, -1, 1);

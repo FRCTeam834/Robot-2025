@@ -77,7 +77,7 @@ public class PoseEstimator extends SubsystemBase {
    * @return
    */
   public boolean isAtPose (Pose2d pose, double translationTolerance, double rotationTolerance) {
-    Pose2d diff = getPoseEstimate().relativeTo(pose);
+    Pose2d diff = getPoseEstimateNoOffset().relativeTo(pose);
     return (
       Math.abs(diff.getX()) < translationTolerance &&
       Math.abs(diff.getY()) < translationTolerance &&

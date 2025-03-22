@@ -14,6 +14,7 @@ import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.drivetrain.DriveTrain;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.utility.PoseEstimator;
+import frc.robot.commands.auton.AutonOuttakeCoral;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -26,7 +27,7 @@ public class AutonScoreL4 extends SequentialCommandGroup {
     addCommands(
       new SequentialCommandGroup(
         //new ArmElevatorGotoPosition(ArmConstants.L4_ANGLE, ElevatorConstants.L4_HEIGHT, arm, elevator),
-        new AutonOuttakeCoral(arm)
+        new AutonOuttakeCoral(arm, elevator)
       ).onlyIf(arm::hasCoral)
     );
   }

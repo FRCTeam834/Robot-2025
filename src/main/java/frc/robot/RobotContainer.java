@@ -137,6 +137,8 @@ public class RobotContainer {
     autoChooser.addOption("twopieceleft", new PathPlannerAuto("twopiece"));
     autoChooser.addOption("twopieceright", new PathPlannerAuto("twopiece", true));
     autoChooser.addOption("onepiecemiddle", new PathPlannerAuto("onepiecemiddle"));
+    autoChooser.addOption("twol4pieceleft", new PathPlannerAuto("twol4piece"));
+    autoChooser.addOption("twol4pieceright", new PathPlannerAuto("twol4piece", true));
 
     SmartDashboard.putData(autoChooser);
 
@@ -199,10 +201,10 @@ public class RobotContainer {
     bButton.onTrue(new OuttakeCoral(arm, elevator));
     yButton.whileTrue(new ReverseIntake(arm));
 
-    leftJoystick1.whileTrue(new AutoDriveWithNewVision(-1, driveTrain, cams[0], estimator, leds).onlyIf(cams[0].hasTarget()));
-    rightJoystick1.whileTrue(new AutoDriveWithNewVision(1, driveTrain, cams[1], estimator, leds).onlyIf(cams[1].hasTarget()));
-    //rightJoystick1.whileTrue(new BetterAutoDrive("right", driveTrain, estimator, leds));
-    //leftJoystick1.whileTrue(new BetterAutoDrive("left", driveTrain, estimator, leds));
+    // leftJoystick1.whileTrue(new AutoDriveWithNewVision(-1, driveTrain, cams[0], estimator, leds).onlyIf(cams[0].hasTarget()));
+    // rightJoystick1.whileTrue(new AutoDriveWithNewVision(1, driveTrain, cams[1], estimator, leds).onlyIf(cams[1].hasTarget()));
+    rightJoystick1.whileTrue(new BetterAutoDrive("right", driveTrain, estimator, leds));
+    leftJoystick1.whileTrue(new BetterAutoDrive("left", driveTrain, estimator, leds));
 
     rightJoystick3.onTrue(new ArmElevatorGotoPosition(ArmConstants.CORAL_INTAKE_ANGLE, ElevatorConstants.STOW_HEIGHT, arm, elevator, driveTrain));
 
