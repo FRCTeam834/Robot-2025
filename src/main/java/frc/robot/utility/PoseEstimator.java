@@ -166,7 +166,7 @@ public class PoseEstimator extends SubsystemBase {
       poseEstimator.addVisionMeasurement(bestEstimate.pose, bestEstimate.timestampSeconds);
     }
 
-    combined_field.setRobotPose(getPoseEstimate());
+    combined_field.setRobotPose(getPoseEstimateNoOffset());
   }
 
   @Override

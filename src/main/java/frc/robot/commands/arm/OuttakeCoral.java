@@ -42,7 +42,7 @@ public class OuttakeCoral extends Command {
     cupTimer.reset();
 
     if(elevator.getElevatorHeight() > ElevatorConstants.L3_HEIGHT + 0.5) {
-      arm.setDesiredPivotAngle(ArmConstants.L4_CUP_ANGLE);
+      arm.setDesiredPivotAngle(ArmConstants.L4_CUP_ANGLE - 0.02);
       arm.setIntakeVoltage(0);
       cupTimer.start();
       doCupping = true;
@@ -58,17 +58,21 @@ public class OuttakeCoral extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(doCupping && cupTimer.get() > 0.3) {
-      arm.setIntakeVoltage(8);
-      timer.start();
-    }
 
     if (!arm.hasCoral() && timer.get() == 0 && !doCupping) {
       timer.start();
     }
 
-    if (timer.get() > 0.5 && doCupping) {
-      arm.setDesiredPivotAngle(ArmConstants.L4_ANGLE);
+    if(doCupping) {
+      if (cupTimer.get() > 0.3) {
+        arm.setIntakeVoltage(8);
+        timer.start();
+      }
+
+      if (timer.get() > 0.6) {
+        arm.setDesiredPivotAngle(ArmConstants.L4_ANGLE);
+        doCupping = false;
+      }
     }
 
     if(timer.get() > 2) {

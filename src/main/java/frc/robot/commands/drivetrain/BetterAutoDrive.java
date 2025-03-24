@@ -52,8 +52,8 @@ public class BetterAutoDrive extends Command {
   private Pose2d[] scoringPosesBlue = new Pose2d[12];
   private Pose2d[] scoringPosesRed = new Pose2d[12];
 
-  PIDController xController = new PIDController(1.25, 0, 0);
-  PIDController yController = new PIDController(1.25, 0, 0);
+  PIDController xController = new PIDController(2, 0, 0);
+  PIDController yController = new PIDController(2, 0, 0);
   PIDController thetaController = new PIDController(2.5, 0, 0);
 
   private boolean isRed;
@@ -121,37 +121,32 @@ public class BetterAutoDrive extends Command {
       }
     }
 
-    System.out.println("Closest tag id: " + closestTagID);
-    cam_left.setTagsFilter(new int[]{closestTagID});
-    cam_right.setTagsFilter(new int[]{closestTagID});
+    if (closestScoringPose == null) end(true);
 
-    double dx = -Math.cos(lineupScoringPose.getRotation().getRadians()) * FieldConstants.LINEUP_DISTANCE;
-    double dy = -Math.sin(lineupScoringPose.getRotation().getRadians()) * FieldConstants.LINEUP_DISTANCE;
-    Translation2d lineupTranslation = new Translation2d(dx, dy);
-    lineupScoringPose = closestScoringPose.transformBy(new Transform2d(lineupTranslation, new Rotation2d()));
+    System.out.println("Closest tag id: " + closestTagID);
+    // cam_left.setTagsFilter(new int[]{closestTagID});
+    // cam_right.setTagsFilter(new int[]{closestTagID});
+
+    double dx = -Math.cos(closestScoringPose.getRotation().getRadians()) * FieldConstants.LINEUP_DISTANCE;
+    double dy = -Math.sin(closestScoringPose.getRotation().getRadians()) * FieldConstants.LINEUP_DISTANCE;
+    Translation2d lineupTranslation = closestScoringPose.getTranslation().plus(new Translation2d(dx, dy));
+    lineupScoringPose = new Pose2d(lineupTranslation, closestScoringPose.getRotation());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     Pose2d robotPose = poseEstimator.getPoseEstimateNoOffset();
-    //double translationError = robotPose.getTranslation().getDistance(closestScoringPose.getTranslation());
+    // double translationToLineupError = robotPose.getTranslation().getDistance(lineupScoringPose.getTranslation());
+    double translationToScorePoseError = robotPose.getTranslation().getDistance(closestScoringPose.getTranslation());
 
-    // if(translationError > 0.2) {
-    //   desiredLinearVelocity = 0.1;
-    //   xController.setP(1);
-    //   yController.setP(1);
-    // } else {
-    //   desiredLinearVelocity = 0.0;
-    //   yController.setP(1);
-    //   xController.setP(1);
-    // }
     
     ChassisSpeeds speeds = new ChassisSpeeds();
     if(stage.equals("lineup")) {
-      if(poseEstimator.isAtPose(lineupScoringPose, Units.inchesToMeters(3), Units.degreesToRadians(5))) {
+      if(poseEstimator.isAtPose(lineupScoringPose, Units.inchesToMeters(4), Units.degreesToRadians(5))) {
         stage = "score";
       } else {
+        desiredLinearVelocity = 0.2;
         speeds = holonomicDriveController.calculate(
           poseEstimator.getPoseEstimateNoOffset(),
           lineupScoringPose,
@@ -162,6 +157,11 @@ public class BetterAutoDrive extends Command {
     }
 
     if(stage.equals("score")) {
+      if (translationToScorePoseError > 0.05) {
+        desiredLinearVelocity = 0.075;
+      } else {
+        desiredLinearVelocity = 0.0;
+      }
       speeds = holonomicDriveController.calculate(
         poseEstimator.getPoseEstimateNoOffset(),
         closestScoringPose,
@@ -169,6 +169,13 @@ public class BetterAutoDrive extends Command {
         closestScoringPose.getRotation()
       );
     }
+
+    // ChassisSpeeds speeds = holonomicDriveController.calculate(
+    //     poseEstimator.getPoseEstimateNoOffset(),
+    //     closestScoringPose,
+    //     desiredLinearVelocity, 
+    //     closestScoringPose.getRotation()
+    //   );
 
     speeds.vxMetersPerSecond = MathUtil.clamp(speeds.vxMetersPerSecond, -1, 1);
     speeds.vyMetersPerSecond = MathUtil.clamp(speeds.vyMetersPerSecond, -1, 1);

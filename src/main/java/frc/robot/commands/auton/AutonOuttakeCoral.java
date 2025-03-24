@@ -58,18 +58,18 @@ public class AutonOuttakeCoral extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(doCupping && cupTimer.get() > 0.3) {
-      arm.setIntakeVoltage(8);
-      timer.start();
-    }
-
     if (!arm.hasCoral() && timer.get() == 0 && !doCupping) {
       timer.start();
     }
 
-    if (timer.get() > 0.75 && doCupping) {
-      arm.setDesiredPivotAngle(ArmConstants.L4_ANGLE);
-      finished = true;
+    if (doCupping) {
+      if(cupTimer.get() > 0.3) {
+        arm.setIntakeVoltage(8);
+      }
+      if(cupTimer.get() > 1.05) {
+        arm.setDesiredPivotAngle(ArmConstants.L4_ANGLE);
+        finished = true;
+      }
     }
 
     if(timer.get() > 2) {
