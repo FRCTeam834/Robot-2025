@@ -97,7 +97,7 @@ public class Elevator extends SubsystemBase {
     //Configure motor encoders
     motor1Config.encoder
     .positionConversionFactor(2 * (Math.PI * Units.inchesToMeters(1.75)) / 5) 
-    .velocityConversionFactor(2 * ((Math.PI * Units.inchesToMeters(1.75)) / 5) / 60);
+    .velocityConversionFactor((2 * (Math.PI * Units.inchesToMeters(1.75)) / 5) / 60);
 
     //Configure PID controller
     motor1Config.closedLoop
@@ -150,6 +150,10 @@ public class Elevator extends SubsystemBase {
     return relativeEncoder.getPosition();
   }
 
+  public double getElevatorVelocity() {
+    return relativeEncoder.getVelocity();
+  }
+
   public void setElevatorSpeed(double speed) {
     elevatorMotor1.set(speed);
   }
@@ -166,7 +170,7 @@ public class Elevator extends SubsystemBase {
 
   public void setDesiredHeight(double height) {
     setpointHeight = MathUtil.clamp(height, 0, ElevatorConstants.MAXMIMUM_HEIGHT);
-    trapezoidPID.reset(getElevatorHeight());
+    trapezoidPID.reset(getElevatorHeight(), getElevatorVelocity());
     trapezoidPID.setGoal(new TrapezoidProfile.State(setpointHeight, 0.0));
     elevatorStopped = false;
   }
