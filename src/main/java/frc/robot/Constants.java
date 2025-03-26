@@ -194,7 +194,7 @@ public class Constants {
         AVERAGE_ESTIMATE
     }
 
-    public static final boolean tuningMode = false;
+    public static final boolean tuningMode = true;
     public static final RobotMode robotMode = RobotMode.COMPETITION;
 
     public static enum RobotMode {
