@@ -30,8 +30,8 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.14406779661016644,
-      "rotationDegrees": -55.0
+      "waypointRelativePos": 0.9382566585956469,
+      "rotationDegrees": -59.99999999999999
     }
   ],
   "constraintZones": [],
@@ -50,7 +50,7 @@
     },
     {
       "name": "AutonGotoL4",
-      "waypointRelativePos": 0.154063604240271,
+      "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -61,8 +61,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 2.5,
+    "maxAcceleration": 2.5,
     "maxAngularVelocity": 180.0,
     "maxAngularAcceleration": 360.0,
     "nominalVoltage": 12.0,

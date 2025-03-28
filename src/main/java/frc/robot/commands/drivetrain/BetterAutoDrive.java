@@ -143,7 +143,7 @@ public class BetterAutoDrive extends Command {
     
     ChassisSpeeds speeds = new ChassisSpeeds();
     if(stage.equals("lineup")) {
-      if(poseEstimator.isAtPose(lineupScoringPose, Units.inchesToMeters(4), Units.degreesToRadians(5))) {
+      if(poseEstimator.isAtPose(lineupScoringPose, Units.inchesToMeters(4), Units.degreesToRadians(10))) {
         stage = "score";
       } else {
         desiredLinearVelocity = 0.2;

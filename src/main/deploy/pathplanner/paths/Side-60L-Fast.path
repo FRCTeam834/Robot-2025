@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.1,
-        "y": 6.5
+        "x": 7.075206953642384,
+        "y": 6.7490273178807945
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.327007450331125,
-        "y": 6.654594370860926
+        "x": 5.738617549668874,
+        "y": 6.887044701986754
       },
       "isLocked": false,
       "linkedName": null
@@ -20,8 +20,8 @@
         "y": 5.274420529801323
       },
       "prevControl": {
-        "x": 5.615128311258278,
-        "y": 6.233278145695364
+        "x": 5.551955807440334,
+        "y": 6.209287232638864
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,20 +33,20 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "AutonGotoL2",
-      "waypointRelativePos": 0.04805653710248127,
+      "name": "AutonGotoL4",
+      "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "AutonGotoL2"
+          "name": "AutonGotoL4"
         }
       }
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 2.5,
-    "maxAcceleration": 2.5,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 180.0,
     "maxAngularAcceleration": 360.0,
     "nominalVoltage": 12.0,
@@ -60,7 +60,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -119.99999999999999
   },
   "useDefaultConstraints": false
 }

@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.259748858485737,
-        "y": 5.710434023572499
+        "x": 5.382677980132451,
+        "y": 6.160637417214911
       },
       "isLocked": false,
       "linkedName": "60L"
     },
     {
       "anchor": {
-        "x": 4.7870240066225165,
-        "y": 6.443936258278145
+        "x": 3.7337334437086094,
+        "y": 6.247806291387096
       },
       "prevControl": {
-        "x": 5.255688779349788,
-        "y": 5.935385121914509
+        "x": 4.551523718795375,
+        "y": 6.127763682200049
       },
       "nextControl": {
-        "x": 4.265114753442099,
-        "y": 7.0102633202398765
+        "x": 2.941949503311258,
+        "y": 6.364031456950009
       },
       "isLocked": false,
       "linkedName": null
@@ -36,8 +36,8 @@
         "y": 7.293832781456953
       },
       "prevControl": {
-        "x": 2.6161888546046024,
-        "y": 6.565906645087812
+        "x": 2.280918874172185,
+        "y": 6.487520695360606
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,7 +46,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.6,
+      "waypointRelativePos": 1.65,
       "rotationDegrees": -54.0
     }
   ],
@@ -55,7 +55,7 @@
   "eventMarkers": [
     {
       "name": "AutonIntake",
-      "waypointRelativePos": 0.05088339222614271,
+      "waypointRelativePos": 0.1,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -66,8 +66,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 2.25,
+    "maxAcceleration": 2.25,
     "maxAngularVelocity": 180.0,
     "maxAngularAcceleration": 360.0,
     "nominalVoltage": 12.0,

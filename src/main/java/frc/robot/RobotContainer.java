@@ -140,6 +140,9 @@ public class RobotContainer {
     autoChooser.addOption("twol4pieceleft", new PathPlannerAuto("twol4piece"));
     autoChooser.addOption("twol4pieceright", new PathPlannerAuto("twol4piece", true));
 
+    autoChooser.addOption("threepiece-fast-left", new PathPlannerAuto("threepiece-fast"));    
+    autoChooser.addOption("threepiece-fast-right", new PathPlannerAuto("threepiece-fast", true));    
+
     SmartDashboard.putData(autoChooser);
 
 
