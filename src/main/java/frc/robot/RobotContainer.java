@@ -50,7 +50,6 @@ import frc.robot.commands.drivetrain.AutoDriveWithNewVision;
 import frc.robot.commands.drivetrain.BetterAutoDrive;
 import frc.robot.commands.drivetrain.DriveWithSpeeds;
 import frc.robot.commands.drivetrain.OpenloopDrive;
-import frc.robot.commands.drivetrain.RotateToPathTarget;
 import frc.robot.commands.elevator.DumbElevator;
 import frc.robot.commands.elevator.TuneElevator;
 import frc.robot.commands.elevator.testElevatorPID;
@@ -131,9 +130,6 @@ public class RobotContainer {
 
     autoChooser = new SendableChooser<>();
     autoChooser.setDefaultOption("Do Nothing", new InstantCommand());
-    autoChooser.addOption("LEFT_Top-60L-120R-120L", new PathPlannerAuto("Top-60L-120R-120L"));
-    autoChooser.addOption("RIGHT_Top-60L-120R-120L", new PathPlannerAuto("Top-60L-120R-120L", true));
-    autoChooser.addOption("Top-60L-120R-120L-AutoDrive", new PathPlannerAuto("Top-60L-120R-120L-AutoDrive"));
     autoChooser.addOption("twopieceleft", new PathPlannerAuto("twopiece"));
     autoChooser.addOption("twopieceright", new PathPlannerAuto("twopiece", true));
     autoChooser.addOption("onepiecemiddle", new PathPlannerAuto("onepiecemiddle"));
