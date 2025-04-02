@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Side-60L-Fast"
+            "pathName": "EasySide-60L-Fast"
           }
         },
         {
@@ -62,6 +62,12 @@
           "type": "named",
           "data": {
             "name": "AutonScoreL4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "120L-FeederTop"
           }
         }
       ]

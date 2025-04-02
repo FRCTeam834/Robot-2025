@@ -4,6 +4,8 @@
 
 package frc.robot.commands.auton;
 
+import java.lang.annotation.Documented;
+
 import edu.wpi.first.util.cleanup.CleanupPool;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -42,7 +44,8 @@ public class AutonOuttakeCoral extends Command {
     cupTimer.reset();
 
     if(elevator.getElevatorHeight() > ElevatorConstants.L3_HEIGHT + 0.5) {
-      arm.setDesiredPivotAngle(ArmConstants.L4_CUP_ANGLE);
+      System.out.println("Setting arm angle");
+      arm.setDesiredPivotAngle(ArmConstants.L4_CUP_ANGLE - 0.125);
       arm.setIntakeVoltage(0);
       cupTimer.start();
       doCupping = true;
@@ -63,12 +66,15 @@ public class AutonOuttakeCoral extends Command {
     }
 
     if (doCupping) {
-      if(cupTimer.get() > 0.3) {
+      if(cupTimer.get() > 0.2) {
+        System.out.println(arm.getCurrentPivotAngle());
         arm.setIntakeVoltage(8);
       }
-      if(cupTimer.get() > 1.05) {
+      if(cupTimer.get() > 0.7) {
         arm.setDesiredPivotAngle(ArmConstants.L4_ANGLE);
+        doCupping = false;
         finished = true;
+        end(true);
       }
     }
 

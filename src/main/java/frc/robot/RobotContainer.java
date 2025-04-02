@@ -45,6 +45,7 @@ import frc.robot.commands.auton.AutonIntake;
 import frc.robot.commands.auton.AutonIntakeDos;
 import frc.robot.commands.auton.AutonIntakeUno;
 import frc.robot.commands.auton.AutonIntakeUnoArm;
+import frc.robot.commands.auton.AutonOuttakeCoral;
 import frc.robot.commands.auton.AutonScoreL4;
 import frc.robot.commands.drivetrain.AutoDriveWithNewVision;
 import frc.robot.commands.drivetrain.BetterAutoDrive;
@@ -120,7 +121,7 @@ public class RobotContainer {
 
     driveTrain.configureAutoBuilder(estimator);
 
-    NamedCommands.registerCommand("AutonScoreL4", new AutonScoreL4(driveTrain, estimator, arm, elevator));
+    NamedCommands.registerCommand("AutonScoreL4", new AutonOuttakeCoral(arm, elevator).onlyIf(arm::hasCoral));
     NamedCommands.registerCommand("AutonGotoL4", new AutonGotoL4(elevator, arm));
     NamedCommands.registerCommand("AutonGotoL2", new AutonGotoL2(elevator, arm));
     NamedCommands.registerCommand("AutonIntake", new AutonIntake(arm, elevator, leds));

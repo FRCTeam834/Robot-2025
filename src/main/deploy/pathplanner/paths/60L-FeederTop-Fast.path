@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.8139957622119685,
-        "y": 5.7742035095725655
+        "x": 4.881456953642384,
+        "y": 6.000827814569536
       },
       "isLocked": false,
       "linkedName": "60L"
     },
     {
       "anchor": {
-        "x": 3.9148404052209145,
-        "y": 6.1989338627181425
+        "x": 3.53033940397351,
+        "y": 6.487520695364237
       },
       "prevControl": {
-        "x": 4.568917706609809,
-        "y": 5.886114283793019
+        "x": 4.180692752934231,
+        "y": 6.279844836032242
       },
       "nextControl": {
-        "x": 2.9620360455478303,
-        "y": 6.654622904300922
+        "x": 2.6659147350993377,
+        "y": 6.763555463576158
       },
       "isLocked": false,
       "linkedName": null
@@ -56,8 +56,8 @@
       "minWaypointRelativePos": 0.0,
       "maxWaypointRelativePos": 0.599640933572711,
       "constraints": {
-        "maxVelocity": 2.25,
-        "maxAcceleration": 1.8,
+        "maxVelocity": 2.5,
+        "maxAcceleration": 2.5,
         "maxAngularVelocity": 180.0,
         "maxAngularAcceleration": 360.0,
         "nominalVoltage": 12.0,
@@ -80,8 +80,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 2.5,
-    "maxAcceleration": 2.5,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 180.0,
     "maxAngularAcceleration": 360.0,
     "nominalVoltage": 12.0,
