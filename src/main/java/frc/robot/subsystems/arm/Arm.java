@@ -178,6 +178,10 @@ public class Arm extends SubsystemBase {
     return intakeEncoder.getPosition();
   }
 
+  public double getCurrentAngleSetpoint() {
+    return pivotAngleSetpoint;
+  }
+
   public void setPivotVoltage(double volts) {
     pivotMotor.setVoltage(volts);
   }

@@ -27,6 +27,7 @@ public class LEDs extends SubsystemBase {
     STROBEWHITE(-0.05),
     STROBEGOLD(-0.07),
     WHITE(0.93),
+    FIRE(-0.57),
     STROBERED(-0.11);
 
     public final double signal;

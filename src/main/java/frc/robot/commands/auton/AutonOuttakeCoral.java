@@ -46,7 +46,7 @@ public class AutonOuttakeCoral extends Command {
     if(elevator.getElevatorHeight() > ElevatorConstants.L3_HEIGHT + 0.5) {
       System.out.println("Setting arm angle");
       arm.setDesiredPivotAngle(ArmConstants.L4_CUP_ANGLE - 0.125);
-      arm.setIntakeVoltage(0);
+      arm.setIntakeVoltage(3);
       cupTimer.start();
       doCupping = true;
     } else {
@@ -70,7 +70,7 @@ public class AutonOuttakeCoral extends Command {
         System.out.println(arm.getCurrentPivotAngle());
         arm.setIntakeVoltage(8);
       }
-      if(cupTimer.get() > 0.7) {
+      if(cupTimer.get() > 0.5) {
         arm.setDesiredPivotAngle(ArmConstants.L4_ANGLE);
         doCupping = false;
         finished = true;

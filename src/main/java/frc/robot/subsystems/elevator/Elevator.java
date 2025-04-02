@@ -16,6 +16,7 @@ import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
@@ -160,6 +161,12 @@ public class Elevator extends SubsystemBase {
 
   public void setElevatorVoltage(double voltage) {
     elevatorMotor1.setVoltage(voltage);
+  }
+
+  public void setElevatorCurrentLimit(int current) {
+    SparkBaseConfig config = new SparkMaxConfig().smartCurrentLimit(current);
+    elevatorMotor1.configureAsync(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+    elevatorMotor2.configureAsync(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
   }
 
   //Stop the elevator motors

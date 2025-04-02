@@ -112,10 +112,10 @@ public class Constants {
         public static final double L1_HEIGHT = 0.05;
         public static final double L2_HEIGHT = 0.45;
         public static final double L3_HEIGHT = 0.75; 
-        public static final double L4_HEIGHT = 1.44; 
-        public static final double L4_AUTON_HEIGHT = 1.44;
-        public static final double ALGAE_L1_HEIGHT = 0.5; // 0.46
-        public static final double ALGAE_L2_HEIGHT = 0.83; // 0.86
+        public static final double L4_HEIGHT = 1.42; // 1.44
+        public static final double L4_AUTON_HEIGHT = 1.42;
+        public static final double ALGAE_L1_HEIGHT = 0.55; // 0.5 // 0.46
+        public static final double ALGAE_L2_HEIGHT = 0.97; // 0.83 // 0.86
         public static final double MAXMIMUM_HEIGHT = 1.44;
     }
 

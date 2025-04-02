@@ -7,6 +7,7 @@ package frc.robot.commands.arm;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.GamePiece;
 import frc.robot.subsystems.arm.Arm;
 
@@ -26,6 +27,7 @@ public class IntakeAlgae extends Command {
   @Override
   public void initialize() {
     arm.setIntakeVoltage(-12);
+    arm.setDesiredPivotAngle(arm.getCurrentAngleSetpoint() - 0.2);
     filter.reset();
   }
 
@@ -34,7 +36,7 @@ public class IntakeAlgae extends Command {
   public void execute() {
     double current = filter.calculate(arm.getIntakeOutputCurrent());
 
-    if (current > 6.0) { // some value
+    if (current > 4.0) { // some value
       arm.currentPiece = GamePiece.ALGAE;
       cancel();
     }
@@ -43,6 +45,7 @@ public class IntakeAlgae extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    arm.setDesiredPivotAngle(arm.getCurrentAngleSetpoint() + 0.2);
     arm.setIntakeVoltage(0.0); // could have some small holding voltage
   }
 

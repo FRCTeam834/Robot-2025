@@ -8,27 +8,11 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.881456953642384,
-        "y": 6.000827814569536
+        "x": 4.779759933774835,
+        "y": 5.986299668874171
       },
       "isLocked": false,
       "linkedName": "60L"
-    },
-    {
-      "anchor": {
-        "x": 3.53033940397351,
-        "y": 6.487520695364237
-      },
-      "prevControl": {
-        "x": 4.180692752934231,
-        "y": 6.279844836032242
-      },
-      "nextControl": {
-        "x": 2.6659147350993377,
-        "y": 6.763555463576158
-      },
-      "isLocked": false,
-      "linkedName": null
     },
     {
       "anchor": {
@@ -36,8 +20,8 @@
         "y": 7.293832781456953
       },
       "prevControl": {
-        "x": 2.4530676074435855,
-        "y": 6.73925858995228
+        "x": 2.3535596026490064,
+        "y": 7.046854304635761
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,7 +30,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.823899371069189,
+      "waypointRelativePos": 0.9,
       "rotationDegrees": -55.0
     }
   ],
@@ -54,7 +38,7 @@
     {
       "name": "notippls",
       "minWaypointRelativePos": 0.0,
-      "maxWaypointRelativePos": 0.599640933572711,
+      "maxWaypointRelativePos": 0.3,
       "constraints": {
         "maxVelocity": 2.5,
         "maxAcceleration": 2.5,
@@ -69,7 +53,7 @@
   "eventMarkers": [
     {
       "name": "AutonIntake",
-      "waypointRelativePos": 0.1,
+      "waypointRelativePos": 0.05,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

@@ -175,7 +175,7 @@ public class PoseEstimator extends SubsystemBase {
 
     if(!Constants.tuningMode) return;
 
-    builder.addDoubleProperty("poseEstimator Yaw", () -> { return getPoseEstimate().getRotation().getDegrees(); }, null);
-    builder.addDoubleProperty("error between cams", () -> { return getErrorBetweenCams(cameras[0].getPoseEstimate2d(), cameras[1].getPoseEstimate2d()); }, null);
+    //builder.addDoubleProperty("poseEstimator Yaw", () -> { return getPoseEstimate().getRotation().getDegrees(); }, null);
+    //builder.addDoubleProperty("error between cams", () -> { return getErrorBetweenCams(cameras[0].getPoseEstimate2d(), cameras[1].getPoseEstimate2d()); }, null);
   }
 }
