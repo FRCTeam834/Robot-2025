@@ -21,6 +21,12 @@
           "data": {
             "name": "AutonScoreL4"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "0R-Away"
+          }
         }
       ]
     }

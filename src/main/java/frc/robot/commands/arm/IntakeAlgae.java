@@ -27,8 +27,14 @@ public class IntakeAlgae extends Command {
   @Override
   public void initialize() {
     arm.setIntakeVoltage(-12);
-    arm.setDesiredPivotAngle(arm.getCurrentAngleSetpoint() - 0.2);
+    //arm.setDesiredPivotAngle(arm.getCurrentAngleSetpoint() - 0.2);
     filter.reset();
+    filter.calculate(0);
+    filter.calculate(0);
+    filter.calculate(0);
+    filter.calculate(0);
+    filter.calculate(0);
+    System.out.println("Starting algae intake");
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -36,7 +42,9 @@ public class IntakeAlgae extends Command {
   public void execute() {
     double current = filter.calculate(arm.getIntakeOutputCurrent());
 
-    if (current > 4.0) { // some value
+    System.out.println("filtered: " + current);
+
+    if (current > 35) { // some value
       arm.currentPiece = GamePiece.ALGAE;
       cancel();
     }
@@ -45,8 +53,9 @@ public class IntakeAlgae extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    arm.setDesiredPivotAngle(arm.getCurrentAngleSetpoint() + 0.2);
-    arm.setIntakeVoltage(0.0); // could have some small holding voltage
+    //arm.setDesiredPivotAngle(arm.getCurrentAngleSetpoint() + 0.2);
+    arm.setIntakeVoltage(-3); // could have some small holding voltage
+    System.out.println("done intaking algae");
   }
 
   // Returns true when the command should end.

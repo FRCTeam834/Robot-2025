@@ -29,7 +29,7 @@ public class AutonIntakeUnoArm extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
+  public void initialize() {  
     ended = false;
     hasCoral = false;
     arm.setIntakeVoltage(6); // 4 was good

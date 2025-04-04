@@ -134,6 +134,7 @@ public class RobotContainer {
     autoChooser.addOption("twopieceleft", new PathPlannerAuto("twopiece"));
     autoChooser.addOption("twopieceright", new PathPlannerAuto("twopiece", true));
     autoChooser.addOption("onepiecemiddle", new PathPlannerAuto("onepiecemiddle"));
+    autoChooser.addOption("onepiecemiddleright", new PathPlannerAuto("onepiecemiddle", true));
     autoChooser.addOption("twol4pieceleft", new PathPlannerAuto("twol4piece"));
     autoChooser.addOption("twol4pieceright", new PathPlannerAuto("twol4piece", true));
 

@@ -171,7 +171,7 @@ public class Arm extends SubsystemBase {
   }
 
   public double getIntakeOutputCurrent () {
-    return intakeMotor.getAppliedOutput();
+    return intakeMotor.getOutputCurrent();
   }
 
   public double getIntakeAngle() {

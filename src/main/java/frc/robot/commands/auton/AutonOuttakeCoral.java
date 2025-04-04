@@ -70,7 +70,7 @@ public class AutonOuttakeCoral extends Command {
         System.out.println(arm.getCurrentPivotAngle());
         arm.setIntakeVoltage(8);
       }
-      if(cupTimer.get() > 0.5) {
+      if(cupTimer.get() > 0.6) {
         arm.setDesiredPivotAngle(ArmConstants.L4_ANGLE);
         doCupping = false;
         finished = true;
@@ -86,7 +86,7 @@ public class AutonOuttakeCoral extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    arm.setIntakeVoltage(0.0);
+    //arm.setIntakeVoltage(0.0);
   }
 
   // Returns true when the command should end.
