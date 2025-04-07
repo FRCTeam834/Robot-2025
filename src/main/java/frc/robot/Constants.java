@@ -95,7 +95,7 @@ public class Constants {
         public static final double L2_ANGLE = -0.4; // this is a random default value
         public static final double L3_ANGLE = -0.29; // this is a random default value
         public static final double L4_ANGLE = -0.29; // -0.25 // this is a random default value
-        public static final double L4_CUP_ANGLE = -0.32;
+        public static final double L4_CUP_ANGLE = -0.34; // -0.32
         public static final double L4_AUTON_ANGLE = -0.32; // -0.28
         public static final double ALGAE_L1_ANGLE = -0.47; // -0.4
         public static final double ALGAE_L2_ANGLE = -0.54; // -0.34
@@ -110,10 +110,10 @@ public class Constants {
         public static final double STOW_HEIGHT = 0.0; 
         public static final double INTAKE_HEIGHT = 0.0; 
         public static final double L1_HEIGHT = 0.05;
-        public static final double L2_HEIGHT = 0.45;
+        public static final double L2_HEIGHT = 0.44; // 0.45
         public static final double L3_HEIGHT = 0.75; 
         public static final double L4_HEIGHT = 1.435; // 1.44
-        public static final double L4_AUTON_HEIGHT = 1.44;
+        public static final double L4_AUTON_HEIGHT = 1.43;
         public static final double ALGAE_L1_HEIGHT = 0.55; // 0.5 // 0.46
         public static final double ALGAE_L2_HEIGHT = 0.97; // 0.83 // 0.86
         public static final double MAXMIMUM_HEIGHT = 1.44;

@@ -70,13 +70,13 @@ public class Elevator extends SubsystemBase {
   private boolean elevatorStopped = true;
 
   static {
-    elevatorkP.initDefault(10);
+    elevatorkP.initDefault(10.5); // 10
     elevatorkI.initDefault(0);
     elevatorkD.initDefault(0);
 
-    elevatorkS.initDefault(0.584); 
-    elevatorkG.initDefault(0.366);
-    elevatorkV.initDefault(2.15); 
+    elevatorkS.initDefault(0.584); // 0.584
+    elevatorkG.initDefault(0.366); // 0.366
+    elevatorkV.initDefault(2.15); // 2.15
     elevatorkA.initDefault(0.05);
   }
 
