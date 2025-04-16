@@ -195,7 +195,7 @@ public class Constants {
     }
 
     public static final boolean tuningMode = true;
-    public static final RobotMode robotMode = RobotMode.COMPETITION;
+    public static final RobotMode robotMode = RobotMode.DEVELOPMENT;
 
     public static enum RobotMode {
         COMPETITION,

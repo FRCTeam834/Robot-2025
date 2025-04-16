@@ -70,8 +70,8 @@ public class DriveTrain extends SubsystemBase {
 
   static {
     kS_TunableNumber.initDefault(0.2);
-    kV_TunableNumber.initDefault(2.8);
-    kP_Drive.initDefault(0.15);
+    kV_TunableNumber.initDefault(2.58); // 2.8
+    kP_Drive.initDefault(0.075); // 0.15
     kP_Turn.initDefault(0.17);
   }
 
@@ -107,11 +107,17 @@ public class DriveTrain extends SubsystemBase {
   }
 
   public void drive(double vx, double vy, double rot) {
-    // double angle = Math.atan2(ySpeed, xSpeed);
-    // double mag = translationLimiter.calculate(Math.hypot(xSpeed, ySpeed));
-    // xSpeed = mag * Math.cos(angle);
-    // ySpeed = mag * Math.sin(angle);
-    // rot = omegaLimiter.calculate(rot);
+    if(Math.hypot(vx, vy) > 0.01) {
+      double angle = Math.atan2(vy, vx);
+      double mag = translationLimiter.calculate(Math.hypot(vx, vy));
+      vx = mag * Math.cos(angle);
+      vy = mag * Math.sin(angle);
+      lastTranslationAngle = angle;
+    } else if (translationLimiter.lastValue() > 0.01) {
+      double mag = translationLimiter.calculate(0);
+      vx = mag * Math.cos(lastTranslationAngle);
+      vy = mag * Math.sin(lastTranslationAngle);
+    }
 
     ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(vx, vy, rot, RobotContainer.estimator.getPoseEstimate().getRotation());
 

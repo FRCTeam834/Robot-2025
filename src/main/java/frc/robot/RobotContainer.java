@@ -112,7 +112,7 @@ public class RobotContainer {
   private final SendableChooser<Command> autoChooser;
 
   public RobotContainer() {
-    driveTrain.setDefaultCommand(new OpenloopDrive(
+    driveTrain.setDefaultCommand(new DriveWithSpeeds(
       driveTrain,
       OI::getRightJoystickX,
       OI::getRightJoystickY,

@@ -177,16 +177,13 @@ public class SwerveModule extends SubsystemBase {
     correctedDesiredState.optimize(Rotation2d.fromRadians(getCANCoderAngle()));
 
     if (Math.abs(correctedDesiredState.speedMetersPerSecond) < 0.01) {
+      driveMotor.setVoltage(0);
       correctedDesiredState.speedMetersPerSecond = 0.0;
+    } else {
+      driveController.setReference(correctedDesiredState.speedMetersPerSecond, ControlType.kVelocity, ClosedLoopSlot.kSlot0, ff.calculate(correctedDesiredState.speedMetersPerSecond));
     }
 
-    // correctedDesiredState.speedMetersPerSecond *= Math.cos(correctedDesiredState.speedMetersPerSecond - getTurnAngle());
-
-    //TODO: MAXMotion
-    //TODO: If needed try arbitary feedforward
-    driveController.setReference(correctedDesiredState.speedMetersPerSecond, ControlType.kVelocity, ClosedLoopSlot.kSlot0, ff.calculate(correctedDesiredState.speedMetersPerSecond));
     turnController.setReference(correctedDesiredState.angle.getRadians(), ControlType.kPosition);
-
     this.setpoint = correctedDesiredState;
   }
 
@@ -194,6 +191,7 @@ public class SwerveModule extends SubsystemBase {
     state.optimize(Rotation2d.fromRadians(getCANCoderAngle()));
 
     if (Math.abs(state.speedMetersPerSecond) < 0.01) {
+      driveMotor.setVoltage(0);
       state.speedMetersPerSecond = 0.0;
     }
     
@@ -247,7 +245,7 @@ public class SwerveModule extends SubsystemBase {
     builder.addDoubleProperty("Setpoint Angle", this::getSetpointAngle, null);
     builder.addDoubleProperty("Clamped Setpoint Angle ", () -> MathUtil.inputModulus(getSetpointAngle(), 0, Math.PI), null);
     builder.addDoubleProperty("Clamped Angle", () -> MathUtil.inputModulus(getTurnAngle(), 0, Math.PI), null);
-    builder.addDoubleProperty("Speed", this::getDriveVelocity, null);
+    builder.addDoubleProperty("AbsSpeed", () -> Math.abs(getDriveVelocity()), null);
     builder.addDoubleProperty("Angle", this::getTurnAngle, null);
     builder.addDoubleProperty("Drive Voltage", () -> { return driveMotor.get() * driveMotor.getBusVoltage(); }, null);
     builder.addDoubleProperty("Turn Voltage", () -> { return turnMotor.get() * turnMotor.getBusVoltage(); }, null);
